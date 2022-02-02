@@ -120,8 +120,7 @@ $file_id
 				<div id="dynamic_div0"></div>
 				<div class="col-sm-12"><br>
 					<input type="hidden" id="tax_inp" name="tax_inp" value="1">
-					<button type="button" class="btn btn-link" style="outline: none;" onclick="repeat_div(0)">Add
-						Items<i class="fa fa-plus"></i></button>
+					<button type="button" class="btn btn-link" style="outline: none;" onclick="repeat_div(0)">Add Entries <i class="fa fa-plus"></i></button>
 				</div>
 				<div class="row">
 					<hr>
@@ -140,7 +139,7 @@ $file_id
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Amount</label>
-						<input type="text" class="form-control" id="taxamt" placeholder="Rate" name="taxamt0[]">
+						<input type="text" class="form-control" id="taxamt" placeholder="Amount" name="taxamt0[]">
 					</div>
 				</div>
 				<div class="row">
@@ -156,7 +155,7 @@ $file_id
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Amount</label>
-						<input type="text" class="form-control" id="taxamt" placeholder="Rate" name="taxamt0[]">
+						<input type="text" class="form-control" id="taxamt" placeholder="Amount" name="taxamt0[]">
 					</div>
 				</div>
 			</div>
@@ -438,7 +437,7 @@ $file_id
 				'</div>' +
 				'<div id="dynamic_div' + div_count1 + '"></div>' +
 				'<div class="col-sm-12">' +
-				'<button type="button" class="btn btn-link" style="outline: none;" onclick="repeat_div(' + div_count1 + ')">Add Items<i class="fa fa-plus"></i></button>' +
+				'<button type="button" class="btn btn-link" style="outline: none;" onclick="repeat_div(' + div_count1 + ')">Add Entries <i class="fa fa-plus"></i></button>' +
 				' </div>' +
 				'<div class="row"> <hr>' +
 				'<div class="col-sm-12">' +
@@ -457,7 +456,7 @@ $file_id
 				'</div>' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Amount</label>' +
-				'<input type="text" class="form-control" id="taxamt" placeholder="Rate" name="taxamt' + div_count1 + '[]" >' +
+				'<input type="text" class="form-control" id="taxamt" placeholder="Amount" name="taxamt' + div_count1 + '[]" >' +
 				'</div>' +
 				'</div>' +
 				'</div>' +
@@ -475,7 +474,7 @@ $file_id
 				'</div>' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Amount</label>' +
-				'<input type="text" class="form-control" id="taxamt" placeholder="Rate" name="taxamt' + div_count1 + '[]" >' +
+				'<input type="text" class="form-control" id="taxamt" placeholder="Amount" name="taxamt' + div_count1 + '[]" >' +
 				'</div>' +
 				'</div>' +
 				'</div><hr>';

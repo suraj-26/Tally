@@ -351,7 +351,7 @@ if ($this->session->user_session->user_type == '6') {
 		</div>
 		<ul class="nav-links h-100">
 			<li class="position-relative">
-				<a href="<?php echo base_url("InvoiceController/customer_account"); ?>">
+				<a href="<?php echo base_url("home"); ?>">
 					<i class='bx bx-line-chart'></i>
 					<span class="link_name">
                         Invoice Management</span></a>

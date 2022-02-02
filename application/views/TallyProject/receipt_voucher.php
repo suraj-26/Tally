@@ -122,8 +122,7 @@
 				<div id="dynamic_div0"></div>
 				<div class="col-sm-12"><br>
 					<input type="hidden" id="tax_inp" name="tax_inp" value="1">
-					<button type="button" class="btn btn-link" style="outline: none;" onclick="repeat_div(0)">Add
-						Items<i class="fa fa-plus"></i></button>
+					<button type="button" class="btn btn-link" style="outline: none;" onclick="repeat_div(0)">Add Entries <i class="fa fa-plus"></i></button>
 				</div>
 			</div>
 			<hr>
@@ -421,7 +420,7 @@
 				'</div>' +
 				'<div id="dynamic_div' + div_count1 + '"></div>' +
 				'<div class="col-sm-12"><br>' +
-				'<button type="button" class="btn btn-link" style="outline: none;" onclick="repeat_div(' + div_count1 + ')">Add Items<i class="fa fa-plus"></i></button>' +
+				'<button type="button" class="btn btn-link" style="outline: none;" onclick="repeat_div(' + div_count1 + ')">Add Entries <i class="fa fa-plus"></i></button>' +
 				' </div>';
 
 
