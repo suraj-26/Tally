@@ -1,0 +1,14 @@
+<IfModule mod_rewrite.c>
+   
+ Header set Access-Control-Allow-Origin "*"
+  RewriteEngine On	
+	RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php?/$1 [L]
+    php_value memory_limit 1G
+	php_value post_max_size 900M
+	php_value upload_max_filesize 900M
+	Options -Indexes
+	RewriteCond %{HTTP_HOST} ^www\.docango\.com$
+#    RewriteRule ^/?$ "https://docango.com\" [R=301,L]
+</IfModule>
