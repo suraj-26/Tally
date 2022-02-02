@@ -64,9 +64,9 @@ $result = $this->db->get('partner_header_all')->row();
 		/* position: fixed; */
 		top: 0;
 		left: 0;
-		height: 100%;
-		width: 306px;
-		background: #fff;
+		/* height: 100%; */
+		width: 276px;
+		/* background: #fff; */
 		z-index: 100;
 		transition: all 0.5s ease;
 		box-shadow: #d6d6d687 1px 1px 6px;
@@ -109,16 +109,31 @@ $result = $this->db->get('partner_header_all')->row();
 	.sidebar .nav-links::-webkit-scrollbar {
 		display: none;
 	}
-
+/* .sub-menu li{
+	padding-left:45px !important;
+} */
+.sub-menu li:focus{
+	/* background: #ffd96fa6 ; */
+}
 	.sidebar .nav-links li {
 		position: relative;
 		list-style: none;
 		transition: all 0.4s ease;
+		
 	}
+	.fm_lists:hover{
+		background: #ffd96fa6 ;
+	}
+	.fm_lists{
+		background: #ffd96fa6 ;
+	}
+	.fm_lists:focus{
+		background: #ffd96fa6 ;
+	}
+	/* .sidebar .nav-links li:hover {
+		background: #ffd96fa6 !important;
+	} */
 
-	.sidebar .nav-links li:hover {
-		background: #ffd96fa6;
-	}
 
 	.sidebar .nav-links li .iocn-link {
 		display: flex;
@@ -157,7 +172,7 @@ $result = $this->db->get('partner_header_all')->row();
 
 	.sidebar .nav-links li a .link_name {
 		text-transform: uppercase;
-		font-size: 15px;
+		font-size: 14px;
 		font-weight: 400;
 		color: #000;
 		transition: all 0.4s ease;
@@ -171,8 +186,8 @@ $result = $this->db->get('partner_header_all')->row();
 	.sidebar .nav-links li .sub-menu {
 		/* padding: 6px 6px 14px 80px; */
 		margin-top: -10px;
-		background: #ffe6a1;
-		display: none;
+		/* background: #ffe6a1;
+		display: none; */
 	}
 
 	.sidebar .nav-links li.showMenu .sub-menu {
@@ -182,7 +197,7 @@ $result = $this->db->get('partner_header_all')->row();
 	.sidebar .nav-links li .sub-menu a {
 		color: #000;
 		font-size: 15px;
-		padding: 5px 0;
+		/* padding: 5px 0; */
 		opacity: 1 !important;
 		white-space: nowrap;
 		opacity: 0.6;
@@ -270,7 +285,9 @@ $result = $this->db->get('partner_header_all')->row();
 		background: #1d1b31;
 		transition: all 0.5s ease;
 	}
-
+	.showMenu{
+		background:#ffd96fa6; 
+	}
 	.sidebar.close .profile-details img {
 		padding: 10px;
 	}
@@ -297,10 +314,15 @@ $result = $this->db->get('partner_header_all')->row();
 		position: relative;
 		background: white;
 		height: 100vh;
-		left: 300px;
-		width: calc(100% - 306px);
+		left: 287px;
+		width: calc(100% - 276px);
 		transition: all 0.5s ease;
 	}
+	.menu_header {
+    font-size: .9rem;
+    margin-bottom: 8px;
+    margin-top: 12px;
+}
 
 	.sidebar.close ~ .home-section {
 		left: 78px;
@@ -312,9 +334,9 @@ $result = $this->db->get('partner_header_all')->row();
 		color: #11101d;
 		font-size: 25px;
 	}
-
+	
 	.home-section .home-content .bx-menu {
-		margin-left: 33px;
+		margin-left: 11px;
 		cursor: pointer;
 	}
 
@@ -343,38 +365,40 @@ if ($this->session->user_session->user_type == '6') {
 }
 ?>
 <?php if ($this->session->user_session) { ?>
-	<div class="sidebar position-fixed" style="opacity: 1;">
+	<div class="sidebar position-fixed h-100 bg-white" style="opacity: 1;">
 		<div class="align-items-center d-flex logo-details w-100">
 			<img src="<?php echo base_url(); ?>images/finance_management_logo.png" style="width: 75%; max-width: 75px ;"
 				 alt="">
-			<span class="font-weight-normal logo_name ml-3 text-dark text-uppercase">finance management</span>
+			<span class="font-weight-normal logo_name ml-3 text-dark text-uppercase">LOGO</span>
 		</div>
-		<ul class="nav-links h-100">
-			<li class="position-relative">
+		<ul class="nav-links h-100" style="background-color:white !important">
+			<li><a href="#"><h6 class="pl-3 text-dark menu_header">Home </h6></a>
+				<li style=" padding-left: 21px;	" class="position-relative <?php echo $this->uri->segment(1) == 'home' ? 'showMenu' : '' ?>">
 				<a href="<?php echo base_url("home"); ?>">
 					<i class='bx bx-line-chart'></i>
-					<span class="link_name">
-                        Invoice Management</span></a>
-			</li>
-			<li class="position-relative">
-				<div class="iocn-link">
-					<a href="#">
-						<i class='bx bx-pie-chart-alt-2'></i>
-						<span class="link_name">MASTER DATA ENTRY</span>
+					<span class="link_name">Invoice Management</span>
 					</a>
-					<i class='bx bxs-chevron-down arrow'></i>
+			</li></li>
+			<li class="position-relative">
+				<div class="iocn-link" id="icon_link">
+					<a href="#">
+					<h6 class="pl-3 text-dark menu_header" >MASTER DATA ENTRY</h6>
+						<!-- <i class='bx bx-pie-chart-alt-2'></i> -->
+						<span class="link_name"></span>
+					</a>
+					<!-- <i class='bx bxs-chevron-down arrow'></i> -->
 				</div>
 				<ul class="sub-menu">
-					<li style="display: flex; padding-left: 21px;">
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'add_ledger_page' ? 'showMenu' : '' ?>">
 						<a href="<?php echo base_url("ImportController/add_ledger_page"); ?>">
 							<i class='bx bx-list-ul'></i>
 							Add Ledger</a>
 					</li>
-					<li style="display: flex; padding-left: 21px;">
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'add_group_page' ? 'showMenu' : '' ?>">
 						<i class='bx bx-group'></i>
 						<a href="<?php echo base_url("ImportController/add_group_page"); ?>">Add Group</a>
 					</li>
-					<li style="display: flex; padding-left: 21px;">
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'add_stock_summary_page' ? 'showMenu' : '' ?>">
 						<i class='bx bx-bar-chart-square'></i>
 						<a href="<?php echo base_url("ImportController/add_stock_summary_page"); ?>">
 							Stock summary</a>
@@ -384,24 +408,25 @@ if ($this->session->user_session->user_type == '6') {
 			<li class="position-relative">
 				<div class="iocn-link">
 					<a href="#">
-						<i class='bx bx-book-alt'></i>
-						<span class="link_name">Transaction Entry</span>
+					<h6 class="pl-3 text-dark menu_header" >Transaction Entry</h6>
+						<!-- <i class='bx bx-book-alt'></i> -->
+						<!-- <span class="link_name">Transaction Entry</span> -->
 					</a>
-					<i class='bx bxs-chevron-down arrow'></i>
+					<!-- <i class='bx bxs-chevron-down arrow'></i> -->
 				</div>
 				<ul class="sub-menu">
 					<li><a class="link_name" href="#">Transaction Entry</a></li>
-					<li style="display: flex; padding-left: 21px;">
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'journal_entry' ? 'showMenu' : '' ?>">
 						<i class='bx bx-list-ul'></i>
 						<a href="<?php echo base_url("ImportController/journal_entry"); ?>">
 							Journal Entry</a>
 					</li>
-					<li style="display: flex; padding-left: 21px;">
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'sale_purchase' ? 'showMenu' : '' ?>">
 						<i class='bx bx-credit-card'></i>
 						<a href="<?php echo base_url("ImportController/sale_purchase"); ?>">
 							Sale/Purchase</a>
 					</li>
-					<li style="display: flex; padding-left: 21px;">
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'receipt_voucher' ? 'showMenu' : '' ?>">
 						<i class='bx bx-line-chart'></i>
 						<a href="<?php echo base_url("ImportController/receipt_voucher"); ?>">
 							Other Entry</a>
@@ -411,22 +436,24 @@ if ($this->session->user_session->user_type == '6') {
 			<li class="position-relative">
 				<div class="iocn-link">
 					<a href="#">
-						<i class='bx bx-plug'></i>
-						<span class="link_name">Reports</span>
+					<h6 class="pl-3 text-dark menu_header" >Reports</h6>
+						
+						<!-- <i class='bx bx-plug'></i> -->
+						<!-- <span class="link_name">Reports</span> -->
 					</a>
-					<i class='bx bxs-chevron-down arrow'></i>
+					<!-- <i class='bx bxs-chevron-down arrow'></i> -->
 				</div>
 				<ul class="sub-menu">
 					<li><a class="link_name" href="#">Reports</a></li>
-					<li style="display: flex; padding-left: 21px; "><i class='bx bx-spreadsheet'></i>
+					<li style="display: flex; padding-left: 21px; " class="<?php echo $this->uri->segment(2) == 'balance_sheet_page' ? 'showMenu' : '' ?>" ><i class='bx bx-spreadsheet'></i>
 						<a href="<?php echo base_url("ImportController/balance_sheet_page"); ?>">
 							Balance Sheet</a>
 					</li>
-					<li style="display: flex; padding-left: 21px;"><i class='bx bx-sitemap'></i>
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'ratio_analysis_page' ? 'showMenu' : '' ?>"><i class='bx bx-sitemap'></i>
 						<a href="<?php echo base_url("ImportController/ratio_analysis_page"); ?>">
 							Ratio Analysis</a>
 					</li>
-					<li style="display: flex; padding-left: 21px;"><i class='bx bx-trending-up'></i>
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'profit_n_loss_page' ? 'showMenu' : '' ?>"><i class='bx bx-trending-up'></i>
 						<a href="<?php echo base_url("ImportController/profit_n_loss_page"); ?>">
 							Profit and Loss</a>
 					</li>
@@ -446,7 +473,7 @@ if ($this->session->user_session->user_type == '6') {
 					<span><h5 class="logo_name pl-2 mb-0 font-weight-bold text-uppercase" id="logo_name">finance management</h5></span>
 				</div>
 				<div class="float-right logout mr-3">
-					<span><b>Logout</b><i class="fas fa-sign-out-alt pl-2" style="transform: rotate(0deg);"></i></span>
+					<span><b>Logout</b><i class="fas fa-sign-out-alt pl-2" style="transform: rotate(0deg); font-size: 1.3rem;"></i></span>
 				</div>
 			</div>
 		</div>
@@ -491,16 +518,19 @@ if ($this->session->user_session->user_type == '6') {
 <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 <script>
 	let arrow = document.querySelectorAll(".iocn-link");
+	$(".fm_lists").focus(function(){
+		$(this).css("background-color", "#ffe6a1")
+	});
 	for (var i = 0; i < arrow.length; i++) {
 		arrow[i].addEventListener("click", (e) => {
 			let arrowParent = e.target.parentElement.parentElement.parentElement; //selecting main parent of arrow
-			
+			// console.log(arrowParent);
 			arrowParent.classList.toggle("showMenu");
 			// $(".logo_name").toggle();
 		});
 	}
 	let sidebar = document.querySelector(".sidebar");
-	let sidebarBtn = document.querySelector(".bx-menu");
+	// let sidebarBtn = document.querySelector(".bx-menu");
 	console.log(sidebarBtn);
 	sidebarBtn.addEventListener("click", () => {
 		sidebar.classList.toggle("close");
@@ -514,7 +544,31 @@ if ($this->session->user_session->user_type == '6') {
 	function googleTranslateElementInit() {
 		new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
 	}
+	// function fm_menus(list_class) {
+	// 	var exist_class = document.getElementsByClassName('fm_lists');
+	// 	console.log(exist_class);
+		
+	// 	if(document.querySelector('.fm_lists') == null){
+	// 		console.log('if');
+	// 	list_class.classList.add("fm_lists");
+	// 	}else{
+	// 		console.log('else');
+	// 	list_class.classList.remove("fm_lists");
 
+	// 	}
+	// // 	// console.log(numItems);
+	// // 	for(i=0; i < numItems; i++){
+	// // 		// console.log('inside');
+    // //         var Classname = numItems[i];
+    // //             if(Classname){
+	// // 				list_class.classList.add("fm_lists");
+                   
+    // //             }else{
+	// // 				list_class.classList.remove("fm_lists");
+	// // 			}
+    // //     }
+
+	// }
 
 </script>
 </body>
