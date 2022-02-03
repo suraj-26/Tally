@@ -6,7 +6,8 @@
 		color: white;
 	}
 
-	.modal-backdrop, .blockOverlay {
+	.modal-backdrop,
+	.blockOverlay {
 		display: none;
 		z-index: 0 !important;
 	}
@@ -19,7 +20,6 @@
 	.PS {
 		background: none !important;
 	}
-
 </style>
 
 
@@ -31,51 +31,57 @@
 
 <div class="" style="padding:8px;background-color:#ffffff;">
 	<form class="form-horizontal" id="add_stk_form" method="post" action="">
-		<div class="form-group">
-			<label for="group-name" class="col-sm-4 control-label">Company Name</label>
-			<div class="col-sm-6">
-				<select id='company_namestk' class="form-control" name='company_namestk' onchange="get_stockgrp_list()">
+		<div class="form-group" >
+			<div class="col-sm-12">
+				<div class="col-sm-8 m-auto">
+					<label for="group-name" class="control-label mb-1">Company Name</label>
+					<select id='company_namestk' class="form-control" name='company_namestk' onchange="get_stockgrp_list()"></select>
+				</div>
+			</div>
+		</div>
 
+		<div class="form-group" >
+			<div class="col-sm-12">
+				<div class="col-sm-8 m-auto">
+					<label for="item-name" class="control-label mb-1">Parent</label>
+					<select id='stock_group' class="form-control" name='stock_group'>
+						<option>Select Stock Group</option>
+					</select>
+					<button type="button" onclick="open_modal()" class="btn btn-link pb-0 pl-0">Add stock group</button>
+				</div>
+			</div>
+		</div>
 
-				</select>
+		<div class="form-group" >
+			<div class="col-sm-12">
+				<div class="col-sm-8 m-auto">
+					<label for="item-name" class="control-label mb-1">Stock Item name</label>
+					<input type="text" class="form-control" id="item_name" placeholder="Stock Item name" name="item_name" required>
+				</div>
 			</div>
 		</div>
 
 		<div class="form-group">
-			<label for="item-name" class="col-sm-4 control-label">Parent</label>
-			<div class="col-sm-6">
-				<select id='stock_group' class="form-control" name='stock_group'>
-					<option>Select Stock Group</option>
+			<div class="col-sm-12">
+				<div class="col-sm-8 m-auto">
+					<label for="opening_balance" class="control-label mb-1">Opening Balance</label>
+					<input type="text" class="form-control" id="opening_balance" placeholder="Opening Balance" name="opening_balance" required>
+				</div>
+			</div>
+		</div>
 
-				</select>
-				<button type="button" onclick="open_modal()" class="btn btn-link">Add stock group</button>
-			</div>
-		</div>
 		<div class="form-group">
-			<label for="item-name" class="col-sm-4 control-label">Stock Item name</label>
-			<div class="col-sm-6">
-				<input type="text" class="form-control" id="item_name" placeholder="Stock Item name" name="item_name"
-					   required>
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="opening_balance" class="col-sm-4 control-label">Opening Balance</label>
-			<div class="col-sm-6">
-				<input type="text" class="form-control" id="opening_balance" placeholder="Opening Balance"
-					   name="opening_balance" required>
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="opening_value" class="col-sm-4 control-label">Unit Price</label>
-			<div class="col-sm-6">
-				<input type="text" class="form-control" id="opening_value" placeholder="Item Unit Price"
-					   name="opening_value" required>
+			<div class="col-sm-12">
+				<div class="col-sm-8 m-auto">
+					<label for="opening_value" class="control-label mb-1">Unit Price</label>
+					<input type="text" class="form-control" id="opening_value" placeholder="Item Unit Price" name="opening_value" required>
+				</div>
 			</div>
 		</div>
 
 
 		<div class="form-group">
-			<div class="col-sm-offset-4 col-sm-6">
+			<div class="col-sm-6 col-sm-offset-4 m-auto text-center mt-3">
 				<button type="button" onclick="insert_stock()" class="btn btn-primary">Insert</button>
 			</div>
 		</div>
@@ -103,8 +109,7 @@
 					<div class="form-group">
 						<label for="Stock_group_name" class="col-sm-12 control-label">Stock Group Name</label>
 						<div class="col-sm-12">
-							<input type="text" class="form-control" id="Stock_group_name" placeholder="Stock Group Name"
-								   name="Stock_group_name" required>
+							<input type="text" class="form-control" id="Stock_group_name" placeholder="Stock Group Name" name="Stock_group_name" required>
 						</div>
 					</div>
 				</form>
@@ -120,7 +125,7 @@
 
 
 <script>
-	$(document).ready(function () {
+	$(document).ready(function() {
 		get_company_list();
 	});
 
@@ -137,7 +142,7 @@
 			dataType: "json",
 			async: false,
 			cache: false,
-			success: function (result) {
+			success: function(result) {
 				var data = result.company_list;
 				console.log(data);
 				if (result.status === 'true') {
@@ -165,8 +170,10 @@
 			dataType: "json",
 			async: false,
 			cache: false,
-			data: {company_name},
-			success: function (result) {
+			data: {
+				company_name
+			},
+			success: function(result) {
 				var data = result.group_list;
 				console.log(data);
 				if (result.status === 'true') {
@@ -187,7 +194,7 @@
 			data: $("#add_stk_form").serialize(),
 			async: false,
 			cache: false,
-			success: function (result) {
+			success: function(result) {
 				console.log(result.status);
 				if (result.status == 200) {
 					alert("Imported Successfully");
@@ -206,7 +213,7 @@
 			data: $("#add_stckgrp_form").serialize(),
 			async: false,
 			cache: false,
-			success: function (result) {
+			success: function(result) {
 				console.log(result.status);
 				if (result.status == 200) {
 					alert("Imported Successfully");
@@ -217,6 +224,4 @@
 			},
 		});
 	}
-
-
 </script>

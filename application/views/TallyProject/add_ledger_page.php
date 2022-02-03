@@ -20,8 +20,9 @@
 <div class="" style="padding:8px;background-color:#ffffff;">
 	<form class="form-horizontal" id="add_led_form" method="post" action="">
 		<div class="row">
-			<div class="col-sm-12">
-				<div class="col-sm-6">
+			<div class="col-sm-2"></div>
+			<div class="col-sm-8">
+				<div class="col-sm-12">
 					<div class="form-group">
 						<label for="group-name">Company Name</label>
 						<select id='company_name' class="form-control" name='company_name'
@@ -45,7 +46,7 @@
 							   name="opening_balance" required>
 					</div>
 				</div>
-				<div class="col-sm-6">
+				<div class="col-sm-12">
 					<div class="form-group">
 						<label for="item-name">GSTIN</label>
 						<input type="text" class="form-control" id="gstin" placeholder="GSTIN" name="gstin">
@@ -60,7 +61,9 @@
 					</div>
 				</div>
 			</div>
-			<div class="form-group">
+			<div class="col-sm-2"></div>
+
+			<div class="form-group w-100 mt-3">
 				<div class="col-sm-12" align="center">
 					<button type="button" onclick="insert_ledger()" class="btn btn-primary">Insert</button>
 				</div>

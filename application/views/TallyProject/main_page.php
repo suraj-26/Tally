@@ -72,18 +72,18 @@ $result = $this->db->get('partner_header_all')->row();
 		box-shadow: #d6d6d687 1px 1px 6px;
 	}
 
-	.sidebar.close {
+	/* .sidebar.close {
 		width: 78px;
-	}
+	} */
 
-	.sidebar .logo-details {
+	.logo-details {
 		height: 60px;
-		margin-left: 0.65rem;
+		/* margin-left: 0.65rem; */
 		/* margin-top: 0.7rem; */
 		padding-top: 20px;
 	}
 
-	.sidebar .logo-details .logo_name {
+	.logo_name {
 		line-height: 1.1;
 		font-size: 22px;
 		transition: 0.3s ease;
@@ -98,7 +98,7 @@ $result = $this->db->get('partner_header_all')->row();
 
 	.sidebar .nav-links {
 		/* height: 100%; */
-		padding: 30px 0 150px 0;
+		padding: 13px 0 150px 0;
 		overflow: auto;
 	}
 
@@ -121,7 +121,7 @@ $result = $this->db->get('partner_header_all')->row();
 		transition: all 0.4s ease;
 		
 	}
-	.fm_lists:hover{
+	/* .fm_lists:hover{
 		background: #ffd96fa6 ;
 	}
 	.fm_lists{
@@ -129,7 +129,7 @@ $result = $this->db->get('partner_header_all')->row();
 	}
 	.fm_lists:focus{
 		background: #ffd96fa6 ;
-	}
+	} */
 	/* .sidebar .nav-links li:hover {
 		background: #ffd96fa6 !important;
 	} */
@@ -286,7 +286,7 @@ $result = $this->db->get('partner_header_all')->row();
 		transition: all 0.5s ease;
 	}
 	.showMenu{
-		background:#ffd96fa6; 
+		background:#fbc36ab0; 
 	}
 	.sidebar.close .profile-details img {
 		padding: 10px;
@@ -366,13 +366,13 @@ if ($this->session->user_session->user_type == '6') {
 ?>
 <?php if ($this->session->user_session) { ?>
 	<div class="sidebar position-fixed h-100 bg-white" style="opacity: 1;">
-		<div class="align-items-center d-flex logo-details w-100">
-			<img src="<?php echo base_url(); ?>images/finance_management_logo.png" style="width: 75%; max-width: 75px ;"
+		<div class="align-items-center justify-content-around d-flex logo-details w-100">
+			<img src="<?php echo base_url(); ?>assets/finance_management_logo.png" style="width: 75%; max-width: 75px ;"
 				 alt="">
-			<span class="font-weight-normal logo_name ml-3 text-dark text-uppercase">LOGO</span>
+			<!-- <span class="font-weight-normal logo_name ml-3 text-dark text-uppercase">LOGO</span> -->
 		</div>
 		<ul class="nav-links h-100" style="background-color:white !important">
-			<li><a href="#"><h6 class="pl-3 text-dark menu_header">Home </h6></a>
+			<li><h6 class="pl-3 text-dark menu_header text-uppercase">Home </h6>
 				<li style=" padding-left: 21px;	" class="position-relative <?php echo $this->uri->segment(1) == 'home' ? 'showMenu' : '' ?>">
 				<a href="<?php echo base_url("home"); ?>">
 					<i class='bx bx-line-chart'></i>
@@ -381,80 +381,85 @@ if ($this->session->user_session->user_type == '6') {
 			</li></li>
 			<li class="position-relative">
 				<div class="iocn-link" id="icon_link">
-					<a href="#">
-					<h6 class="pl-3 text-dark menu_header" >MASTER DATA ENTRY</h6>
+				
+					<h6 class="pl-3 text-dark menu_header text-uppercase" >MASTER DATA ENTRY</h6>
 						<!-- <i class='bx bx-pie-chart-alt-2'></i> -->
 						<span class="link_name"></span>
-					</a>
+				
 					<!-- <i class='bx bxs-chevron-down arrow'></i> -->
 				</div>
 				<ul class="sub-menu">
 					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'add_ledger_page' ? 'showMenu' : '' ?>">
-						<a href="<?php echo base_url("ImportController/add_ledger_page"); ?>">
+						<a href="<?php echo base_url("ImportController/add_ledger_page"); ?>" class='w-100'>
 							<i class='bx bx-list-ul'></i>
 							Add Ledger</a>
 					</li>
 					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'add_group_page' ? 'showMenu' : '' ?>">
+						
+						<a href="<?php echo base_url("ImportController/add_group_page"); ?>" class="w-100">
 						<i class='bx bx-group'></i>
-						<a href="<?php echo base_url("ImportController/add_group_page"); ?>">Add Group</a>
+						Add Group</a>
 					</li>
 					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'add_stock_summary_page' ? 'showMenu' : '' ?>">
+						
+						<a href="<?php echo base_url("ImportController/add_stock_summary_page"); ?>" class="w-100">
 						<i class='bx bx-bar-chart-square'></i>
-						<a href="<?php echo base_url("ImportController/add_stock_summary_page"); ?>">
 							Stock summary</a>
 					</li>
 				</ul>
 			</li>
 			<li class="position-relative">
 				<div class="iocn-link">
-					<a href="#">
-					<h6 class="pl-3 text-dark menu_header" >Transaction Entry</h6>
+				
+					<h6 class="pl-3 text-dark menu_header text-uppercase" >Transaction Entry</h6>
 						<!-- <i class='bx bx-book-alt'></i> -->
 						<!-- <span class="link_name">Transaction Entry</span> -->
-					</a>
+					
 					<!-- <i class='bx bxs-chevron-down arrow'></i> -->
 				</div>
 				<ul class="sub-menu">
 					<li><a class="link_name" href="#">Transaction Entry</a></li>
 					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'journal_entry' ? 'showMenu' : '' ?>">
+						
+						<a href="<?php echo base_url("ImportController/journal_entry"); ?>" class="w-100">
 						<i class='bx bx-list-ul'></i>
-						<a href="<?php echo base_url("ImportController/journal_entry"); ?>">
 							Journal Entry</a>
 					</li>
 					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'sale_purchase' ? 'showMenu' : '' ?>">
+						<!-- <i class='bx bx-credit-card'></i> -->
+						<a href="<?php echo base_url("ImportController/sale_purchase"); ?>" class="w-100">
 						<i class='bx bx-credit-card'></i>
-						<a href="<?php echo base_url("ImportController/sale_purchase"); ?>">
 							Sale/Purchase</a>
 					</li>
 					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'receipt_voucher' ? 'showMenu' : '' ?>">
 						<i class='bx bx-line-chart'></i>
-						<a href="<?php echo base_url("ImportController/receipt_voucher"); ?>">
+						<a href="<?php echo base_url("ImportController/receipt_voucher"); ?>" class="w-100">
 							Other Entry</a>
 					</li>
 				</ul>
 			</li>
 			<li class="position-relative">
 				<div class="iocn-link">
-					<a href="#">
-					<h6 class="pl-3 text-dark menu_header" >Reports</h6>
+					
+					<h6 class="pl-3 menu_header text-uppercase" >Reports</h6>
 						
 						<!-- <i class='bx bx-plug'></i> -->
 						<!-- <span class="link_name">Reports</span> -->
-					</a>
+				
 					<!-- <i class='bx bxs-chevron-down arrow'></i> -->
 				</div>
 				<ul class="sub-menu">
 					<li><a class="link_name" href="#">Reports</a></li>
 					<li style="display: flex; padding-left: 21px; " class="<?php echo $this->uri->segment(2) == 'balance_sheet_page' ? 'showMenu' : '' ?>" ><i class='bx bx-spreadsheet'></i>
-						<a href="<?php echo base_url("ImportController/balance_sheet_page"); ?>">
+						<a href="<?php echo base_url("ImportController/balance_sheet_page"); ?>" class="w-100">
 							Balance Sheet</a>
 					</li>
 					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'ratio_analysis_page' ? 'showMenu' : '' ?>"><i class='bx bx-sitemap'></i>
-						<a href="<?php echo base_url("ImportController/ratio_analysis_page"); ?>">
+						<a href="<?php echo base_url("ImportController/ratio_analysis_page"); ?>" class="w-100">
 							Ratio Analysis</a>
 					</li>
 					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'profit_n_loss_page' ? 'showMenu' : '' ?>"><i class='bx bx-trending-up'></i>
-						<a href="<?php echo base_url("ImportController/profit_n_loss_page"); ?>">
+						<a href="<?php echo base_url("ImportController/profit_n_loss_page"); ?>" class="w-100">
 							Profit and Loss</a>
 					</li>
 				</ul>
@@ -473,7 +478,7 @@ if ($this->session->user_session->user_type == '6') {
 					<span><h5 class="logo_name pl-2 mb-0 font-weight-bold text-uppercase" id="logo_name">finance management</h5></span>
 				</div>
 				<div class="float-right logout mr-3">
-					<span><b>Logout</b><i class="fas fa-sign-out-alt pl-2" style="transform: rotate(0deg); font-size: 1.3rem;"></i></span>
+					<span><b>Logout</b><i class="fas fa-sign-out-alt pl-2" style=" margin-bottom:-3px ; transform: rotate(0deg); font-size: 1.3rem;"></i></span>
 				</div>
 			</div>
 		</div>
@@ -525,7 +530,7 @@ if ($this->session->user_session->user_type == '6') {
 		arrow[i].addEventListener("click", (e) => {
 			let arrowParent = e.target.parentElement.parentElement.parentElement; //selecting main parent of arrow
 			// console.log(arrowParent);
-			arrowParent.classList.toggle("showMenu");
+			// arrowParent.classList.toggle("showMenu");
 			// $(".logo_name").toggle();
 		});
 	}
