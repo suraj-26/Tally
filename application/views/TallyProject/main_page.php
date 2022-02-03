@@ -474,7 +474,7 @@ if ($this->session->user_session->user_type == '6') {
 		<div class="row header">
 			<div class="align-items-center col-md-12 d-flex justify-content-between p-3 pl-4">
 				<div class="d-flex align-items-center ">
-					<i class='bx bx-menu' id="menu_btn"></i>
+					<!-- <i class='bx bx-menu' id="menu_btn"></i> -->
 					<span><h5 class="logo_name pl-2 mb-0 font-weight-bold text-uppercase" id="logo_name">finance management</h5></span>
 				</div>
 				<div class="float-right logout mr-3">
