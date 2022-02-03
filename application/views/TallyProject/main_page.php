@@ -432,8 +432,9 @@ if ($this->session->user_session->user_type == '6') {
 							Sale/Purchase</a>
 					</li>
 					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'receipt_voucher' ? 'showMenu' : '' ?>">
-						<i class='bx bx-line-chart'></i>
+						
 						<a href="<?php echo base_url("ImportController/receipt_voucher"); ?>" class="w-100">
+						<i class='bx bx-line-chart'></i>
 							Other Entry</a>
 					</li>
 				</ul>
@@ -450,16 +451,19 @@ if ($this->session->user_session->user_type == '6') {
 				</div>
 				<ul class="sub-menu">
 					<li><a class="link_name" href="#">Reports</a></li>
-					<li style="display: flex; padding-left: 21px; " class="<?php echo $this->uri->segment(2) == 'balance_sheet_page' ? 'showMenu' : '' ?>" ><i class='bx bx-spreadsheet'></i>
+					<li style="display: flex; padding-left: 21px; " class="<?php echo $this->uri->segment(2) == 'balance_sheet_page' ? 'showMenu' : '' ?>" >
 						<a href="<?php echo base_url("ImportController/balance_sheet_page"); ?>" class="w-100">
+						<i class='bx bx-spreadsheet'></i>
 							Balance Sheet</a>
 					</li>
-					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'ratio_analysis_page' ? 'showMenu' : '' ?>"><i class='bx bx-sitemap'></i>
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'ratio_analysis_page' ? 'showMenu' : '' ?>">
 						<a href="<?php echo base_url("ImportController/ratio_analysis_page"); ?>" class="w-100">
+						<i class='bx bx-sitemap'></i>
 							Ratio Analysis</a>
 					</li>
-					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'profit_n_loss_page' ? 'showMenu' : '' ?>"><i class='bx bx-trending-up'></i>
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'profit_n_loss_page' ? 'showMenu' : '' ?>">
 						<a href="<?php echo base_url("ImportController/profit_n_loss_page"); ?>" class="w-100">
+						<i class='bx bx-trending-up'></i>
 							Profit and Loss</a>
 					</li>
 				</ul>
