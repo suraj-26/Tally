@@ -400,17 +400,17 @@ class ImportController extends CI_Controller
       <VATDEALERTYPE>Regular</VATDEALERTYPE>
       <PARENT>' . $ledger_parent . '</PARENT>
 	  <OPENINGBALANCE>' . $opening_balance . '</OPENINGBALANCE>
-  
+  		
       <COUNTRYOFRESIDENCE>India</COUNTRYOFRESIDENCE>
       <PARTYGSTIN>' . $gst . '</PARTYGSTIN>
       <LEDSTATENAME>Maharashtra</LEDSTATENAME>
+      
       <LANGUAGENAME.LIST>
        <NAME.LIST TYPE="String">
         <NAME>' . $ledger_name . '</NAME>
        </NAME.LIST>
        <LANGUAGEID> 1033</LANGUAGEID>
       </LANGUAGENAME.LIST>
-     
      </LEDGER>
             </TALLYMESSAGE>
             </REQUESTDATA>
