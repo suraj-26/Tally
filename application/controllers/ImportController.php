@@ -617,6 +617,7 @@ XML; */
 
 			$p = 1;
 			$option = "<option>Select Group</option>";
+
 			foreach ($array as $row) {
 
 //        var_dump($k1);
