@@ -112,7 +112,7 @@ $file_id
 						</div>
 						<div class="col-sm-4">
 							<label for="group-name" class=" control-label">Amount</label>
-							<input type="text" class="form-control amt0" value="0" onchange="getValue(this)" id="amt" placeholder="Amount" name="amt0[]">
+							<input type="text" class="form-control amt0" value="0" onkeyup="getValue(this)" id="amt" placeholder="Amount" name="amt0[]">
 
 						</div>
 					</div>
@@ -136,7 +136,7 @@ $file_id
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Percent</label>
-						<input type="text" class="form-control taxper0" onchange="getTotal(this)" value="0" id="taxper" placeholder="Percent" name="taxper0[]">
+						<input type="text" class="form-control taxper0" onkeyup="getTotal(this)" value="0" id="taxper" placeholder="Percent" name="taxper0[]">
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Amount</label>
@@ -152,7 +152,7 @@ $file_id
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Percent</label>
-						<input type="text" class="form-control taxper10" onchange="getTotal(this)" value="0" id="taxper" placeholder="Percent" name="taxper0[]">
+						<input type="text" class="form-control taxper10" onkeyup="getTotal(this)" value="0" id="taxper" placeholder="Percent" name="taxper0[]">
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Amount</label>
@@ -388,7 +388,12 @@ $file_id
 
 		total = parseInt(percent) / 100 * sum;
 		total1 = parseInt(percent1) / 100 * sum;
-
+		if(Number.isNaN(total)){
+			total = 0;
+		}
+		if(Number.isNaN(total1)){
+			total1 = 0;
+		}
 		$('.taxamt'+cl_id).val(total);
 		$('.taxamt1'+cl_id).val(total1);
 	}
@@ -418,7 +423,7 @@ $file_id
 				' </div>' +
 				'<div class="col-sm-4">' +
 				' <label for="group-name" class=" control-label">Amount</label>' +
-				'<input type="text" class="form-control amt' + id + '" onchange="getValue(this)" value="0" id="amt" placeholder="Amount" name="amt' + id + '[]" >' +
+				'<input type="text" class="form-control amt' + id + '" onKeyup="getValue(this)" value="0" id="amt" placeholder="Amount" name="amt' + id + '[]" >' +
 				'</div>' +
 				'</div>' +
 				'</div>';
@@ -466,7 +471,7 @@ $file_id
 				'</div>' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Amount</label>' +
-				'<input type="text" class="form-control amt' + div_count1 + '" onchange="getValue(this)" value="0" id="amt" placeholder="Amount" name="amt' + div_count1 + '[]" >' +
+				'<input type="text" class="form-control amt' + div_count1 + '" onKeyup="getValue(this)" value="0" id="amt" placeholder="Amount" name="amt' + div_count1 + '[]" >' +
 				'</div>' +
 				'</div>' +
 				'</div>' +
@@ -487,7 +492,7 @@ $file_id
 
 		task_data2 += '<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Percent</label>' +
-				'<input type="text" class="form-control taxper'+div_count1+'" id="taxper" onchange="getTotal(this)" value="0" placeholder="Percent" name="taxper' + div_count1 + '[]" >' +
+				'<input type="text" class="form-control taxper'+div_count1+'" id="taxper" onKeyup="getTotal(this)" value="0" placeholder="Percent" name="taxper' + div_count1 + '[]" >' +
 				'</div>' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Amount</label>' +
@@ -505,7 +510,7 @@ $file_id
 
 		task_data2 += '<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Percent</label>' +
-				'<input type="text" class="form-control taxper1'+div_count1+'" value="0" onchange="getTotal(this)" " id="taxper" placeholder="Percent" name="taxper' + div_count1 + '[]" >' +
+				'<input type="text" class="form-control taxper1'+div_count1+'" value="0" onKeyup="getTotal(this)" " id="taxper" placeholder="Percent" name="taxper' + div_count1 + '[]" >' +
 				'</div>' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Amount</label>' +
@@ -544,6 +549,12 @@ $file_id
 		total = parseInt(percent) / 100 * sum;
 		total1 = parseInt(percent1) / 100 * sum;
 
+		if(Number.isNaN(total)){
+			total = 0;
+		}
+		if(Number.isNaN(total1)){
+			total1 = 0;
+		}
 		$('.taxamt'+id).val(total);
 		$('.taxamt1'+id).val(total1);
 	}
@@ -567,7 +578,12 @@ $file_id
 
 		total = parseInt(percent) / 100 * sum;
 		total1 = parseInt(percent1) / 100 * sum;
-
+		if(Number.isNaN(total)){
+			total = 0;
+		}
+		if(Number.isNaN(total1)){
+			total1 = 0;
+		}
 		$('.taxamt'+id).val(total);
 		$('.taxamt1'+id).val(total1);
 	}
