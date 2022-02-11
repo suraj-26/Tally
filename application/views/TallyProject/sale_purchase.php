@@ -91,7 +91,7 @@ $file_id
 					<div class="col-md-12 p-0">
 						<div class="col-sm-2 float-right">
 							<label for="group-name" class=" control-label"> </label>
-							<button type="button" class="btn btn-link" onclick="remove_div(0)" style="margin-top:42%;">
+							<button type="button" class="btn btn-link" onclick="remove_div(0,this)" style="margin-top:42%;">
 								<i class="fa fa-close"></i></button>
 						</div>
 						<div class="col-sm-10" style="padding:5px">
@@ -112,7 +112,7 @@ $file_id
 						</div>
 						<div class="col-sm-4">
 							<label for="group-name" class=" control-label">Amount</label>
-							<input type="text" class="form-control" id="amt" placeholder="Amount" name="amt0[]">
+							<input type="text" class="form-control amt0" value="0" onchange="getValue(this)" id="amt" placeholder="Amount" name="amt0[]">
 
 						</div>
 					</div>
@@ -120,7 +120,8 @@ $file_id
 				<div id="dynamic_div0"></div>
 				<div class="col-sm-12"><br>
 					<input type="hidden" id="tax_inp" name="tax_inp" value="1">
-					<button type="button" class="btn btn-link" style="outline: none;" onclick="repeat_div(0)">Add Entries <i class="fa fa-plus"></i></button>
+					<button type="button" class="btn btn-link" style="outline: none;" onclick="repeat_div(0)">Add
+						Entries <i class="fa fa-plus"></i></button>
 				</div>
 				<div class="row">
 					<hr>
@@ -135,11 +136,11 @@ $file_id
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Percent</label>
-						<input type="text" class="form-control" id="taxper" placeholder="Percent" name="taxper0[]">
+						<input type="text" class="form-control taxper0" onchange="getTotal(this)" value="0" id="taxper" placeholder="Percent" name="taxper0[]">
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Amount</label>
-						<input type="text" class="form-control" id="taxamt" placeholder="Amount" name="taxamt0[]">
+						<input type="text" class="form-control taxamt0" value="0" id="taxamt" placeholder="Amount" name="taxamt0[]">
 					</div>
 				</div>
 				<div class="row">
@@ -151,11 +152,11 @@ $file_id
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Percent</label>
-						<input type="text" class="form-control" id="taxper" placeholder="Percent" name="taxper0[]">
+						<input type="text" class="form-control taxper10" onchange="getTotal(this)" value="0" id="taxper" placeholder="Percent" name="taxper0[]">
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Amount</label>
-						<input type="text" class="form-control" id="taxamt" placeholder="Amount" name="taxamt0[]">
+						<input type="text" class="form-control taxamt10"  value="0" id="taxamt" placeholder="Amount" name="taxamt0[]">
 					</div>
 				</div>
 			</div>
@@ -236,7 +237,6 @@ $file_id
 			cache: false,
 			success: function (result) {
 				var data = result.company_list;
-				console.log(data);
 				if (result.status === 'true') {
 					$('#company_name').html(data);
 				} else {
@@ -354,8 +354,43 @@ $file_id
 		});
 	}
 
-	function remove_div(id) {
+	function remove_div(id,val) {
+		var cl_id = '';
+		var parent_div = $(val).parent().parent().parent()[0].id;
+		if(parent_div.search(/item_div0/) === 1){
+			cl_id = 0;
+		}else{
+			if(parent_div.includes('item_div')){
+				var pd = $(val).parent().parent().parent().parent()[0].id;
+				cl_id = pd.slice(-1);
+			}else {
+				cl_id = parent_div.slice(-1);
+			}
+		}
 		$("#item_div" + id).remove();
+		var all = [];
+		var sum = 0;
+		// var cl_id = '';
+		// var parent = $('#item_div'+id).parent();
+		// var parent_id = parent[0].id;
+		// var p_id = parent_id.slice(-1);
+		$('.amt'+cl_id).map(function () {
+			all.push(this.value);
+		}).get();
+		if(all.length > 0){
+			sum = eval(all.join("+"));
+		}
+		var percent = $('.taxper'+cl_id).val();
+		var percent1 = $('.taxper1'+cl_id).val();
+
+		var total = 0;
+		var total1 = 0;
+
+		total = parseInt(percent) / 100 * sum;
+		total1 = parseInt(percent1) / 100 * sum;
+
+		$('.taxamt'+cl_id).val(total);
+		$('.taxamt1'+cl_id).val(total1);
 	}
 
 	function repeat_div(id) {
@@ -366,7 +401,7 @@ $file_id
 				'<div class="col-md-12 p-0">' +
 				'<div class="col-sm-2 float-right">' +
 				'<label for="group-name" class=" control-label">  </label>' +
-				'<button type="button" class="btn btn-link" onclick="remove_div(' + div_count + ')"><i class="fa fa-close"></i></button>' +
+				'<button type="button" class="btn btn-link" onclick="remove_div(' + div_count + ',this)"><i class="fa fa-close"></i></button>' +
 				'</div>' +
 				'<div class="col-sm-10" style="padding: 5px;">' +
 				' <label for="group-name" class=" control-label">Item Name</label>' +
@@ -383,7 +418,7 @@ $file_id
 				' </div>' +
 				'<div class="col-sm-4">' +
 				' <label for="group-name" class=" control-label">Amount</label>' +
-				'<input type="text" class="form-control" id="amt" placeholder="Amount" name="amt' + id + '[]" >' +
+				'<input type="text" class="form-control amt' + id + '" onchange="getValue(this)" value="0" id="amt" placeholder="Amount" name="amt' + id + '[]" >' +
 				'</div>' +
 				'</div>' +
 				'</div>';
@@ -413,7 +448,7 @@ $file_id
 				'<div class="col-md-12 p-0">' +
 				'<div class="col-sm-2 float-right">' +
 				'<label for="group-name" class=" control-label">  </label>' +
-				'<button type="button" class="btn btn-link" onclick="remove_div(' + div_count1 + ')" style="margin-top:42%;"><i class="fa fa-close"></i></button>' +
+				'<button type="button" class="btn btn-link" onclick="remove_div(' + div_count1 + ',this)" style="margin-top:42%;"><i class="fa fa-close"></i></button>' +
 				'</div>' +
 				'<div class="col-sm-10" style="padding:5px">' +
 				'<label for="group-name" class=" control-label">Item Name</label>' +
@@ -421,7 +456,7 @@ $file_id
 				' </div>' +
 				'</div>' +
 				'<div class="row">' +
- 				'<div class="col-sm-4">' +
+				'<div class="col-sm-4">' +
 				' <label for="group-name" class=" control-label">Quantity</label>' +
 				'<input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity' + div_count1 + '[]" >' +
 				'</div>' +
@@ -431,7 +466,7 @@ $file_id
 				'</div>' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Amount</label>' +
-				'<input type="text" class="form-control" id="amt" placeholder="Amount" name="amt' + div_count1 + '[]" >' +
+				'<input type="text" class="form-control amt' + div_count1 + '" onchange="getValue(this)" value="0" id="amt" placeholder="Amount" name="amt' + div_count1 + '[]" >' +
 				'</div>' +
 				'</div>' +
 				'</div>' +
@@ -452,11 +487,11 @@ $file_id
 
 		task_data2 += '<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Percent</label>' +
-				'<input type="text" class="form-control" id="taxper" placeholder="Percent" name="taxper' + div_count1 + '[]" >' +
+				'<input type="text" class="form-control taxper'+div_count1+'" id="taxper" onchange="getTotal(this)" value="0" placeholder="Percent" name="taxper' + div_count1 + '[]" >' +
 				'</div>' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Amount</label>' +
-				'<input type="text" class="form-control" id="taxamt" placeholder="Amount" name="taxamt' + div_count1 + '[]" >' +
+				'<input type="text" class="form-control taxamt'+div_count1+'" id="taxamt" value="0" placeholder="Amount" name="taxamt' + div_count1 + '[]" >' +
 				'</div>' +
 				'</div>' +
 				'</div>' +
@@ -470,11 +505,11 @@ $file_id
 
 		task_data2 += '<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Percent</label>' +
-				'<input type="text" class="form-control" id="taxper" placeholder="Percent" name="taxper' + div_count1 + '[]" >' +
+				'<input type="text" class="form-control taxper1'+div_count1+'" value="0" onchange="getTotal(this)" " id="taxper" placeholder="Percent" name="taxper' + div_count1 + '[]" >' +
 				'</div>' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Amount</label>' +
-				'<input type="text" class="form-control" id="taxamt" placeholder="Amount" name="taxamt' + div_count1 + '[]" >' +
+				'<input type="text" class="form-control taxamt1'+div_count1+'"  value="0" id="taxamt" placeholder="Amount" name="taxamt' + div_count1 + '[]" >' +
 				'</div>' +
 				'</div>' +
 				'</div><hr>';
@@ -487,6 +522,54 @@ $file_id
 		$('#div_count1').val(div_count1);
 		$('#tax_inp').val(tax_inp);
 
+	}
+
+	function getValue(val) {
+		var cl = val.className.split(" ")[1];
+		var all = [];
+		let sum = 0;
+		$('.'+cl).map(function () {
+			all.push(this.value);
+		}).get();
+		if(all.length > 0){
+			sum = eval(all.join("+"));
+		}
+		var id = cl.slice(-1);
+		var percent = $('.taxper'+id).val();
+		var percent1 = $('.taxper1'+id).val();
+
+		var total = 0;
+		var total1 = 0;
+
+		total = parseInt(percent) / 100 * sum;
+		total1 = parseInt(percent1) / 100 * sum;
+
+		$('.taxamt'+id).val(total);
+		$('.taxamt1'+id).val(total1);
+	}
+
+	function getTotal(val) {
+		var cl = val.className.split(" ")[1];
+		var all = [];
+		let sum = 0;
+		var id = cl.slice(-1);
+		$('.amt'+id).map(function () {
+			all.push(this.value);
+		}).get();
+		if(all.length > 0){
+			sum = eval(all.join("+"));
+		}
+		var percent = $('.taxper'+id).val();
+		var percent1 = $('.taxper1'+id).val();
+
+		var total = 0;
+		var total1 = 0;
+
+		total = parseInt(percent) / 100 * sum;
+		total1 = parseInt(percent1) / 100 * sum;
+
+		$('.taxamt'+id).val(total);
+		$('.taxamt1'+id).val(total1);
 	}
 
 </script>
