@@ -61,24 +61,32 @@
 			</div>
 		</div>
 
+
 		<div class="form-group">
 			<div class="col-sm-12">
 				<div class="col-sm-8 m-auto">
-					<label for="opening_balance" class="control-label mb-1">Opening Balance</label>
-					<input type="text" class="form-control" id="opening_balance" placeholder="Opening Balance" name="opening_balance" required>
+					<label for="opening_value" class="control-label mb-1">Quantity</label>
+					<input type="number" class="form-control" id="quantity" onkeyup="getFinalPrice()" ke placeholder="Item Quantity" name="quantity" required>
 				</div>
 			</div>
 		</div>
-
 		<div class="form-group">
 			<div class="col-sm-12">
 				<div class="col-sm-8 m-auto">
 					<label for="opening_value" class="control-label mb-1">Unit Price</label>
-					<input type="text" class="form-control" id="opening_value" placeholder="Item Unit Price" name="opening_value" required>
+					<input type="number" class="form-control" id="unit_price" onkeyup="getFinalPrice()" placeholder="Item Unit Price" name="unit_price" required>
 				</div>
 			</div>
 		</div>
 
+		<div class="form-group">
+			<div class="col-sm-12">
+				<div class="col-sm-8 m-auto">
+					<label for="opening_balance" class="control-label mb-1">Opening Balance</label>
+					<input type="number" class="form-control" id="opening_balance" placeholder="Opening Balance" name="opening_balance" required>
+				</div>
+			</div>
+		</div>
 
 		<div class="form-group">
 			<div class="col-sm-6 col-sm-offset-4 m-auto text-center mt-3">
@@ -183,6 +191,12 @@
 				}
 			},
 		});
+	}
+	
+	function getFinalPrice() {
+		var quantity=$("#quantity").val();
+		var unit_price=$("#unit_price").val();
+		$("#opening_balance").val(quantity*unit_price);
 	}
 
 	function insert_stock() {

@@ -59,6 +59,13 @@
 						<label for="item-name">PAN No</label>
 						<input type="text" class="form-control" id="panno" placeholder="PAN No" name="panno">
 					</div>
+					<div class="form-group">
+						<label for="item-name">Inventory Values Affected?</label>
+						<select class="form-control" id="inventoryValuesAffected" name="inventoryValuesAffected">
+							<option value="No" selected>No</option>
+							<option value="Yes" >Yes</option>
+						</select>
+					</div>
 				</div>
 			</div>
 			<div class="col-sm-2"></div>

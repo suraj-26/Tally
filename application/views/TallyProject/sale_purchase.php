@@ -21,11 +21,30 @@ $file_id
 		<hr>
 		<form class="form-horizontal" id="add_led_formsale" method="post" action="">
 			<input type="hidden" id="file_id" name="file_id" value="<?php $file_id ?>">
+			<div class="row m-2"><br>
+				<div class="col-sm-6">
+					<input type="radio"  id="sales" name="vctype" value="Sales" onclick="changesState('1')" >
+					<label for="vehicle1">Sales</label>
+					<input type="radio" id="purchase" name="vctype" value="Purchase" onclick="changesState('2')" >
+					<label for="vehicle2">Purchase</label>
+					<input type="radio" id="expense" name="vctype" value="Expense" onclick="changesState('3')">
+					<label for="vehicle2">Expense</label>
+				</div>
+				<div class="col-sm-6" id="PurchaseInvoiceInput" style="">
+					<input type="radio" checked id="item_invoice" name="acc_item_invoice" value="2" onclick="getStockorledger(2)">
+					<label for="vehicle2">Item Invoice</label>
+					<input type="radio"  id="acc_invoice" name="acc_item_invoice" value="1"  onclick="getStockorledger(1)">
+					<label for="vehicle1">Accounting Invoice</label>
+
+
+
+				</div>
+			</div>
 			<div class="row">
 				<div class="col-sm-6">
 					<label for="group-name" class=" control-label">Company Name</label>
 					<select id='company_name' class="form-control" name='company_name'
-							onchange="get_ledger_list('party_ledger');get_ledger_list1()">
+							onchange="checkSelectionType();">
 						<option>Select Value</option>
 					</select>
 				</div>
@@ -60,14 +79,7 @@ $file_id
 					<input type="text" class="form-control" id="narration" placeholder="Narration" name="narration">
 				</div>
 			</div>
-			<div class="row m-2"><br>
-				<div class="col-sm-6">
-					<input type="radio" checked id="sales" name="vctype" value="Sales">
-					<label for="vehicle1">Sales</label>
-					<input type="radio" id="purchase" name="vctype" value="Purchase">
-					<label for="vehicle2">Purchase</label>
-				</div>
-			</div>
+
 			<hr>
 			<div class="row">
 				<div class="col-md-12">
@@ -96,8 +108,10 @@ $file_id
 						</div>
 						<div class="col-sm-10" style="padding:5px">
 							<label for="group-name" class=" control-label">Item Name</label>
-							<input type="text" class="form-control" id="item_name" placeholder="Item Name"
-								   name="item_name0[]">
+
+							<select id='item_name00' class="form-control itemClass" name='item_name0[]'>
+								<option>Select Value</option>
+							</select>
 						</div>
 					</div>
 					<div class="row">
@@ -120,7 +134,7 @@ $file_id
 				<div id="dynamic_div0"></div>
 				<div class="col-sm-12"><br>
 					<input type="hidden" id="tax_inp" name="tax_inp" value="1">
-					<button type="button" class="btn btn-link" style="outline: none;" onclick="repeat_div(0)">Add
+					<button type="button" class="btn btn-link itemClass" style="outline: none;" onclick="repeat_div(0)">Add
 						Entries <i class="fa fa-plus"></i></button>
 				</div>
 				<div class="row">
@@ -187,6 +201,8 @@ $file_id
 				<label for="vehicle1">Sales</label>
 				<input type="radio" id="purchase1" name="vctype1" value="Purchase">
 				<label for="vehicle2">Purchase</label>
+				<input type="radio" id="expense1" name="vctype1" value="Expense">
+				<label for="vehicle2">Expense</label>
 
 			</div>
 			<div class="col-md-6">
@@ -211,6 +227,44 @@ $file_id
 		get_company_list();
 		get_mon();
 	});
+	function checkSelectionType(){
+		if ($('input[name=vctype]:checked').length > 0) {
+			get_ledger_list('party_ledger');get_ledger_list1();get_stockItems_list('item_name00')
+		}else{
+			alert("Select Type of Entry!!");
+			$("#company_name").val("");
+		}
+
+
+	}
+	function changesState(id) {
+		if(id == 3){
+			$('.itemClass').attr("disabled","disabled");
+			$('#item_invoice').attr("disabled","disabled");
+			$('#item_invoice').attr("checked",false);
+			$('#acc_invoice').attr("checked",true);
+		}else{
+			$('.itemClass').attr("disabled",false);
+			$('#item_invoice').attr("disabled",false);
+		}
+
+	}
+
+/*	function SelectInvoiceFormat(id) {
+		if(id==1){
+		$("#PurchaseInvoiceInput").hide();
+		}else{
+		$("#PurchaseInvoiceInput").show();
+		}
+	}*/
+	
+	function getStockorledger(id) {
+		if(id == 1){
+			$('.itemClass').attr("disabled","disabled");
+		}else{
+			$('.itemClass').attr("disabled",false);
+		}
+	}
 
 	function get_mon() {
 		const monthNames = ["January", "February", "March", "April", "May", "June",
@@ -326,32 +380,76 @@ $file_id
 			},
 		});
 	}
-
-	function get_ledger_list1() {
+	function get_stockgrp_list(id) {
 		var company_name = $("#company_name").val();
+
 		$.ajax({
 			type: "POST",
-			url: "<?= base_url("ImportController/get_ledgers") ?>",
+			url: "<?= base_url("ImportController/get_stockgroups") ?>",
 			dataType: "json",
 			async: false,
 			cache: false,
-			data: {company_name},
-			success: function (result) {
-				var data = result.ledger_list;
+			data: {
+				company_name
+			},
+			success: function(result) {
+				var data = result.group_list;
 				console.log(data);
 				if (result.status === 'true') {
-					$('#ledger0').html(data);
-					$('#taxname1').html(data);
-
+					$('#' + id).html(data);
 				} else {
-					$('#ledger0').html(data);
-					$('#taxname0').html(data);
-					$('#taxname1').html(data);
-
+					$('#' + id).html(data);
 				}
-
 			},
 		});
+	}
+	function get_stockItems_list(id) {
+		var company_name = $("#company_name").val();
+
+		$.ajax({
+			type: "POST",
+			url: "<?= base_url("ImportController/get_stockItems") ?>",
+			dataType: "json",
+			async: false,
+			cache: false,
+			data: {
+				company_name
+			},
+			success: function(result) {
+				var data = result.group_list;
+				console.log(data);
+				if (result.status === 'true') {
+					$('#' + id).html(data);
+				} else {
+					$('#' + id).html(data);
+				}
+			},
+		});
+	}
+
+
+	function get_ledger_list1() {
+		var acc_item_invoice=$('input[name="acc_item_invoice"]:checked').val();
+
+			var company_name = $("#company_name").val();
+			$.ajax({
+				type: "POST",
+				url: "<?= base_url("ImportController/get_ledgers") ?>",
+				dataType: "json",
+				async: false,
+				cache: false,
+				data: {company_name},
+				success: function (result) {
+					var data = result.ledger_list;
+					console.log(data);
+					$('#taxname0').html(data);
+					$('#taxname1').html(data);
+						$('#ledger0').html(data);
+
+				},
+			});
+
+
 	}
 
 	function remove_div(id,val) {
@@ -410,7 +508,7 @@ $file_id
 				'</div>' +
 				'<div class="col-sm-10" style="padding: 5px;">' +
 				' <label for="group-name" class=" control-label">Item Name</label>' +
-				'<input type="text" class="form-control" id="item_name" placeholder="Item Name" name="item_name' + id + '[]" >' +
+				'<select id="item_name' + id + div_count + '"class="form-control itemClass" name="item_name' + id + '[]"> <option>Select Value</option> </select>' +
 				'</div>' +
 				'<div class="row">' +
 				'<div class="col-sm-4">' +
@@ -428,7 +526,7 @@ $file_id
 				'</div>' +
 				'</div>';
 		$('#dynamic_div' + id).append(task_data1);
-
+		get_stockItems_list('item_name' + id + div_count);
 		$('#div_count').val(div_count);
 	}
 
@@ -457,7 +555,7 @@ $file_id
 				'</div>' +
 				'<div class="col-sm-10" style="padding:5px">' +
 				'<label for="group-name" class=" control-label">Item Name</label>' +
-				'<input type="text" class="form-control" id="item_name" placeholder="Item Name" name="item_name' + div_count1 + '[]" >' +
+				'<select id="item_name' + div_count1 + '"class="form-control itemClass" name="item_name' + div_count1 + '[]"> <option>Select Value</option> </select>' +
 				' </div>' +
 				'</div>' +
 				'<div class="row">' +
@@ -477,7 +575,7 @@ $file_id
 				'</div>' +
 				'<div id="dynamic_div' + div_count1 + '"></div>' +
 				'<div class="col-sm-12">' +
-				'<button type="button" class="btn btn-link" style="outline: none;" onclick="repeat_div(' + div_count1 + ')">Add Entries <i class="fa fa-plus"></i></button>' +
+				'<button type="button" class="btn btn-link itemClass" style="outline: none;" onclick="repeat_div(' + div_count1 + ')">Add Entries <i class="fa fa-plus"></i></button>' +
 				' </div>' +
 				'<div class="row"> <hr>' +
 				'<div class="col-sm-12">' +
@@ -520,12 +618,28 @@ $file_id
 				'</div><hr>';
 
 		$('#dynamic_div_n1').append(task_data2);
+		var acc_item_invoice=$('input[name="acc_item_invoice"]:checked').val();
+		if(acc_item_invoice == 1){
+			get_ledger_list('ledger' + div_count1);
+			get_ledger_list('taxname' + first);
+			get_ledger_list('taxname' + tax_inp);
+		}else{
+			get_stockgrp_list('ledger' + div_count1);
+			get_ledger_list('taxname' + first);
+			get_ledger_list('taxname' + tax_inp);
 
-		get_ledger_list('ledger' + div_count1);
-		get_ledger_list('taxname' + first);
-		get_ledger_list('taxname' + tax_inp);
+		}
+		get_stockItems_list('item_name' + div_count1);
 		$('#div_count1').val(div_count1);
 		$('#tax_inp').val(tax_inp);
+		if ($('#expense').is(":checked"))
+		{
+			$('.itemClass').attr("disabled","disabled");
+		}
+		if ($('#acc_invoice').is(":checked"))
+		{
+			$('.itemClass').attr("disabled","disabled");
+		}
 
 	}
 

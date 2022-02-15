@@ -370,6 +370,7 @@ class ImportController extends CI_Controller
 		$gst = $this->input->post('gstin');
 		$address = $this->input->post('address');
 		$pan = $this->input->post('panno');
+		$inventoryValuesAffected = $this->input->post('inventoryValuesAffected');
 		$res_str = '
 	  <ENVELOPE>
             <HEADER>
@@ -404,7 +405,7 @@ class ImportController extends CI_Controller
       <COUNTRYOFRESIDENCE>India</COUNTRYOFRESIDENCE>
       <PARTYGSTIN>' . $gst . '</PARTYGSTIN>
       <LEDSTATENAME>Maharashtra</LEDSTATENAME>
-      
+      <INVENTORIESVALUEAFFECTED>'.$inventoryValuesAffected.'</INVENTORIESVALUEAFFECTED>
       <LANGUAGENAME.LIST>
        <NAME.LIST TYPE="String">
         <NAME>' . $ledger_name . '</NAME>
@@ -653,6 +654,82 @@ XML; */
 		$response['group_list'] = $option;
 		echo json_encode($response);
 	}
+	public function get_stockItems()
+	{
+		$company_id = $this->input->post('company_name');
+
+		$requestXML='
+		<ENVELOPE>
+<HEADER>
+<VERSION>1</VERSION>
+<TALLYREQUEST>Export</TALLYREQUEST>
+<TYPE>Data</TYPE>
+<ID>Stock Summary</ID>
+</HEADER>
+<BODY>
+<DESC>
+<STATICVARIABLES>
+<EXPLODEFLAG>Yes</EXPLODEFLAG>
+       
+<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+</STATICVARIABLES>
+<TDL>
+  <TDLMESSAGE>
+   <REPORT NAME="Stock Summary" ISMODIFY="Yes" ISFIXED="No" ISINITIALIZE="No" ISOPTION="No" ISINTERNAL="No">
+    <SET>IsItemWise: Yes</SET>
+   </REPORT>
+  </TDLMESSAGE>
+</TDL>
+</DESC>
+</BODY>
+</ENVELOPE>';
+
+		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $this->url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
+
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		$data = curl_exec($ch);
+
+		$data = str_replace("", "", $data);
+		$data = str_replace('&#4;', '', $data);
+
+		if (curl_errno($ch)) {
+			print curl_error($ch);
+			echo "  something went wrong..... try later";
+		} else {
+			// echo "request accepted";
+			//echo $data;
+			curl_close($ch);
+			$xml = simplexml_load_string($data);
+			$json = json_encode($xml);
+			$array = json_decode($json, TRUE);
+
+			$p = 1;
+			$option = "<option>Select Item</option>";
+
+			foreach ($array as $row) {
+
+//        var_dump($k1);
+//        echo "<br>";
+				$newarr = $row;
+				$m = 0;
+				foreach ($newarr as $r1) {
+					if (array_key_exists('DSPDISPNAME', $r1)) {
+						$option .= "<option value='" . $r1['DSPDISPNAME'] . "'>" . $r1['DSPDISPNAME'] . "</option>";
+					}
+					$m++;
+				}
+			}
+		}
+		$response['group_list'] = $option;
+		echo json_encode($response);
+	}
 
 	public function add_group()
 	{
@@ -725,8 +802,8 @@ XML;
 		$group_name = $this->input->post('stock_group');
 		$item_name = $this->input->post('item_name');
 		$opening_balance = $this->input->post('opening_balance');
-		$opening_value = $this->input->post('opening_value');
-		$opening_rate = $opening_value * $opening_balance;
+		$unit_price = $this->input->post('unit_price');
+		$quantity = $this->input->post('quantity');
 		$res_str = <<<XML
 	<ENVELOPE>
 <HEADER>
@@ -749,16 +826,17 @@ XML;
 </NAME.LIST>
 <PARENT>{$group_name}</PARENT>
 <BASEUNITS>NOS</BASEUNITS>
-<OPENINGBALANCE>{$opening_balance} NOS</OPENINGBALANCE>
-<OPENINGVALUE>{$opening_rate}</OPENINGVALUE>
+<OPENINGBALANCE>{$quantity} NOS</OPENINGBALANCE> 
+<OPENINGVALUE>{$opening_balance}</OPENINGVALUE>
+<OPENINGRATE>{$unit_price}</OPENINGRATE>
 <BATCHALLOCATIONS.LIST>
 <NAME>Primary Batch</NAME>
 <BATCHNAME>Primary Batch</BATCHNAME>
 <GODOWNNAME>Main Location</GODOWNNAME>
 <MFDON>20170120</MFDON>
-<OPENINGBALANCE>0.000 NOS</OPENINGBALANCE>
-<OPENINGVALUE>0.000</OPENINGVALUE>
-<OPENINGRATE>0.000/NOS</OPENINGRATE>
+<OPENINGBALANCE>{$quantity} NOS</OPENINGBALANCE> 
+<OPENINGVALUE>{$opening_balance}</OPENINGVALUE>
+<OPENINGRATE>{$unit_price}</OPENINGRATE>
 </BATCHALLOCATIONS.LIST>
 </STOCKITEM>
 </TALLYMESSAGE>
@@ -1710,51 +1788,8 @@ XML;
 		return $xml;
 	}
 
-	public function test_tally()
-	{
-		$company_id = $this->input->post('company_name');
-		$party_ledger = $this->input->post('party_ledger');
-		$date = $this->input->post('date');
-		$invoiceno = $this->input->post('invoiceno');
-		$amount = $this->input->post('amount');
-		$narration = $this->input->post('narration');
-		$div_count = ($this->input->post('div_count1')) + 1;
-		$get_item_xml = "";
-		$get_tax_xml = "";
-		$get_all_xml = "";
-
-
-		$type = $this->input->post('vctype');;
-		if ($type == "Sales") {
-			for ($i = 0; $i < $div_count; $i++) {
-				$ledger = $this->input->post('ledger' . $i);
-				//array of all items details
-				$item_name = $this->input->post('item_name' . $i);
-				$quantity = $this->input->post('quantity' . $i);
-				$rate = $this->input->post('rate' . $i);
-				$amt = $this->input->post('amt' . $i);
-				$allamt = array_sum($amt);
-
-				$get_item_xml .= $this->get_ledger_with_item_xml($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type);
-
-				//taxasation details
-				$taxname = $this->input->post('taxname' . $i);
-				$taxper = $this->input->post('taxper' . $i);
-				$taxamt = $this->input->post('taxamt' . $i);
-
-				for ($n = 0; $n < count($taxname); $n++) {
-					if ($taxname[$n] == "") {
-
-					} else {
-						$get_tax_xml .= $this->get_tax_xml_new($taxname[$n], $taxper[$n], $taxamt[$n], $allamt, $type);
-					}
-
-				}
-				$get_all_xml .= $get_item_xml . $get_tax_xml;
-
-
-			}
-			$xml = '<ENVELOPE>
+	function getXmlForSale(){
+		$xml = '<ENVELOPE>
  <HEADER>
   <TALLYREQUEST>Import Data</TALLYREQUEST>
  </HEADER>
@@ -1812,6 +1847,401 @@ XML;
 </ENVELOPE>
 
 ';
+		return $xml;
+	}
+
+	function getXmlForSaleItemN($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num){
+
+		$xml = '<ENVELOPE>
+ <HEADER>
+  <TALLYREQUEST>Import Data</TALLYREQUEST>
+ </HEADER>
+ <BODY>
+  <IMPORTDATA>
+   <REQUESTDESC>
+    <REPORTNAME>Vouchers</REPORTNAME>
+    <STATICVARIABLES>
+     <SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+    </STATICVARIABLES>
+   </REQUESTDESC>
+   <REQUESTDATA>
+    <TALLYMESSAGE xmlns:UDF="TallyUDF">
+     <VOUCHER  VCHTYPE="Sales" ACTION="Create" OBJVIEW="Accounting Voucher View">
+      <OLDAUDITENTRYIDS.LIST TYPE="Number">
+       <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+      </OLDAUDITENTRYIDS.LIST>
+      <DATE>' . $date . '</DATE>
+	  <NARRATION>{' . $narration . '}</NARRATION>
+      <PARTYLEDGERNAME>' . $party_ledger . '</PARTYLEDGERNAME>
+      <VOUCHERTYPENAME>Sales</VOUCHERTYPENAME>
+      <REFERENCE>22</REFERENCE>
+      <VOUCHERNUMBER>' . $vc_num . '</VOUCHERNUMBER>
+      <CSTFORMISSUETYPE/>
+      <CSTFORMRECVTYPE/>
+      <VCHGSTCLASS/>
+      <VOUCHERTYPEORIGNAME>Sales</VOUCHERTYPEORIGNAME>
+      <EFFECTIVEDATE>' . $date . '</EFFECTIVEDATE>
+      <ALLLEDGERENTRIES.LIST>
+       <OLDAUDITENTRYIDS.LIST TYPE="Number">
+        <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+       </OLDAUDITENTRYIDS.LIST>
+	   <ISPARTYLEDGER>Yes</ISPARTYLEDGER>
+       <LEDGERNAME>' . $party_ledger . '</LEDGERNAME>
+       <GSTCLASS/>
+	   <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+       <LEDGERFROMITEM>No</LEDGERFROMITEM>
+       <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
+       <ISPARTYLEDGER>Yes</ISPARTYLEDGER>
+       <ISLASTDEEMEDPOSITIVE>Yes</ISLASTDEEMEDPOSITIVE>
+       <ISCAPVATTAXALTERED>No</ISCAPVATTAXALTERED>
+       <ISCAPVATNOTCLAIMED>No</ISCAPVATNOTCLAIMED>
+       <AMOUNT>-' . $amount . '</AMOUNT>
+      </ALLLEDGERENTRIES.LIST>
+		' . $get_all_xml . '
+      
+      <PAYROLLMODEOFPAYMENT.LIST>      </PAYROLLMODEOFPAYMENT.LIST>
+      <ATTDRECORDS.LIST>      </ATTDRECORDS.LIST>
+     </VOUCHER>
+    </TALLYMESSAGE>
+    
+   </REQUESTDATA>
+  </IMPORTDATA>
+ </BODY>
+</ENVELOPE>
+
+';
+		return $xml;
+	}
+
+	function getXmlForSaleAcc($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num){
+
+		$xml = '<ENVELOPE>
+ <HEADER>
+  <TALLYREQUEST>Import Data</TALLYREQUEST>
+ </HEADER>
+ <BODY>
+  <IMPORTDATA>
+
+   <REQUESTDESC>
+    <REPORTNAME>Vouchers</REPORTNAME>
+    <STATICVARIABLES>
+     <SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+    </STATICVARIABLES>
+   </REQUESTDESC>
+   <REQUESTDATA>
+    <TALLYMESSAGE xmlns:UDF="TallyUDF">
+     <VOUCHER  VCHTYPE="Sales" ACTION="Create" OBJVIEW="Accounting Voucher View">
+      <OLDAUDITENTRYIDS.LIST TYPE="Number">
+       <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+      </OLDAUDITENTRYIDS.LIST>
+      <DATE>' . $date . '</DATE>
+	  <NARRATION>{' . $narration . '}</NARRATION>
+      <PARTYLEDGERNAME>' . $party_ledger . '</PARTYLEDGERNAME>
+      <VOUCHERTYPENAME>Sales</VOUCHERTYPENAME>
+      <REFERENCE>22</REFERENCE>
+      <VOUCHERNUMBER>' . $vc_num . '</VOUCHERNUMBER>
+      <CSTFORMISSUETYPE/>
+      <CSTFORMRECVTYPE/>
+      <VCHGSTCLASS/>
+      <VOUCHERTYPEORIGNAME>Sales</VOUCHERTYPEORIGNAME>
+      <EFFECTIVEDATE>' . $date . '</EFFECTIVEDATE>
+      <LEDGERENTRIES.LIST>
+       <OLDAUDITENTRYIDS.LIST TYPE="Number">
+        <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+       </OLDAUDITENTRYIDS.LIST>
+	   <ISPARTYLEDGER>Yes</ISPARTYLEDGER>
+       <LEDGERNAME>' . $party_ledger . '</LEDGERNAME>
+       <GSTCLASS/>
+	   <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+       <LEDGERFROMITEM>No</LEDGERFROMITEM>
+       <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
+       <ISPARTYLEDGER>Yes</ISPARTYLEDGER>
+       <ISLASTDEEMEDPOSITIVE>Yes</ISLASTDEEMEDPOSITIVE>
+       <ISCAPVATTAXALTERED>No</ISCAPVATTAXALTERED>
+       <ISCAPVATNOTCLAIMED>No</ISCAPVATNOTCLAIMED>
+       <AMOUNT>-' . $amount . '</AMOUNT>
+      </LEDGERENTRIES.LIST>
+		' . $get_all_xml . '
+      
+      <PAYROLLMODEOFPAYMENT.LIST>      </PAYROLLMODEOFPAYMENT.LIST>
+      <ATTDRECORDS.LIST>      </ATTDRECORDS.LIST>
+     </VOUCHER>
+    </TALLYMESSAGE>
+    
+   </REQUESTDATA>
+  </IMPORTDATA>
+ </BODY>
+</ENVELOPE>
+
+';
+		return $xml;
+	}
+
+	function getXmlForSaleExp($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num){
+		$xml = '<ENVELOPE>
+ <HEADER>
+  <TALLYREQUEST>Import Data</TALLYREQUEST>
+ </HEADER>
+ <BODY>
+  <IMPORTDATA>
+
+   <REQUESTDESC>
+    <REPORTNAME>Vouchers</REPORTNAME>
+    <STATICVARIABLES>
+     <SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+    </STATICVARIABLES>
+   </REQUESTDESC>
+   <REQUESTDATA>
+    <TALLYMESSAGE xmlns:UDF="TallyUDF">
+     <VOUCHER  VCHTYPE="Expense" ACTION="Create" OBJVIEW="Invoice Voucher View">
+      <OLDAUDITENTRYIDS.LIST TYPE="Number">
+       <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+      </OLDAUDITENTRYIDS.LIST>
+      <DATE>' . $date . '</DATE>
+	  <NARRATION>{' . $narration . '}</NARRATION>
+      <PARTYLEDGERNAME>' . $party_ledger . '</PARTYLEDGERNAME>
+      <PARTYNAME>' . $party_ledger . '</PARTYNAME>
+      <VOUCHERTYPENAME>Expense</VOUCHERTYPENAME>
+      <REFERENCE>22</REFERENCE>
+      <VOUCHERNUMBER>' . $vc_num . '</VOUCHERNUMBER>
+      <CSTFORMISSUETYPE/>
+      <CSTFORMRECVTYPE/>
+      <VCHGSTCLASS/>
+      <VOUCHERTYPEORIGNAME>Expense</VOUCHERTYPEORIGNAME>
+      <EFFECTIVEDATE>' . $date . '</EFFECTIVEDATE>
+      <LEDGERENTRIES.LIST>
+       <OLDAUDITENTRYIDS.LIST TYPE="Number">
+        <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+       </OLDAUDITENTRYIDS.LIST>
+	   <ISPARTYLEDGER>Yes</ISPARTYLEDGER>
+       <LEDGERNAME>' . $party_ledger . '</LEDGERNAME>
+       <GSTCLASS/>
+	   <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+       <LEDGERFROMITEM>No</LEDGERFROMITEM>
+       <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
+       <ISPARTYLEDGER>Yes</ISPARTYLEDGER>
+       <ISLASTDEEMEDPOSITIVE>Yes</ISLASTDEEMEDPOSITIVE>
+       <ISCAPVATTAXALTERED>No</ISCAPVATTAXALTERED>
+       <ISCAPVATNOTCLAIMED>No</ISCAPVATNOTCLAIMED>
+      <AMOUNT>'.$amount.'</AMOUNT>
+      </LEDGERENTRIES.LIST>
+		 ' . $get_all_xml . '
+      
+      <PAYROLLMODEOFPAYMENT.LIST>      </PAYROLLMODEOFPAYMENT.LIST>
+      <ATTDRECORDS.LIST>      </ATTDRECORDS.LIST>
+     </VOUCHER>
+    </TALLYMESSAGE>
+    
+   </REQUESTDATA>
+  </IMPORTDATA>
+ </BODY>
+</ENVELOPE>
+
+';
+		return $xml;
+	}
+	function getXmlForSalePUR($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num){
+		$xml = '<ENVELOPE>
+ <HEADER>
+  <TALLYREQUEST>Import Data</TALLYREQUEST>
+ </HEADER>
+ <BODY>
+  <IMPORTDATA>
+   <REQUESTDESC>
+    <REPORTNAME>Vouchers</REPORTNAME>
+    <STATICVARIABLES>
+     <SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+    </STATICVARIABLES>
+   </REQUESTDESC>
+   <REQUESTDATA>
+    <TALLYMESSAGE xmlns:UDF="TallyUDF">
+     <VOUCHER  VCHTYPE="Purchase" ACTION="Create" OBJVIEW="Accounting Voucher View">
+      <OLDAUDITENTRYIDS.LIST TYPE="Number">
+       <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+      </OLDAUDITENTRYIDS.LIST>
+      <DATE>' . $date . '</DATE>
+	  <NARRATION>{' . $narration . '}</NARRATION>
+      <PARTYLEDGERNAME>' . $party_ledger . '</PARTYLEDGERNAME>
+      <VOUCHERTYPENAME>Purchase</VOUCHERTYPENAME>
+      <REFERENCE>22</REFERENCE>
+      <VOUCHERNUMBER>' . $vc_num . '</VOUCHERNUMBER>
+      <CSTFORMISSUETYPE/>
+      <CSTFORMRECVTYPE/>
+      <VCHGSTCLASS/>
+      <VOUCHERTYPEORIGNAME>Purchase</VOUCHERTYPEORIGNAME>
+      <EFFECTIVEDATE>' . $date . '</EFFECTIVEDATE>
+      <ALLLEDGERENTRIES.LIST>
+       <OLDAUDITENTRYIDS.LIST TYPE="Number">
+        <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+       </OLDAUDITENTRYIDS.LIST>
+	   <ISPARTYLEDGER>Yes</ISPARTYLEDGER>
+       <LEDGERNAME>' . $party_ledger . '</LEDGERNAME>
+       <GSTCLASS/>
+	   <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+       <LEDGERFROMITEM>No</LEDGERFROMITEM>
+       <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
+       <ISPARTYLEDGER>Yes</ISPARTYLEDGER>
+       <ISLASTDEEMEDPOSITIVE>Yes</ISLASTDEEMEDPOSITIVE>
+       <ISCAPVATTAXALTERED>No</ISCAPVATTAXALTERED>
+       <ISCAPVATNOTCLAIMED>No</ISCAPVATNOTCLAIMED>
+       <AMOUNT>' . $amount . '</AMOUNT>
+      </ALLLEDGERENTRIES.LIST>
+		' . $get_all_xml . '
+      
+      <PAYROLLMODEOFPAYMENT.LIST>      </PAYROLLMODEOFPAYMENT.LIST>
+      <ATTDRECORDS.LIST>      </ATTDRECORDS.LIST>
+     </VOUCHER>
+    </TALLYMESSAGE>
+    
+   </REQUESTDATA>
+  </IMPORTDATA>
+ </BODY>
+</ENVELOPE>
+
+';
+		return $xml;
+	}
+
+
+	function getXmlForPurchaseItem($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num){
+		$xml = '<ENVELOPE>
+ <HEADER>
+  <TALLYREQUEST>Import Data</TALLYREQUEST>
+ </HEADER>
+ <BODY>
+  <IMPORTDATA>
+   <REQUESTDESC>
+    <REPORTNAME>Vouchers</REPORTNAME>
+    <STATICVARIABLES>
+     <SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+    </STATICVARIABLES>
+   </REQUESTDESC>
+   <REQUESTDATA>
+    <TALLYMESSAGE xmlns:UDF="TallyUDF">
+     <VOUCHER  VCHTYPE="Purchase" ACTION="Create" OBJVIEW="Accounting Voucher View">
+      <OLDAUDITENTRYIDS.LIST TYPE="Number">
+       <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+      </OLDAUDITENTRYIDS.LIST>
+      <DATE>' . $date . '</DATE>
+	  <NARRATION>{' . $narration . '}</NARRATION>
+      <PARTYLEDGERNAME>' . $party_ledger . '</PARTYLEDGERNAME>
+      <VOUCHERTYPENAME>Purchase</VOUCHERTYPENAME>
+      <REFERENCE>22</REFERENCE>
+      <VOUCHERNUMBER>' . $vc_num  . '</VOUCHERNUMBER>
+      <CSTFORMISSUETYPE/>
+      <CSTFORMRECVTYPE/>
+      <VCHGSTCLASS/>
+      <VOUCHERTYPEORIGNAME>Purchase</VOUCHERTYPEORIGNAME>
+      <EFFECTIVEDATE>' . $date . '</EFFECTIVEDATE>
+      <ALLLEDGERENTRIES.LIST>
+       <OLDAUDITENTRYIDS.LIST TYPE="Number">
+        <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+       </OLDAUDITENTRYIDS.LIST>
+	   <ISPARTYLEDGER>Yes</ISPARTYLEDGER>
+       <LEDGERNAME>' . $party_ledger . '</LEDGERNAME>
+       <GSTCLASS/>
+	   <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+       <LEDGERFROMITEM>No</LEDGERFROMITEM>
+       <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
+       <ISPARTYLEDGER>Yes</ISPARTYLEDGER>
+       <ISLASTDEEMEDPOSITIVE>Yes</ISLASTDEEMEDPOSITIVE>
+       <ISCAPVATTAXALTERED>No</ISCAPVATTAXALTERED>
+       <ISCAPVATNOTCLAIMED>No</ISCAPVATNOTCLAIMED>
+       <AMOUNT>' . $amount . '</AMOUNT>
+      </ALLLEDGERENTRIES.LIST>
+		' . $get_all_xml . '
+      
+      <PAYROLLMODEOFPAYMENT.LIST>      </PAYROLLMODEOFPAYMENT.LIST>
+      <ATTDRECORDS.LIST>      </ATTDRECORDS.LIST>
+     </VOUCHER>
+    </TALLYMESSAGE>
+    
+   </REQUESTDATA>
+  </IMPORTDATA>
+ </BODY>
+</ENVELOPE>
+
+';
+		return $xml;
+	}
+
+	public function test_tally()
+	{
+		$company_id = $this->input->post('company_name');
+		$party_ledger = $this->input->post('party_ledger');
+		$date = $this->input->post('date');
+		$invoiceno = $this->input->post('invoiceno');
+		$amount = $this->input->post('amount');
+		$narration = $this->input->post('narration');
+		$acc_item_invoice = $this->input->post('acc_item_invoice');
+		$div_count = ($this->input->post('div_count1')) + 1;
+		$get_item_xml = "";
+		$get_tax_xml = "";
+		$get_all_xml = "";
+
+		$vc_num = $this->voucher_number();
+		$type = $this->input->post('vctype');;
+		if ($type == "Sales") {
+			for ($i = 0; $i < $div_count; $i++) {
+				$ledger = $this->input->post('ledger' . $i);
+				//array of all items details
+				$item_name = $this->input->post('item_name' . $i);
+				$quantity = $this->input->post('quantity' . $i);
+				$rate = $this->input->post('rate' . $i);
+				$amt = $this->input->post('amt' . $i);
+				$allamt = array_sum($amt);
+				if($acc_item_invoice == 1){
+					$amt=$amt[0];
+				}
+					$get_item_xml .= $this->get_ledger_with_item_xml($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type,$acc_item_invoice);
+				//taxasation details
+				$taxname = $this->input->post('taxname' . $i);
+				$taxper = $this->input->post('taxper' . $i);
+				$taxamt = $this->input->post('taxamt' . $i);
+
+				for ($n = 0; $n < count($taxname); $n++) {
+					if ($taxname[$n] == "") {
+
+					} else {
+						$get_tax_xml .= $this->get_tax_xml_new($taxname[$n], $taxper[$n], $taxamt[$n], $allamt, $type,$acc_item_invoice);
+					}
+				}
+				$get_all_xml .= $get_item_xml . $get_tax_xml;
+			}
+			if($acc_item_invoice == 2){
+				$xml=$this->getXmlForSaleItemN($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num);
+			}else{
+				 $xml=$this->getXmlForSaleAcc($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num);
+
+			}
+
+
+		}else if ($type == "Expense") {
+			for ($i = 0; $i < $div_count; $i++) {
+				$ledger = $this->input->post('ledger' . $i);
+				//array of all items details
+				$item_name = $this->input->post('item_name' . $i);
+				$quantity = $this->input->post('quantity' . $i);
+				$rate = $this->input->post('rate' . $i);
+				$amt = $this->input->post('amt' . $i);
+				$allamt = array_sum($amt);
+				$get_item_xml .= $this->get_ledger_with_item_xmlEXP($ledger, $item_name, $rate, $quantity, $amt[0], $allamt, $type,$acc_item_invoice);
+				//taxasation details
+				$taxname = $this->input->post('taxname' . $i);
+				$taxper = $this->input->post('taxper' . $i);
+				$taxamt = ($this->input->post('taxamt' . $i)) ;
+
+				for ($n = 0; $n < count($taxname); $n++) {
+					if ($taxname[$n] == "") {
+
+					} else {
+						$get_tax_xml .= $this->get_tax_xml_newEXP($taxname[$n], $taxper[$n], $taxamt[$n], $allamt, $type);
+					}
+				}
+				$get_all_xml .= $get_item_xml . $get_tax_xml;
+			}
+			 $xml=$this->getXmlForSaleExp($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num);
+
 		} else {
 			for ($i = 0; $i < $div_count; $i++) {
 				$ledger = $this->input->post('ledger' . $i);
@@ -1821,8 +2251,11 @@ XML;
 				$rate = $this->input->post('rate' . $i);
 				$amt = $this->input->post('amt' . $i);
 				$allamt = array_sum($amt);
+				if($acc_item_invoice == 1){
+					$amt=$amt[0];
+				}
+				$get_item_xml .= $this->get_ledger_with_item_xml($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type,$acc_item_invoice);
 
-				$get_item_xml .= $this->get_ledger_with_item_xml_purchase($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type);
 
 				//taxasation details
 				$taxname = $this->input->post('taxname' . $i);
@@ -1833,7 +2266,96 @@ XML;
 					if ($taxname[$n] == "") {
 
 					} else {
-						$get_tax_xml .= $this->get_tax_xml_new_purchase($taxname[$n], $taxper[$n], $taxamt[$n], $allamt, $type);
+						$get_tax_xml .= $this->get_tax_xml_new($taxname[$n], $taxper[$n], $taxamt[$n], $allamt, $type,$acc_item_invoice);
+					}
+
+				}
+				$get_all_xml .= $get_item_xml . $get_tax_xml;
+
+			}
+			if($acc_item_invoice == 2){
+				$xml=$this->getXmlForPurchaseItem($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num);
+			}else{
+				$xml=$this->getXmlForSalePUR($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num);
+
+			}
+
+		}
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $this->url);
+// Following line is compulsary to add as it is:
+		curl_setopt($ch, CURLOPT_POSTFIELDS, "xmlRequest=" . $xml);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 300);
+		$data = curl_exec($ch);
+		// var_dump($data);
+
+		$xml = simplexml_load_string($data);
+		$json = json_encode($xml);
+		$array = json_decode($json, TRUE);
+		//var_dump($array);
+		if ($array['CREATED'] == 1) {
+			$response['status'] = 200;
+			$user_id = $this->session->user_session->user_id;
+			$file_id = $this->input->post('file_id');
+			$data = array("voucher_id" => $vc_num,
+				"user_id" => $user_id,
+				"file_id" => $file_id
+			);
+			$insert = $this->db->insert("tally_user_combo_table", $data);
+		} else {
+			if (!array_key_exists('LINEERROR', $array)) {
+				$response['error'] = "please try again later";
+			} else {
+				$response['error'] = $array['LINEERROR'];
+			}
+			$response['status'] = 201;
+		}
+		curl_close($ch);
+		echo json_encode($response);
+	}
+
+	public function test_tallyNEW()
+	{
+		$company_id = $this->input->post('company_name');
+		$party_ledger = $this->input->post('party_ledger');
+		$date = $this->input->post('date');
+		$invoiceno = $this->input->post('invoiceno');
+		$amount = $this->input->post('amount');
+		$narration = $this->input->post('narration');
+		$div_count = ($this->input->post('div_count1')) + 1;
+		$get_item_xml = "";
+		$get_tax_xml = "";
+		$get_all_xml = "";
+
+
+		$type = $this->input->post('vctype');
+		//$type = 'Expense';
+		$acc_item_invoice = $this->input->post('acc_item_invoice');;
+		if ($type == "Sales") {
+			for ($i = 0; $i < $div_count; $i++) {
+				$ledger = $this->input->post('ledger' . $i);
+				//array of all items details
+				$item_name = $this->input->post('item_name' . $i);
+				$quantity = $this->input->post('quantity' . $i);
+				$rate = $this->input->post('rate' . $i);
+				$amt = $this->input->post('amt' . $i);
+				$allamt = array_sum($amt);
+
+				$get_item_xml .= $this->get_ledger_with_item_xml($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type);
+
+				//taxasation details
+				$taxname = $this->input->post('taxname' . $i);
+				$taxper = $this->input->post('taxper' . $i);
+				$taxamt = $this->input->post('taxamt' . $i);
+
+				for ($n = 0; $n < count($taxname); $n++) {
+					if ($taxname[$n] == "") {
+
+					} else {
+						$get_tax_xml .= $this->get_tax_xml_newItem($taxname[$n], $taxper[$n], $taxamt[$n], $allamt, $type);
+
 					}
 
 				}
@@ -1841,7 +2363,113 @@ XML;
 
 
 			}
-			$xml = '<ENVELOPE>
+			$xml=$this->getXmlForSale($get_all_xml);
+		}else if($type == "Expense"){
+			for ($i = 0; $i < $div_count; $i++) {
+				$ledger = $this->input->post('ledger' . $i);
+				//array of all items details
+				$item_name = $this->input->post('item_name' . $i);
+				$quantity = $this->input->post('quantity' . $i);
+				$rate = $this->input->post('rate' . $i);
+				$amt = $this->input->post('amt' . $i);
+				$allamt = array_sum($amt);
+
+				$get_item_xml .= $this->get_ledger_with_item_xml($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type);
+
+				//taxasation details
+				$taxname = $this->input->post('taxname' . $i);
+				$taxper = $this->input->post('taxper' . $i);
+				$taxamt = $this->input->post('taxamt' . $i);
+
+				for ($n = 0; $n < count($taxname); $n++) {
+					if ($taxname[$n] == "") {
+
+					} else {
+						$get_tax_xml .= $this->get_tax_xml_newItem($taxname[$n], $taxper[$n], $taxamt[$n], $allamt, $type);
+
+					}
+
+				}
+				$get_all_xml .= $get_item_xml . $get_tax_xml;
+
+
+			}
+			$xml='<ENVELOPE>
+ <HEADER>
+  <TALLYREQUEST>Import Data</TALLYREQUEST>
+ </HEADER>
+ <BODY>
+  <IMPORTDATA>
+<REQUESTDESC>
+    <REPORTNAME>Vouchers</REPORTNAME>
+    <STATICVARIABLES>
+     <SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+    </STATICVARIABLES>
+   </REQUESTDESC>
+    <REQUESTDATA> 
+	<TALLYMESSAGE xmlns:UDF="TallyUDF">
+	<VOUCHER VCHTYPE="Expenses" ACTION="Create" OBJVIEW="Invoice Voucher View">
+	<DATE>' . $date . '</DATE>
+      <REFERENCEDATE>' . $date . '</REFERENCEDATE>
+      <STATENAME>Maharashtra</STATENAME>
+      <NARRATION>{' . $narration . '}</NARRATION>
+      <PARTYNAME>' . $party_ledger . '</PARTYNAME>
+      <VOUCHERTYPENAME>Expenses</VOUCHERTYPENAME>
+      <VOUCHERNUMBER>' . $vc_num = $this->voucher_number() . '</VOUCHERNUMBER>
+      <PARTYLEDGERNAME>' . $party_ledger . '</PARTYLEDGERNAME>
+      <BASICBASEPARTYNAME>' . $party_ledger . '</BASICBASEPARTYNAME>
+      <CSTFORMISSUETYPE/>
+      <CSTFORMRECVTYPE/>
+      <FBTPAYMENTTYPE>Default</FBTPAYMENTTYPE>
+      <PERSISTEDVIEW>Invoice Voucher View</PERSISTEDVIEW>
+      <BASICBUYERNAME>' . $company_id . '</BASICBUYERNAME>
+      <VCHGSTCLASS/>
+      <ENTEREDBY>rkabra</ENTEREDBY>
+      ' . $get_all_xml . '
+	</TALLYMESSAGE>
+	
+	</REQUESTDATA>
+  </IMPORTDATA>
+ </BODY>
+ </ENVELOPE>';
+		} else {
+			for ($i = 0; $i < $div_count; $i++) {
+				$ledger = $this->input->post('ledger' . $i);
+				//array of all items details
+				$item_name = $this->input->post('item_name' . $i);
+				$quantity = $this->input->post('quantity' . $i);
+				$rate = $this->input->post('rate' . $i);
+				$amt = $this->input->post('amt' . $i);
+				$allamt = array_sum($amt);
+
+				//$get_item_xml .= $this->get_ledger_with_item_xml_purchase($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type);
+				if($acc_item_invoice == 1){
+					$get_item_xml .= $this->get_ledger_with_item_xml_purchase($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type);
+				}else{
+					$get_item_xml .= $this->get_ledger_with_item_xml_purchaseITEM($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type);
+					//$get_tax_xml .= $this->get_tax_xml_newItem($taxname[$n], $taxper[$n], $taxamt[$n], $allamt, $type);
+				}
+
+
+				//taxasation details
+				$taxname = $this->input->post('taxname' . $i);
+				$taxper = $this->input->post('taxper' . $i);
+				$taxamt = $this->input->post('taxamt' . $i);
+
+				for ($n = 0; $n < count($taxname); $n++) {
+					if ($taxname[$n] == "") {
+
+					} else {
+						$get_tax_xml .= $this->get_tax_xml_new($taxname[$n], $taxper[$n], $taxamt[$n], $allamt, $type);
+					}
+
+				}
+				$get_all_xml .= $get_item_xml . $get_tax_xml;
+
+
+			}
+			if($acc_item_invoice == 1){
+				$xml = '<ENVELOPE>
  <HEADER>
   <TALLYREQUEST>Import Data</TALLYREQUEST>
  </HEADER>
@@ -1899,8 +2527,83 @@ XML;
 </ENVELOPE>
 
 ';
-		}
+			}else{
+				$xml='
+				<ENVELOPE>
+ <HEADER>
+  <TALLYREQUEST>Import Data</TALLYREQUEST>
+ </HEADER>
+ <BODY>
+  <IMPORTDATA>
+   <REQUESTDESC>
+    <REPORTNAME>Vouchers</REPORTNAME>
+    <STATICVARIABLES>
+     <SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+    </STATICVARIABLES>
+   </REQUESTDESC>
+   <REQUESTDATA>
+    <TALLYMESSAGE xmlns:UDF="TallyUDF">
+     <VOUCHER  VCHTYPE="Purchase" ACTION="Create" OBJVIEW="Invoice Voucher View">
 
+      <OLDAUDITENTRYIDS.LIST TYPE="Number">
+       <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+      </OLDAUDITENTRYIDS.LIST>
+      <DATE>' . $date . '</DATE>
+      <REFERENCEDATE>' . $date . '</REFERENCEDATE>
+      <NARRATION>{' . $narration . '}</NARRATION>
+      <COUNTRYOFRESIDENCE>India</COUNTRYOFRESIDENCE>
+      <PARTYNAME>' . $party_ledger . '</PARTYNAME>
+      <VOUCHERTYPENAME>Purchase</VOUCHERTYPENAME>
+      <REFERENCE>1</REFERENCE>
+      <VOUCHERNUMBER>' . $vc_num = $this->voucher_number() . '</VOUCHERNUMBER>
+      <PARTYLEDGERNAME>' . $party_ledger . '</PARTYLEDGERNAME>
+      <BASICBASEPARTYNAME>' . $party_ledger . '</BASICBASEPARTYNAME>
+      <CSTFORMISSUETYPE/>
+      <CSTFORMRECVTYPE/>
+      <FBTPAYMENTTYPE>Default</FBTPAYMENTTYPE>
+      <PERSISTEDVIEW>Invoice Voucher View</PERSISTEDVIEW>
+      <PLACEOFSUPPLY>Haryana</PLACEOFSUPPLY>
+      <CONSIGNEEGSTIN>07AATCA0578P1ZV</CONSIGNEEGSTIN>
+      <BASICBUYERNAME>' . $company_id . '</BASICBUYERNAME>
+      <VCHGSTCLASS/>
+      <CONSIGNEESTATENAME>Delhi</CONSIGNEESTATENAME>
+      <DIFFACTUALQTY>No</DIFFACTUALQTY>
+      <ISMSTFROMSYNC>No</ISMSTFROMSYNC>
+      <ASORIGINAL>No</ASORIGINAL>
+      <AUDITED>No</AUDITED>
+      <FORJOBCOSTING>No</FORJOBCOSTING>
+      <ISOPTIONAL>No</ISOPTIONAL>
+      <EFFECTIVEDATE>' . $date . '</EFFECTIVEDATE>
+      <LEDGERENTRIES.LIST>
+       <OLDAUDITENTRYIDS.LIST TYPE="Number">
+        <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+       </OLDAUDITENTRYIDS.LIST>
+       <LEDGERNAME>' . $party_ledger . '</LEDGERNAME>
+       <GSTCLASS/>
+       <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
+       <LEDGERFROMITEM>No</LEDGERFROMITEM>
+       <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
+       <ISPARTYLEDGER>Yes</ISPARTYLEDGER>
+       <ISLASTDEEMEDPOSITIVE>No</ISLASTDEEMEDPOSITIVE>
+       <ISCAPVATTAXALTERED>No</ISCAPVATTAXALTERED>
+       <ISCAPVATNOTCLAIMED>No</ISCAPVATNOTCLAIMED>
+       <AMOUNT>' . $amount . '</AMOUNT>
+       
+      </LEDGERENTRIES.LIST>
+      ' . $get_all_xml . '
+     </VOUCHER>
+    </TALLYMESSAGE>
+    
+   
+   </REQUESTDATA>
+  </IMPORTDATA>
+ </BODY>
+</ENVELOPE>
+				';
+
+			}
+
+		}
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $this->url);
 // Following line is compulsary to add as it is:
@@ -1912,8 +2615,9 @@ XML;
 
 		$xml = simplexml_load_string($data);
 		$json = json_encode($xml);
+
 		$array = json_decode($json, TRUE);
-		//var_dump($array);
+
 		if ($array['CREATED'] == 1) {
 			$response['status'] = 200;
 			$user_id = $this->session->user_session->user_id;
@@ -1935,14 +2639,36 @@ XML;
 		echo json_encode($response);
 	}
 
-	function get_ledger_with_item_xml($ledger, $item_arr, $rate_arr, $quantity_arr, $amt_arr, $allamt, $type)
+	function get_ledger_with_item_xml($ledger, $item_arr, $rate_arr, $quantity_arr, $amt_arr, $allamt, $type,$acc_item_invoice)
 	{
 		/* <ACTUALQTY>'.$quantity.'</ACTUALQTY>
 	<BILLEDQTY>'.$quantity.'</BILLEDQTY>
 	<RATE>'.$rate.'</RATE> */
-		$count = count($item_arr);
-		$bxml = "";
 
+		$bxml = "";
+		if($acc_item_invoice == 1){
+			if ($type == "Purchase") {
+				$amt_arr = "-" . $amt_arr;
+			}
+			$xml='<LEDGERENTRIES.LIST>
+       <OLDAUDITENTRYIDS.LIST TYPE="Number">
+        <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+       </OLDAUDITENTRYIDS.LIST>
+       <LEDGERNAME>' . $ledger . '</LEDGERNAME>
+       <GSTCLASS/>
+       <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+       <LEDGERFROMITEM>No</LEDGERFROMITEM>
+       <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
+       <ISPARTYLEDGER>No</ISPARTYLEDGER>
+       <ISLASTDEEMEDPOSITIVE>Yes</ISLASTDEEMEDPOSITIVE>
+       <ISCAPVATTAXALTERED>No</ISCAPVATTAXALTERED>
+       <ISCAPVATNOTCLAIMED>No</ISCAPVATNOTCLAIMED>
+       <AMOUNT>' . $amt_arr . '</AMOUNT>
+       <VATEXPAMOUNT>' . $amt_arr . '</VATEXPAMOUNT>
+      </LEDGERENTRIES.LIST>';
+			return $xml;
+		}
+		$count = count($item_arr);
 		for ($i = 0; $i < $count; $i++) {
 			$quantity = $quantity_arr[$i];
 			$rate = $rate_arr[$i];
@@ -1951,6 +2677,7 @@ XML;
 			if ($type == "Purchase") {
 				$amt = "-" . $amt_arr[$i];
 			}
+
 			if ($item_arr[0] == "" && $amt_arr[0] != "") {
 
 				$xml = '  <ALLLEDGERENTRIES.LIST>
@@ -2020,12 +2747,41 @@ XML;
 		return $xml;
 	}
 
-	function get_tax_xml_new($taxname, $taxper, $taxamt, $amount, $type)
+	function get_ledger_with_item_xmlEXP($ledger, $item_arr, $rate_arr, $quantity_arr, $amt_arr, $allamt, $type,$acc_item_invoice)
+	{
+		/* <ACTUALQTY>'.$quantity.'</ACTUALQTY>
+	<BILLEDQTY>'.$quantity.'</BILLEDQTY>
+	<RATE>'.$rate.'</RATE> */
+		$count = count($item_arr);
+		$bxml = "";
+
+			$xml='<LEDGERENTRIES.LIST>
+       <OLDAUDITENTRYIDS.LIST TYPE="Number">
+        <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+       </OLDAUDITENTRYIDS.LIST>
+       <LEDGERNAME>' . $ledger . '</LEDGERNAME>
+       <GSTCLASS/>
+       <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+       <LEDGERFROMITEM>No</LEDGERFROMITEM>
+       <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
+       <ISPARTYLEDGER>No</ISPARTYLEDGER>
+       <ISLASTDEEMEDPOSITIVE>Yes</ISLASTDEEMEDPOSITIVE>
+       <ISCAPVATTAXALTERED>No</ISCAPVATTAXALTERED>
+       <ISCAPVATNOTCLAIMED>No</ISCAPVATNOTCLAIMED>
+       <AMOUNT>-' . $amt_arr . '</AMOUNT>
+       <VATEXPAMOUNT>-' . $amt_arr . '</VATEXPAMOUNT>
+      </LEDGERENTRIES.LIST>';
+			return $xml;
+
+	}
+
+	function get_tax_xml_new($taxname, $taxper, $taxamt, $amount, $type,$acc_item_invoice)
 	{
 		if ($type == "Purchase") {
 			$taxamt = "-" . $taxamt;
 		}
-		$xml = '<ALLLEDGERENTRIES.LIST>
+		if($acc_item_invoice  == 2){
+			$xml = '<ALLLEDGERENTRIES.LIST>
        <OLDAUDITENTRYIDS.LIST TYPE="Number">
         <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
        </OLDAUDITENTRYIDS.LIST>
@@ -2045,6 +2801,107 @@ XML;
        <AMOUNT>' . $taxamt . '</AMOUNT>
        <VATASSESSABLEVALUE>' . $amount . '</VATASSESSABLEVALUE>
       </ALLLEDGERENTRIES.LIST>';
+		}else{
+			$xml = '<LEDGERENTRIES.LIST>
+       <OLDAUDITENTRYIDS.LIST TYPE="Number">
+        <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+       </OLDAUDITENTRYIDS.LIST>
+	   <ISPARTYLEDGER>No</ISPARTYLEDGER>
+       <LEDGERNAME>' . $taxname . '</LEDGERNAME>
+	   <GSTCLASS/>
+       <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
+       <LEDGERFROMITEM>No</LEDGERFROMITEM>
+       <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
+       <ISPARTYLEDGER>No</ISPARTYLEDGER>
+       <ISLASTDEEMEDPOSITIVE>No</ISLASTDEEMEDPOSITIVE>
+       <ISCAPVATTAXALTERED>No</ISCAPVATTAXALTERED>
+       <ISCAPVATNOTCLAIMED>No</ISCAPVATNOTCLAIMED>
+       <UDF:RATEOFINVOICETAX.LIST DESC="RATEOFINVOICETAX" ISLIST="YES">
+<UDF:RATEOFINVOICETAX DESC="`RATEOFINVOICETAX`">' . $taxper . '</UDF:RATEOFINVOICETAX>
+</UDF:RATEOFINVOICETAX.LIST>
+       <AMOUNT>' . $taxamt . '</AMOUNT>
+       <VATASSESSABLEVALUE>' . $taxamt . '</VATASSESSABLEVALUE> </LEDGERENTRIES.LIST>';
+		}
+
+		return $xml;
+	}
+	function get_tax_xml_newEXP($taxname, $taxper, $taxamt, $amount, $type)
+	{
+		if ($type == "Purchase") {
+			$taxamt = "-" . $taxamt;
+		}
+		$xml = '<LEDGERENTRIES.LIST>
+       <OLDAUDITENTRYIDS.LIST TYPE="Number">
+        <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+       </OLDAUDITENTRYIDS.LIST>
+	   <ISPARTYLEDGER>No</ISPARTYLEDGER>
+       <LEDGERNAME>' . $taxname . '</LEDGERNAME>
+	   <GSTCLASS/>
+       <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
+       <LEDGERFROMITEM>No</LEDGERFROMITEM>
+       <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
+       <ISPARTYLEDGER>No</ISPARTYLEDGER>
+       <ISLASTDEEMEDPOSITIVE>No</ISLASTDEEMEDPOSITIVE>
+       <ISCAPVATTAXALTERED>No</ISCAPVATTAXALTERED>
+       <ISCAPVATNOTCLAIMED>No</ISCAPVATNOTCLAIMED>
+       <UDF:RATEOFINVOICETAX.LIST DESC="RATEOFINVOICETAX" ISLIST="YES">
+<UDF:RATEOFINVOICETAX DESC="`RATEOFINVOICETAX`">' . $taxper . '</UDF:RATEOFINVOICETAX>
+</UDF:RATEOFINVOICETAX.LIST>
+       <AMOUNT>-' . $taxamt . '</AMOUNT>
+       <VATASSESSABLEVALUE>-' . $taxamt . '</VATASSESSABLEVALUE>
+      </LEDGERENTRIES.LIST>';
+		return $xml;
+	}
+	function get_tax_xml_newItem($taxname, $taxper, $taxamt, $amount, $type)
+	{
+		if ($type == "Purchase") {
+			$taxamt = "-" . $taxamt;
+		}
+
+
+		$xml='<ALLINVENTORYENTRIES.LIST>
+       <STOCKITEMNAME>'.$taxname.'</STOCKITEMNAME>
+       <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+       <ISLASTDEEMEDPOSITIVE>Yes</ISLASTDEEMEDPOSITIVE>
+       <ISAUTONEGATE>No</ISAUTONEGATE>
+       <ISCUSTOMSCLEARANCE>No</ISCUSTOMSCLEARANCE>
+       <ISTRACKCOMPONENT>No</ISTRACKCOMPONENT>
+       <ISTRACKPRODUCTION>No</ISTRACKPRODUCTION>
+       <ISPRIMARYITEM>No</ISPRIMARYITEM>
+       <ISSCRAP>No</ISSCRAP>
+       <RATE></RATE>
+       <AMOUNT>' . $amount . '</AMOUNT>
+       <ACTUALQTY>' . $taxper . ' </ACTUALQTY>
+       <BILLEDQTY>' . $taxper . ' </BILLEDQTY>
+       <BATCHALLOCATIONS.LIST>
+        <GODOWNNAME>Main Location</GODOWNNAME>
+        <BATCHNAME>Primary Batch</BATCHNAME>
+        <INDENTNO/>
+        <ORDERNO/>
+        <TRACKINGNUMBER/>
+        <DYNAMICCSTISCLEARED>No</DYNAMICCSTISCLEARED>
+        <AMOUNT>' . $amount . '</AMOUNT>
+        <ACTUALQTY> ' . $taxper . '</ACTUALQTY>
+        <BILLEDQTY> ' . $taxper . '</BILLEDQTY>
+        <ADDITIONALDETAILS.LIST>        </ADDITIONALDETAILS.LIST>
+        <VOUCHERCOMPONENTLIST.LIST>        </VOUCHERCOMPONENTLIST.LIST>
+       </BATCHALLOCATIONS.LIST>
+       <ACCOUNTINGALLOCATIONS.LIST>
+        <OLDAUDITENTRYIDS.LIST TYPE="Number">
+         <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+        </OLDAUDITENTRYIDS.LIST>
+        <GSTCLASS/>
+        <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+        <LEDGERFROMITEM>No</LEDGERFROMITEM>
+        <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
+        <ISPARTYLEDGER>No</ISPARTYLEDGER>
+        <ISLASTDEEMEDPOSITIVE>Yes</ISLASTDEEMEDPOSITIVE>
+        <ISCAPVATTAXALTERED>No</ISCAPVATTAXALTERED>
+        <ISCAPVATNOTCLAIMED>No</ISCAPVATNOTCLAIMED>
+        <AMOUNT>' . $amount . '</AMOUNT>
+       </ACCOUNTINGALLOCATIONS.LIST>
+      </ALLINVENTORYENTRIES.LIST>';
+
 		return $xml;
 	}
 
@@ -2133,11 +2990,69 @@ XML;
 		return $xml;
 	}
 
+	function get_ledger_with_item_xml_purchaseITEM($ledger, $item_arr, $rate_arr, $quantity_arr, $amt_arr, $allamt, $type){
+
+		$count = count($item_arr);
+		$bxml = "";
+
+		for ($i = 0; $i < $count; $i++) {
+			$quantity = $quantity_arr[$i];
+			$rate = $rate_arr[$i];
+			$item = $item_arr[$i];
+			$amt = $amt_arr[$i];
+			if ($type == "Purchase") {
+				$amt = "-" . $amt_arr[$i];
+			}
+			$bxml .= '<ALLINVENTORYENTRIES.LIST>
+       <STOCKITEMNAME>'.$ledger.'</STOCKITEMNAME>
+       <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+       <ISLASTDEEMEDPOSITIVE>Yes</ISLASTDEEMEDPOSITIVE>
+       <ISAUTONEGATE>No</ISAUTONEGATE>
+       <ISCUSTOMSCLEARANCE>No</ISCUSTOMSCLEARANCE>
+       <ISTRACKCOMPONENT>No</ISTRACKCOMPONENT>
+       <ISTRACKPRODUCTION>No</ISTRACKPRODUCTION>
+       <ISPRIMARYITEM>No</ISPRIMARYITEM>
+       <ISSCRAP>No</ISSCRAP>
+       <RATE>'.$rate.'</RATE>
+       <AMOUNT>' . $amt . '</AMOUNT>
+       <ACTUALQTY>' . $quantity . ' </ACTUALQTY>
+       <BILLEDQTY>' . $quantity . ' </BILLEDQTY>
+       <BATCHALLOCATIONS.LIST>
+        <GODOWNNAME>Main Location</GODOWNNAME>
+        <BATCHNAME>Primary Batch</BATCHNAME>
+        <INDENTNO/>
+        <ORDERNO/>
+        <TRACKINGNUMBER/>
+        <DYNAMICCSTISCLEARED>No</DYNAMICCSTISCLEARED>
+        <AMOUNT>' . $amt . '</AMOUNT>
+        <ACTUALQTY> ' . $quantity . '</ACTUALQTY>
+        <BILLEDQTY> ' . $quantity . '</BILLEDQTY>
+        <ADDITIONALDETAILS.LIST>        </ADDITIONALDETAILS.LIST>
+        <VOUCHERCOMPONENTLIST.LIST>        </VOUCHERCOMPONENTLIST.LIST>
+       </BATCHALLOCATIONS.LIST>
+       <ACCOUNTINGALLOCATIONS.LIST>
+        <OLDAUDITENTRYIDS.LIST TYPE="Number">
+         <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+        </OLDAUDITENTRYIDS.LIST>
+        <GSTCLASS/>
+        <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+        <LEDGERFROMITEM>No</LEDGERFROMITEM>
+        <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
+        <ISPARTYLEDGER>No</ISPARTYLEDGER>
+        <ISLASTDEEMEDPOSITIVE>Yes</ISLASTDEEMEDPOSITIVE>
+        <ISCAPVATTAXALTERED>No</ISCAPVATTAXALTERED>
+        <ISCAPVATNOTCLAIMED>No</ISCAPVATNOTCLAIMED>
+        <AMOUNT>' . $allamt . '</AMOUNT>
+       </ACCOUNTINGALLOCATIONS.LIST>
+      </ALLINVENTORYENTRIES.LIST>';
+		}
+
+		return $bxml;
+	}
+
 	function get_tax_xml_new_purchase($taxname, $taxper, $taxamt, $amount, $type)
 	{
-		if ($type == "Purchase") {
-			$taxamt = "-" . $taxamt;
-		}
+
 		$xml = '<ALLLEDGERENTRIES.LIST>
        <OLDAUDITENTRYIDS.LIST TYPE="Number">
         <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
