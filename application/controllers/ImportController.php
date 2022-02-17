@@ -2752,7 +2752,7 @@ XML;
 		/* <ACTUALQTY>'.$quantity.'</ACTUALQTY>
 	<BILLEDQTY>'.$quantity.'</BILLEDQTY>
 	<RATE>'.$rate.'</RATE> */
-		$count = count($item_arr);
+//		$count = count($item_arr);
 		$bxml = "";
 
 			$xml='<LEDGERENTRIES.LIST>

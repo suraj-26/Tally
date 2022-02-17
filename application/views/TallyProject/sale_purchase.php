@@ -117,16 +117,16 @@ $file_id
 					<div class="row">
 						<div class="col-sm-4">
 							<label for="group-name" class=" control-label">Quantity</label>
-							<input type="text" class="form-control" id="quantity" placeholder="Quantity"
-								   name="quantity0[]">
+							<input type="text" class="form-control" id="quantity00" placeholder="Quantity"
+								   name="quantity0[]" onKeyup="changeTotal('00')">
 						</div>
 						<div class="col-sm-4">
 							<label for="group-name" class=" control-label">Rate</label>
-							<input type="text" class="form-control" id="rate" placeholder="Rate" name="rate0[]">
+							<input type="text" class="form-control" id="rate00" placeholder="Rate" name="rate0[]" onKeyup="changeTotal('00')">
 						</div>
 						<div class="col-sm-4">
 							<label for="group-name" class=" control-label">Amount</label>
-							<input type="text" class="form-control amt0" value="0" onkeyup="getValue(this)" id="amt" placeholder="Amount" name="amt0[]">
+							<input type="text" class="form-control amt0" value="0" onKeyup="getValue(this)" id="amt00" placeholder="Amount" name="amt0[]">
 
 						</div>
 					</div>
@@ -150,7 +150,7 @@ $file_id
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Percent</label>
-						<input type="text" class="form-control taxper0" onkeyup="getTotal(this)" value="0" id="taxper" placeholder="Percent" name="taxper0[]">
+						<input type="text" class="form-control taxper0" onKeyup="getTotal(this)" value="0" id="taxper" placeholder="Percent" name="taxper0[]">
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Amount</label>
@@ -166,7 +166,7 @@ $file_id
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Percent</label>
-						<input type="text" class="form-control taxper10" onkeyup="getTotal(this)" value="0" id="taxper" placeholder="Percent" name="taxper0[]">
+						<input type="text" class="form-control taxper10" onKeyup="getTotal(this)" value="0" id="taxper" placeholder="Percent" name="taxper0[]">
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Amount</label>
@@ -513,15 +513,15 @@ $file_id
 				'<div class="row">' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Quantity</label>' +
-				'<input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity' + id + '[]" >' +
+				'<input type="text" class="form-control" id="quantity' + id + div_count + '" placeholder="Quantity" name="quantity' + id + '[]" onKeyup="changeTotal(\'' + id + div_count + '\')">' +
 				'</div>' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Rate</label>' +
-				'<input type="text" class="form-control" id="rate" placeholder="Rate" name="rate' + id + '[]" >' +
+				'<input type="text" class="form-control" id="rate' + id + div_count + '" placeholder="Rate" name="rate' + id + '[]" onKeyup="changeTotal(\'' + id + div_count + '\')">' +
 				' </div>' +
 				'<div class="col-sm-4">' +
 				' <label for="group-name" class=" control-label">Amount</label>' +
-				'<input type="text" class="form-control amt' + id + '" onKeyup="getValue(this)" value="0" id="amt" placeholder="Amount" name="amt' + id + '[]" >' +
+				'<input type="text" class="form-control amt' + id + '" onKeyup="getValue(this)" value="0" id="amt' + id + div_count + '" placeholder="Amount" name="amt' + id + '[]" >' +
 				'</div>' +
 				'</div>' +
 				'</div>';
@@ -561,15 +561,15 @@ $file_id
 				'<div class="row">' +
 				'<div class="col-sm-4">' +
 				' <label for="group-name" class=" control-label">Quantity</label>' +
-				'<input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity' + div_count1 + '[]" >' +
+				'<input type="text" class="form-control" id="quantity' + div_count1 + '" placeholder="Quantity" name="quantity' + div_count1 + '[]" onKeyup="changeTotal(\''+div_count1+'\')">' +
 				'</div>' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Rate</label>' +
-				'<input type="text" class="form-control" id="rate" placeholder="Rate" name="rate' + div_count1 + '[]" >' +
+				'<input type="text" class="form-control" id="rate' + div_count1 + '" placeholder="Rate" name="rate' + div_count1 + '[]" onKeyup="changeTotal(\''+div_count1+'\')">' +
 				'</div>' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Amount</label>' +
-				'<input type="text" class="form-control amt' + div_count1 + '" onKeyup="getValue(this)" value="0" id="amt" placeholder="Amount" name="amt' + div_count1 + '[]" >' +
+				'<input type="text" class="form-control amt' + div_count1 + '" onKeyup="getValue(this)"  value="0" id="amt' + div_count1 + '" placeholder="Amount" name="amt' + div_count1 + '[]" >' +
 				'</div>' +
 				'</div>' +
 				'</div>' +
@@ -640,6 +640,14 @@ $file_id
 		{
 			$('.itemClass').attr("disabled","disabled");
 		}
+
+	}
+
+	function changeTotal(id) {
+		console.log(id);
+		var quantity=$("#quantity"+id).val();
+		var rate=$("#rate"+id).val();
+		$("#amt"+id).val(quantity*rate);
 
 	}
 
