@@ -59,7 +59,7 @@ $file_id
 			<div class="row">
 				<div class="col-sm-6">
 					<label for="group-name" class=" control-label">Date</label>
-					<input type="text" class="form-control" id="date" placeholder="Date (YYYYMMDD)" name="date">
+					<input type="date" class="form-control" id="date" placeholder="Date (YYYYMMDD)" name="date">
 				</div>
 
 				<div class="col-sm-6">
@@ -195,21 +195,26 @@ $file_id
 		<div class="row">
 			<h3>View Sale/Purchase Entry </h3>
 			<hr>
-			<div class="col-md-6">
+			<div class="row">
+			<div class="col-md-5">
 
 				<input type="radio" checked id="sales1" name="vctype1" value="Sales">
 				<label for="vehicle1">Sales</label>
 				<input type="radio" id="purchase1" name="vctype1" value="Purchase">
 				<label for="vehicle2">Purchase</label>
-				<input type="radio" id="expense1" name="vctype1" value="Expense">
+				<input type="radio" id="expense1" name="vctype1" value="Expenses">
 				<label for="vehicle2">Expense</label>
 
 			</div>
-			<div class="col-md-6">
-
-				<select id="month11" name="month11" class="form-control" Onchange="get_sale_purchase_data()">
-					<option value="0">select month</option>
-				</select>
+			<div class="col-md-5">
+				<label>From Date:</label>
+				<input type="date" id="from_date" name="from_date" class="form-control">
+				<label>To Date:</label>
+				<input type="date" id="to_date" name="to_date" class="form-control">
+			</div>
+			<div class="col-md-2">
+				<button type="button" id="btnview" class="btn btn-primary" onclick="get_sale_purchase_data()">View</button>
+			</div>
 			</div>
 
 			<div class="col-md-12" id="jdata" style="overflow: scroll;height:700px">
@@ -220,8 +225,6 @@ $file_id
 	</div>
 </div>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-
-
 <script>
 	$(document).ready(function () {
 		get_company_list();
@@ -293,8 +296,11 @@ $file_id
 				var data = result.company_list;
 				if (result.status === 'true') {
 					$('#company_name').html(data);
+					$('#company_name').select2();
+
 				} else {
 					$('#company_name').html(data);
+					$('#company_name').select2();
 				}
 			},
 		});
@@ -302,7 +308,8 @@ $file_id
 
 	function get_sale_purchase_data() {
 
-		var mon = $("#month11").val();
+		var from_date = $("#from_date").val();
+		var to_date = $("#to_date").val();
 		var company_name = $("#company_name").val();
 		//var vctype1=$("#vctype1").val();
 
@@ -319,7 +326,7 @@ $file_id
 				dataType: "json",
 				async: false,
 				cache: false,
-				data: {mon, company_name, vctype1},
+				data: {from_date,to_date, company_name, vctype1},
 				success: function (result) {
 					var data = result.data;
 					console.log(data);
@@ -350,7 +357,7 @@ $file_id
 				if (result.status == 200) {
 					alert('Voucher Added Successfully');
 				} else {
-					alert('Something went wrong');
+					alert('Something went wrong...ERROR : ' + result.error);
 				}
 			},
 		});
@@ -371,11 +378,14 @@ $file_id
 
 				if (result.status === 'true') {
 					$('#' + id).html(data);
+					$('#' + id).select2();
 
 				} else {
 					$('#' + id).html(data);
+					$('#' + id).select2();
 
 				}
+
 
 			},
 		});
@@ -423,6 +433,7 @@ $file_id
 				} else {
 					$('#' + id).html(data);
 				}
+				$('#' + id).select2();
 			},
 		});
 	}
@@ -445,6 +456,9 @@ $file_id
 					$('#taxname0').html(data);
 					$('#taxname1').html(data);
 						$('#ledger0').html(data);
+						$('#ledger0').select2();
+						$('#taxname0').select2();
+						$('#taxname1').select2();
 
 				},
 			});
@@ -621,10 +635,12 @@ $file_id
 		var acc_item_invoice=$('input[name="acc_item_invoice"]:checked').val();
 		if(acc_item_invoice == 1){
 			get_ledger_list('ledger' + div_count1);
+			$('#ledger' + div_count1).select2();
 			get_ledger_list('taxname' + first);
 			get_ledger_list('taxname' + tax_inp);
 		}else{
 			get_stockgrp_list('ledger' + div_count1);
+			$('#ledger' + div_count1).select2();
 			get_ledger_list('taxname' + first);
 			get_ledger_list('taxname' + tax_inp);
 

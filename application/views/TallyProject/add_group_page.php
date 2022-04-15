@@ -78,9 +78,11 @@
                 console.log(data);
                 if (result.status === 'true') {
                     $('#company_namegrp').html(data);
+                    $('#company_namegrp').select2();
 
                 } else {
                     $('#company_namegrp').html(data);
+                    $('#company_namegrp').select2();
 
                 }
             },
@@ -103,8 +105,10 @@
                 console.log(data);
                 if (result.status === 'true') {
                     $('#parent_id').html(data);
+                    $('#parent_id').select2();
                 } else {
                     $('#parent_id').html(data);
+					$('#parent_id').select2();
                 }
             },
         });

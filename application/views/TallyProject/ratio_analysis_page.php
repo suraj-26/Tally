@@ -56,10 +56,12 @@
                                             console.log(data);
                                             if (result.status === 'true') {
                                                 $('#company_name_ra').html(data);
-                                                
+                                                $('#company_name_ra').select2();
+
                                             } else {
                                                 $('#company_name_ra').html(data);
-                                                
+                                                $('#company_name_ra').select2();
+
                                             }
                                         },
                                     });

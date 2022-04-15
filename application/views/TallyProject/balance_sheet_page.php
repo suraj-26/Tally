@@ -53,9 +53,11 @@
                                             console.log(data);
                                             if (result.status === 'true') {
                                                 $('#company_name1').html(data);
-                                                
+                                                $('#company_name1').select2();
+
                                             } else {
                                                 $('#company_name1').html(data);
+												$('#company_name1').select2();
                                                 
                                             }
                                         },

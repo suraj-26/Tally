@@ -31,7 +31,7 @@
 					</div>
 					<div class="col-sm-6">
 						<label for="group-name" class=" control-label">Date</label>
-						<input type="text" class="form-control" id="Jdate" placeholder="Date (YYYYMMDD)" name="Jdate">
+						<input type="date" class="form-control" id="Jdate" placeholder="Date (YYYYMMDD)" name="Jdate">
 					</div>
 				<div class="col-sm-6">
 					<label for="group-name" class=" control-label">Narration</label>
@@ -104,9 +104,16 @@
 		<div class="col-md-12">
 			<h3>View Journal Entry </h3>
 			<hr>
-			<select id="month11" name="month11" class="form-control" Onchange="get_journal_entry_data()">
+			<!--<select id="month11" name="month11" class="form-control" Onchange="get_journal_entry_data()">
 				<option value="0">select month</option>
-			</select>
+			</select>-->
+			<label>From Date:</label>
+			<input type="date" id="from_date" name="from_date" class="form-control">
+			<label>To Date:</label>
+			<input type="date" id="to_date" name="to_date" class="form-control">
+			<div class="col-md-2">
+				<button type="button" id="btnview" class="btn btn-primary" onclick="get_journal_entry_data()">View</button>
+			</div>
 		</div>
 		<div class="col-md-12" id="jdata" style="overflow: scroll;height:700px">
 		</div>
@@ -155,8 +162,10 @@
 				console.log(data);
 				if (result.status === 'true') {
 					$('#Jcompany_name').html(data);
+					$('#Jcompany_name').select2();
 				} else {
 					$('#Jcompany_name').html(data);
+					$('#Jcompany_name').select2();
 				}
 			},
 		});
@@ -164,11 +173,12 @@
 
 	function get_journal_entry_data() {
 
-		var mon = $("#month11").val();
+		var from_date = $("#from_date").val();
+		var to_date = $("#to_date").val();
 		var company_name = $("#Jcompany_name").val();
 		if (company_name == "") {
 			alert('please select company name');
-			var mon = $("#month11").val("0");
+			//var mon = $("#month11").val("0");
 			return;
 		} else {
 			$.ajax({
@@ -177,7 +187,7 @@
 				dataType: "json",
 				async: false,
 				cache: false,
-				data: {mon, company_name},
+				data: {from_date,to_date, company_name},
 				success: function (result) {
 					var data = result.data;
 					console.log(data);
@@ -236,6 +246,7 @@
 					$('#' + id).html(data);
 
 				}
+				$('#' + id).select2();
 
 			},
 		});
@@ -255,8 +266,10 @@
 				console.log(data);
 				if (result.status === 'true') {
 					$('#jledger0').html(data);
+					$('#jledger0').select2();
 				} else {
 					$('#jledger0').html(data);
+					$('#jledger0').select2();
 				}
 
 			},

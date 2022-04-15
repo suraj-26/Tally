@@ -37,7 +37,7 @@
 
 				<div class="col-sm-6">
 					<label for="group-name" class=" control-label">Date</label>
-					<input type="text" class="form-control" id="date" placeholder="Date (YYYYMMDD)" name="date">
+					<input type="date" class="form-control" id="date" placeholder="Date (YYYYMMDD)" name="date">
 				</div>
 				<div class="col-sm-6">
 					<label for="group-name" class=" control-label">Invoice Number</label>
@@ -47,15 +47,15 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="col-sm-12"><br>
-						<input type="radio" checked id="rece" name="vtype" value="Receipt">
+						<input type="radio" checked id="rece" name="vtype" value="Receipt" onchange="disabledClicks()">
 						<label for="vehicle1">Receipt</label>
-						<input type="radio" id="pay" name="vtype" value="Payment">
+						<input type="radio" id="pay" name="vtype" value="Payment" onchange="disabledClicks()">
 						<label for="vehicle2">Payment</label>
-						<input type="radio" id="contra" name="vtype" value="Contra">
+						<input type="radio" id="contra" name="vtype" value="Contra" onchange="disabledClicks()">
 						<label for="vehicle2">Contra</label>
-						<input type="radio" id="debit_nt" name="vtype" value="Debit Note">
+						<input type="radio" id="debit_nt" name="vtype" value="Debit Note" onchange="disabledClicks()">
 						<label for="vehicle2">Debit Note</label>
-						<input type="radio" id="credit_nt" name="vtype" value="Credit Note">
+						<input type="radio" id="credit_nt" name="vtype" value="Credit Note" onchange="disabledClicks()">
 						<label for="vehicle2">Credit Note</label>
 					</div>
 
@@ -100,29 +100,30 @@
 
 						<div class="col-sm-8" style="padding: 5px">
 							<label for="group-name" class=" control-label">Item Name</label>
-							<input type="text" class="form-control" id="item_name" placeholder="Item Name"
-								   name="item_name0[]">
+							<select id='item_name00' class="form-control disvc" name='item_name0[]'>
+								<option>Select Value</option>
+							</select>
 						</div>
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Quantity</label>
-						<input type="text" class="form-control" id="quantity" placeholder="Quantity"
-							   name="quantity0[]">
+						<input type="text" class="form-control disvc" id="quantity00" placeholder="Quantity"
+							   name="quantity0[]" onkeyup="getFinalAmount('00')">
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Rate</label>
-						<input type="text" class="form-control" id="rate" placeholder="Rate" name="rate0[]">
+						<input type="text" class="form-control disvc" id="rate00" placeholder="Rate" name="rate0[]" onkeyup="getFinalAmount('00')">
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Amount</label>
-						<input type="text" class="form-control" id="amt" placeholder="Amount" name="amt0[]">
+						<input type="text" class="form-control " id="amt00" placeholder="Amount" name="amt0[]">
 
 					</div>
 				</div>
 				<div id="dynamic_div0"></div>
 				<div class="col-sm-12"><br>
 					<input type="hidden" id="tax_inp" name="tax_inp" value="1">
-					<button type="button" class="btn btn-link" style="outline: none;" onclick="repeat_div(0)">Add Entries <i class="fa fa-plus"></i></button>
+					<button type="button" class="btn btn-link disvc" style="outline: none;" onclick="repeat_div(0)">Add Entries <i class="fa fa-plus"></i></button>
 				</div>
 			</div>
 			<hr>
@@ -160,12 +161,23 @@
 				<label for="vehicle2">Credit Note</label>
 
 			</div>
-			<div class="col-md-6">
+			<!--<div class="col-md-6">
 
 				<select id="month11" name="month11" class="form-control" Onchange="get_sale_purchase_data()">
 					<option value="0">select month</option>
 				</select>
+			</div>-->
+
+			<div class="col-md-6">
+				<label>From Date:</label>
+				<input type="date" id="from_date" name="from_date" class="form-control">
+				<label>To Date:</label>
+				<input type="date" id="to_date" name="to_date" class="form-control">
 			</div>
+			<div class="col-md-2">
+				<button type="button" id="btnview" class="btn btn-primary" onclick="get_sale_purchase_data()">View</button>
+			</div>
+		</div>
 
 			<div class="col-md-12" id="jdata" style="overflow: scroll;height:700px">
 
@@ -180,7 +192,26 @@
 	$(document).ready(function () {
 		get_company_list();
 		get_mon();
+		disabledClicks();
+
 	});
+	function disabledClicks() {
+		var vtype=$('input[name="vtype"]:checked').val();
+		//disvc
+		if(vtype == "Debit Note" || vtype== "Credit Note"){
+			$(".disvc").attr('disabled',false);
+		}else{
+			$(".disvc").attr('disabled','disabled');
+		}
+
+	}
+	function getFinalAmount(id) {
+		console.log(id);
+		var q=$("#quantity"+id).val();
+		var r=$("#rate"+id).val();
+		$("#amt"+id).val(q*r);
+
+	}
 
 	function get_mon() {
 		const monthNames = ["January", "February", "March", "April", "May", "June",
@@ -199,7 +230,8 @@
 
 	function get_sale_purchase_data() {
 
-		var mon = $("#month11").val();
+		var from_date = $("#from_date").val();
+		var to_date = $("#to_date").val();
 		var company_name = $("#company_name").val();
 
 
@@ -217,7 +249,7 @@
 				dataType: "json",
 				async: false,
 				cache: false,
-				data: {mon, company_name, vctype1},
+				data: {from_date,to_date, company_name, vctype1},
 				success: function (result) {
 					var data = result.data;
 					console.log(data);
@@ -245,8 +277,10 @@
 				console.log(data);
 				if (result.status === 'true') {
 					$('#company_name').html(data);
+					$('#company_name').select2();
 				} else {
 					$('#company_name').html(data);
+					$('#company_name').select2();
 				}
 			},
 		});
@@ -275,7 +309,7 @@
 	}
 
 	function get_ledger_list(id) {
-
+		get_stockItems_list('00');
 		var company_name = $("#company_name").val();
 		$.ajax({
 			type: "POST",
@@ -294,6 +328,7 @@
 					$('#' + id).html(data);
 
 				}
+				$('#' + id).select2();
 
 			},
 		});
@@ -313,12 +348,14 @@
 				console.log(data);
 				if (result.status === 'true') {
 					$('#ledger0').html(data);
+					$('#ledger0').select2();
 					$('#bank_name').html(data);
 					$('#taxname1').html(data);
 					$('#party_ledger').html(data);
 
 				} else {
 					$('#ledger0').html(data);
+					$('#ledger0').select2();
 					$('#bank_name').html(data);
 					$('#taxname0').html(data);
 					$('#taxname1').html(data);
@@ -346,26 +383,27 @@
 				'</div>' +
 				'<div class="col-sm-8" style="padding: 5px">' +
 				' <label for="group-name" class=" control-label">Item Name</label>' +
-				'<input type="text" class="form-control" id="item_name" placeholder="Item Name" name="item_name' + id + '[]" >' +
+				'<select id="item_name'+id+div_count+'" class="form-control disvc" name="item_name' + id + '[]"> <option>Select Value</option> </select>' +
 				'</div>' +
 				'<div class="row">'+
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Quantity</label>' +
-				'<input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity' + id + '[]" >' +
+				'<input type="text" class="form-control disvc" id="quantity'+id+div_count+'" placeholder="Quantity" name="quantity' + id + '[]" onkeyup="getFinalAmount(\''+id+div_count+'\')">' +
 				'</div>' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Rate</label>' +
-				'<input type="text" class="form-control" id="rate" placeholder="Rate" name="rate' + id + '[]" >' +
+				'<input type="text" class="form-control disvc" id="rate'+id+div_count+'" placeholder="Rate" name="rate' + id + '[]" onkeyup="getFinalAmount(\''+id+div_count+'\')">' +
 				' </div>' +
 				'<div class="col-sm-4">' +
 				' <label for="group-name" class=" control-label">Amount</label>' +
-				'<input type="text" class="form-control" id="amt" placeholder="Amount" name="amt' + id + '[]" >' +
+				'<input type="text" class="form-control" id="amt'+id+div_count+'" placeholder="Amount" name="amt' + id + '[]" >' +
 				'</div>' +
 				'</div>' +
 				'</div>';
 		$('#dynamic_div' + id).append(task_data1);
 
 		$('#div_count').val(div_count);
+		get_stockItems_list(''+ id +div_count);
 	}
 
 	function repeat_div1() {
@@ -401,26 +439,26 @@
 				'</div>' +
 				'<div class="col-sm-8" style="padding: 5px;">' +
 				'<label for="group-name" class=" control-label">Item Name</label>' +
-				'<input type="text" class="form-control" id="item_name" placeholder="Item Name" name="item_name' + div_count1 + '[]" >' +
+				'<select id="item_name'+div_count1+'" class="form-control disvc" name="item_name' + div_count1 + '[]"> <option>Select Value</option> </select>' +
 				' </div>' +
 				'<div class="row">'+
 				'<div class="col-sm-4">' +
 				' <label for="group-name" class=" control-label">Quantity</label>' +
-				'<input type="text" class="form-control" id="quantity" placeholder="Quantity" name="quantity' + div_count1 + '[]" >' +
+				'<input type="text" class="form-control disvc" id="quantity'+div_count1+'" placeholder="Quantity" name="quantity' + div_count1 + '[]" onkeyup="getFinalAmount(\''+div_count1+'\')" >' +
 				'</div>' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Rate</label>' +
-				'<input type="text" class="form-control" id="rate" placeholder="Rate" name="rate' + div_count1 + '[]" >' +
+				'<input type="text" class="form-control disvc" id="rate'+div_count1+'" placeholder="Rate" name="rate' + div_count1 + '[]" onkeyup="getFinalAmount(\''+div_count1+'\')" >' +
 				'</div>' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Amount</label>' +
-				'<input type="text" class="form-control" id="amt" placeholder="Amount" name="amt' + div_count1 + '[]" >' +
+				'<input type="text" class="form-control" id="amt'+div_count1+'" placeholder="Amount" name="amt' + div_count1 + '[]" >' +
 				'</div>' +
 				'</div>' +
 				'</div>' +
 				'<div id="dynamic_div' + div_count1 + '"></div>' +
 				'<div class="col-sm-12"><br>' +
-				'<button type="button" class="btn btn-link" style="outline: none;" onclick="repeat_div(' + div_count1 + ')">Add Entries <i class="fa fa-plus"></i></button>' +
+				'<button type="button" class="btn btn-link disvc" style="outline: none;" onclick="repeat_div(' + div_count1 + ')">Add Entries <i class="fa fa-plus"></i></button>' +
 				' </div>';
 
 
@@ -429,7 +467,35 @@
 		get_ledger_list('ledger' + div_count1);
 		$('#div_count1').val(div_count1);
 		$('#tax_inp').val(tax_inp);
+		disabledClicks();
+		get_stockItems_list(div_count1);
 
+	}
+
+	function get_stockItems_list(id) {
+		var company_name = $("#company_name").val();
+		console.log(id);
+		$.ajax({
+			type: "POST",
+			url: "<?= base_url("ImportController/get_stockItems") ?>",
+			dataType: "json",
+			async: false,
+			cache: false,
+			data: {
+				company_name
+			},
+			success: function(result) {
+				var data = result.group_list;
+				console.log(data);
+				if (result.status === 'true') {
+					$('#item_name' + id).html(data);
+					$('#item_name' + id).select2();
+				} else {
+					$('#item_name' + id).html(data);
+					$('#item_name' + id).select2();
+				}
+			},
+		});
 	}
 
 </script>

@@ -20,8 +20,7 @@
 <div class="" style="padding:8px;background-color:#ffffff;">
 	<form class="form-horizontal" id="add_led_form" method="post" action="">
 		<div class="row">
-			<div class="col-sm-2"></div>
-			<div class="col-sm-8">
+			<div class="col-sm-6">
 				<div class="col-sm-12">
 					<div class="form-group">
 						<label for="group-name">Company Name</label>
@@ -67,25 +66,46 @@
 						</select>
 					</div>
 				</div>
-			</div>
-			<div class="col-sm-2"></div>
-
-			<div class="form-group w-100 mt-3">
-				<div class="col-sm-12" align="center">
-					<button type="button" onclick="insert_ledger()" class="btn btn-primary">Insert</button>
+				<div class="form-group w-100 mt-3">
+					<div class="col-sm-12" align="center">
+						<button type="button" onclick="insert_ledger()" class="btn btn-primary">Insert</button>
+					</div>
 				</div>
 			</div>
+			<div class="card-title col-lg-6">
+				<h5 class="card-header">
+					View Ledgers Vochers
+				</h5>
+				<div class="form-group">
+					<label for="item-name">Parent</label>
+					<select id='ledger_id1' class="form-control" name='ledger_id1' >
+						<option>Select Ledger</option>
+					</select>
+
+				</div>
+				<div class="">
+					<label>From Date:</label>
+					<input type="date" id="fromDate" name="fromDate" class="form-control">
+				</div>
+				<div class="">
+					<label>To Date:</label>
+					<input type="date" id="toDate" name="toDate" class="form-control">
+				</div><br>
+				<div class="">
+					<button type="button" class="btn btn-primary" onclick="getLedgerData()">View</button>
+				</div>
+				<div id="ledger_Details"></div>
+			</div>
+
+
+
 		</div>
 	</form>
 </div>
-<!-- <div class="card-title">
-		<h5 class="card-header">
-			View Ledgers
-		</h5>
-	</div>
+
 <div id="ledger_list" style="padding:8px;background-color:#ffffff;">
 
-</div> -->
+</div>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 
 
@@ -107,9 +127,11 @@
 				console.log(data);
 				if (result.status === 'true') {
 					$('#company_name').html(data);
+					$('#company_name').select2();
 
 				} else {
 					$('#company_name').html(data);
+					$('#company_name').select2();
 
 				}
 			},
@@ -153,11 +175,65 @@
 				console.log(data);
 				if (result.status === 'true') {
 					$('#ledger_id').html(data);
+					$('#ledger_id').select2();
 				} else {
 					$('#ledger_id').html(data);
+					$('#ledger_id').select2();
 				}
 			},
 		});
+		var company_name = $("#company_name").val();
+		$.ajax({
+			type: "POST",
+			url: "<?= base_url("ImportController/get_ledgers") ?>",
+			dataType: "json",
+			async: false,
+			cache: false,
+			data: {company_name},
+			success: function (result) {
+				var data = result.ledger_list;
+				console.log(data);
+				if (result.status === 'true') {
+					$('#ledger_id1').html(data);
+					$('#ledger_id1').select2();
+				} else {
+					$('#ledger_id1').html(data);
+					$('#ledger_id1').select2();
+				}
+
+			},
+		});
+	}
+
+	function getLedgerData(value) {
+		var company_name = $("#company_name").val();
+		var value = $("#ledger_id1").val();
+		var fromDate = $("#fromDate").val();
+		var toDate = $("#toDate").val();
+		if(value == "" || fromDate== "" || toDate==""){
+			alert("Company Name,From Date and To Date are Mandatory!!");
+		}else{
+			$.ajax({
+				type: "POST",
+				url: "<?= base_url("ExportController/get_ledger_details") ?>",
+				dataType: "json",
+				async: false,
+				cache: false,
+				data: {company_name,value,fromDate,toDate},
+				success: function (result) {
+					var data = result.data;
+					console.log(data);
+					if (result.status === 'true') {
+						$('#ledger_Details').html(data);
+
+					} else {
+						$('#ledger_Details').html(data);
+
+					}
+				},
+			});
+		}
+
 	}
 
 	function insert_ledger() {

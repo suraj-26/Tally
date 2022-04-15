@@ -140,7 +140,41 @@ class LoginController extends CI_Controller
 		}
 		echo json_encode($response);
 	}
+	public function loginFromOtherWebsite(){
+		$username = $this->input->post_get("username");
+		$firm_id='';
+		//get Password
+		$q=$this->db->query("select password from user_header_all where email='".$username."'");
+		if ($this->db->affected_rows() > 0) {
+			$password = $q->row()->password;
+			$this->load->model("UserModel");
+			$resultData = $this->UserModel->login($username, $password, $firm_id);
+			if ($resultData["status"] == 200) {
+				$this->session->user_session = $resultData["body"];
+				$this->session->planner_and_shedular = $resultData["planner_and_shedular"];
+				$this->session->task_permission = $resultData["task_permission"];
+				$this->session->designation_permission = $resultData["designation_permission"];
+				$this->session->service_offering_permission = $resultData["service_offering_permission"];
+				$this->session->invoice_mgt_permission = $resultData["invoice_mgt_permission"];
+				$response["email"] = $resultData["body"]->email;
+				$response["status"] = 200;
+				$response["body"] = $resultData["body"];
+				header("Location:".base_url('home'));
+			} else if ($resultData["status"] == 202) {
+				$response["status"] = 202;
+				$response["body"] = $resultData["body"];
+			} else if ($resultData["status"] == 201) {
+				$response["status"] = 202;
+				$response["body"] = $resultData["body"];
+			} else {
+				$response = $resultData;
+			}
 
+		} else {
+			$response["status"] = 201;
+			$response["body"] = "Invalid Parameter";
+		}
+	}
 	function GetPayrollData($email)
 	{
 		$this->db4 = $this->load->database('db4', TRUE);

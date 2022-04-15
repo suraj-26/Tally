@@ -9,7 +9,7 @@ class ExportController extends CI_Controller {
 		$this->load->helper('url');
 	}
 
-	public $url = "65.2.57.255:9000";
+	public $url = SERVER_IP;
 
 	/**
 	 * Index Page for this controller.
@@ -39,13 +39,14 @@ class ExportController extends CI_Controller {
 	}
 
 	public function exportgeneral(){
-		$mon=$this->input->post('mon');
+		$from_date=$this->input->post('from_date');
+		$to_date=$this->input->post('to_date');
 		$company_id=$this->input->post('company_name');
-		$mon = str_pad($mon, 2, "0", STR_PAD_LEFT);
+		/*$mon = str_pad($mon, 2, "0", STR_PAD_LEFT);
 		$year = date("Y");
 		$a_date = $year."-".$mon."-01";
 		$last_date= date("Ymt", strtotime($a_date));
-		$a_date = $year.$mon."01";
+		$a_date = $year.$mon."01";*/
 		$requestXML='<!--Option: Gateway of Tally @Display @Account Books @Journal Register-->
 <ENVELOPE>
 <HEADER>
@@ -57,8 +58,9 @@ class ExportController extends CI_Controller {
 <STATICVARIABLES>
             <SVCURRENTCOMPANY>{'.$company_id.'}</SVCURRENTCOMPANY>
 <!--Specify the Period here-->
-<SVFROMDATE>'.$a_date.'</SVFROMDATE>
-<SVTODATE>'.$last_date.'</SVTODATE>
+<SVFROMDATE>'.date('d-M-Y',strtotime($from_date)).'</SVFROMDATE>
+<SVTODATE>'.date('d-M-Y',strtotime($to_date)).'</SVTODATE>
+
 
 <VOUCHERTYPENAME>Journal</VOUCHERTYPENAME>
 
@@ -95,14 +97,15 @@ class ExportController extends CI_Controller {
 		}echo json_encode($response);
 	}
 	public function exportsalepurchase(){
-		$mon=$this->input->post('mon');
+		$from_date=$this->input->post('from_date');
+		$to_date=$this->input->post('to_date');
 		$company_id=$this->input->post('company_name');
 		$vctype1=$this->input->post('vctype1');
-		$mon = str_pad($mon, 2, "0", STR_PAD_LEFT);
+		/*$mon = str_pad($mon, 2, "0", STR_PAD_LEFT);
 		$year = date("Y");
 		$a_date = $year."-".$mon."-01";
 		$last_date= date("Ymt", strtotime($a_date));
-		$a_date = $year.$mon."01";
+		$a_date = $year.$mon."01";*/
 		$requestXML='<!--Option: Gateway of Tally @Display @Account Books @Journal Register-->
 <ENVELOPE>
 <HEADER>
@@ -113,17 +116,17 @@ class ExportController extends CI_Controller {
 <REQUESTDESC>
 <STATICVARIABLES>
             <SVCURRENTCOMPANY>{'.$company_id.'}</SVCURRENTCOMPANY>
-<!--Specify the Period here-->
-<SVFROMDATE>'.$a_date.'</SVFROMDATE>
-<SVTODATE>'.$last_date.'</SVTODATE>
-
-<VOUCHERTYPENAME>'.$vctype1.'</VOUCHERTYPENAME>
+            <VOUCHERTYPENAME>'.$vctype1.'</VOUCHERTYPENAME>
 
 <!--Detailed or Condensed Format-->
 <EXPLODEFLAG>Yes</EXPLODEFLAG>
 
 <!--Specify the Report FORMAT here-->
 <SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
+<!--Specify the Period here-->
+<SVFROMDATE>'.date('d-M-Y',strtotime($from_date)).'</SVFROMDATE>
+<SVTODATE>'.date('d-M-Y',strtotime($to_date)).'</SVTODATE>
+
 </STATICVARIABLES>
 
 <!--Specify the Report Name here-->
@@ -132,6 +135,7 @@ class ExportController extends CI_Controller {
 </EXPORTDATA>
 </BODY>
 </ENVELOPE>';
+
 		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
 
 		$ch = curl_init();
@@ -171,11 +175,248 @@ class ExportController extends CI_Controller {
 <!--$$SysName:HTML-->
 
 </STATICVARIABLES>
-<REPORTNAME>Balance Sheet</REPORTNAME>
+<REPORTNAME>Balance Sheet </REPORTNAME>
 </REQUESTDESC>
 </EXPORTDATA>
 </BODY>
 </ENVELOPE>
+    ';
+		//$server = '192.168.1.25:9000';
+		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $this->url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
+
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		$data = curl_exec($ch);
+
+
+//var_dump($data);
+//echo '<pre>', htmlentities($data), '</pre>';
+
+
+		if (curl_errno($ch)) {
+			print curl_error($ch);
+			echo "  something went wrong..... try later";
+			$response['data'] = $data;
+		} else {
+			$response['data'] = $data;
+		}echo json_encode($response);
+	}
+	public function getListOFAccounts() {
+		$company_id = $this->input->post('company_name');
+		$requestXML = '<ENVELOPE>
+<HEADER>
+<TALLYREQUEST>Export Data</TALLYREQUEST>
+</HEADER>
+<BODY>
+<EXPORTDATA>
+<REQUESTDESC>
+<STATICVARIABLES>
+
+<!--To Fetch data in XML format-->
+<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+<SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
+
+<!--To Fetch data in HTML format, change the SVEXPORTFORMAT Tag value as -->
+<!--$$SysName:HTML-->
+
+</STATICVARIABLES>
+<REPORTNAME>List of Accounts</REPORTNAME>
+</REQUESTDESC>
+</EXPORTDATA>
+</BODY>
+</ENVELOPE>
+    ';
+		//$server = '192.168.1.25:9000';
+		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $this->url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
+
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		$data = curl_exec($ch);
+
+
+//var_dump($data);
+//echo '<pre>', htmlentities($data), '</pre>';
+
+
+		if (curl_errno($ch)) {
+			print curl_error($ch);
+			echo "  something went wrong..... try later";
+			$response['data'] = $data;
+		} else {
+			$response['data'] = $data;
+		}echo json_encode($response);
+	}
+	public function get_DayBook() {
+		$company_id = $this->input->post('company_name');
+		$toDate = $this->input->post('toDate');
+		$fromDate = $this->input->post('fromDate');
+		 $toDate=date('d-M-Y',strtotime($toDate));
+		 $fromDate=date('d-M-Y',strtotime($fromDate));
+		$requestXML = '<ENVELOPE>
+<HEADER>
+<TALLYREQUEST>Export Data</TALLYREQUEST>
+</HEADER>
+<BODY>
+<EXPORTDATA>
+<REQUESTDESC>
+<STATICVARIABLES>
+<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+<SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
+<!--Specify the Period here-->
+<SVFROMDATE>'.$fromDate.'</SVFROMDATE>
+<SVTODATE>'.$toDate.'</SVTODATE>
+</STATICVARIABLES>
+<!--Specify the Report Name here-->
+<REPORTNAME>Voucher Register</REPORTNAME>
+</REQUESTDESC>
+</EXPORTDATA>
+</BODY>
+</ENVELOPE>
+    ';
+		//$server = '192.168.1.25:9000';
+		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $this->url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
+
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		$data = curl_exec($ch);
+
+
+//var_dump($data);
+//echo '<pre>', htmlentities($data), '</pre>';
+
+
+		if (curl_errno($ch)) {
+			print curl_error($ch);
+			echo "  something went wrong..... try later";
+			$response['data'] = $data;
+		} else {
+			$response['data'] = $data;
+		}echo json_encode($response);
+	}
+
+	public function get_TrialBalance() {
+		$company_id = $this->input->post('company_name');
+		$toDate = $this->input->post('toDate');
+		$fromDate = $this->input->post('fromDate');
+		 $toDate=date('d-M-Y',strtotime($toDate));
+		 $fromDate=date('d-M-Y',strtotime($fromDate));
+		$requestXML = '
+<!--THIS WILL FETCH TRIAL BALANCE DETAILS PROGRAMMATICALLY-->
+<!--WHICH IS EQUIVALENT TO USING THE FOLLOWING OPTION MANUALLY IN TALLY-->
+<!--OPTION:-->
+<!--Gateway of Tally @Display @Trial Balance-->
+<ENVELOPE>
+<HEADER>
+<TALLYREQUEST>Export Data</TALLYREQUEST>
+</HEADER>
+<BODY>
+<EXPORTDATA>
+<REQUESTDESC>
+<!--Specify the Report Name here-->
+<REPORTNAME>Trial Balance</REPORTNAME>
+<STATICVARIABLES>
+<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+<SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
+<SVFROMDATE>'.$fromDate.'</SVFROMDATE>
+<SVTODATE>'.$toDate.'</SVTODATE>
+</STATICVARIABLES>
+</REQUESTDESC>
+</EXPORTDATA>
+</BODY>
+</ENVELOPE>
+
+    ';
+		//$server = '192.168.1.25:9000';
+		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $this->url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
+
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		$data = curl_exec($ch);
+
+
+//var_dump($data);
+//echo '<pre>', htmlentities($data), '</pre>';
+
+
+		if (curl_errno($ch)) {
+			print curl_error($ch);
+			echo "  something went wrong..... try later";
+			$response['data'] = $data;
+		} else {
+			$response['data'] = $data;
+		}echo json_encode($response);
+	}
+	public function get_AccountBook() {
+		$company_id = $this->input->post('company_name');
+		$toDate = $this->input->post('toDate');
+		$fromDate = $this->input->post('fromDate');
+		$reportName = $this->input->post('reportName');
+		$ledger = $this->input->post('ledger');
+		$x='';
+		if($ledger != ""){
+			$x='<STOCKITEM>' . $ledger . '</STOCKITEM> ';
+		}
+
+		$exp=explode('-',$reportName);
+		$reportName=$exp[0];
+		$voucherType='';
+		if(array_key_exists(1,$exp)){
+			$voucherType=$exp[1];
+		}
+
+		 $toDate=date('d-M-Y',strtotime($toDate));
+		 $fromDate=date('d-M-Y',strtotime($fromDate));
+		$requestXML = '
+<!--THIS WILL FETCH TRIAL BALANCE DETAILS PROGRAMMATICALLY-->
+<!--WHICH IS EQUIVALENT TO USING THE FOLLOWING OPTION MANUALLY IN TALLY-->
+<!--OPTION:-->
+<!--Gateway of Tally @Display @Trial Balance-->
+<ENVELOPE>
+<HEADER>
+<TALLYREQUEST>Export Data</TALLYREQUEST>
+</HEADER>
+<BODY>
+<EXPORTDATA>
+<REQUESTDESC>
+<!--Specify the Report Name here-->
+<REPORTNAME>'.$reportName.'</REPORTNAME>
+<STATICVARIABLES>
+<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+<SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
+<SVFROMDATE>'.$fromDate.'</SVFROMDATE>
+<SVTODATE>'.$toDate.'</SVTODATE>
+<VOUCHERTYPENAME>'.$voucherType.'</VOUCHERTYPENAME>
+'.$x.'
+</STATICVARIABLES>
+</REQUESTDESC>
+</EXPORTDATA>
+</BODY>
+</ENVELOPE>
+
     ';
 		//$server = '192.168.1.25:9000';
 		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
@@ -277,6 +518,67 @@ class ExportController extends CI_Controller {
     </EXPORTDATA>
   </BODY>
 </ENVELOPE>
+    ';
+
+		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $this->url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
+
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		$data = curl_exec($ch);
+
+
+//var_dump($data);
+//echo '<pre>', htmlentities($data), '</pre>';
+
+
+		if (curl_errno($ch)) {
+			print curl_error($ch);
+			echo "  something went wrong..... try later";
+			$response['data'] = $data;
+		} else {
+			$response['data'] = $data;
+		}echo json_encode($response);
+	}
+	public function get_ledger_details() {
+		$company_id = $this->input->post('company_name');
+		$ledger_value = $this->input->post('value');
+		$toDate = $this->input->post('toDate');
+		$fromDate = $this->input->post('fromDate');
+		$toDate=date('d-M-Y',strtotime($toDate));
+		$fromDate=date('d-M-Y',strtotime($fromDate));
+		$requestXML = '
+<ENVELOPE> 
+<HEADER> 
+<TALLYREQUEST>Export Data</TALLYREQUEST> 
+</HEADER> 
+<BODY> 
+<EXPORTDATA> 
+<REQUESTDESC> 
+<STATICVARIABLES> 
+<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+<SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
+<!-- Specify the period here -->
+<SVFROMDATE>'.$fromDate.'</SVFROMDATE>
+<SVTODATE>'.$toDate.'</SVTODATE>
+
+<!-- F12 @ Show billwise is set to Yes -->
+<DBBILLEXPLODEFLAG>YES</DBBILLEXPLODEFLAG>
+
+<!-- Specify the Ledger Name here -->
+<LEDGERNAME>' . $ledger_value . '</LEDGERNAME> 
+
+</STATICVARIABLES>
+<REPORTNAME>Ledger Vouchers</REPORTNAME>
+</REQUESTDESC> 
+</EXPORTDATA> 
+</BODY> 
+</ENVELOPE> 
     ';
 
 		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");

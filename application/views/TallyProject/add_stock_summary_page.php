@@ -60,6 +60,16 @@
 				</div>
 			</div>
 		</div>
+		<div class="form-group" >
+			<div class="col-sm-12">
+				<div class="col-sm-8 m-auto">
+					<label for="item-name" class="control-label mb-1">Unit Of Measure</label>
+					<select id='unitofM' class="form-control" name='unitofM'>
+						<option>Select Unit Of Measure</option>
+					</select>
+				</div>
+			</div>
+		</div>
 
 
 		<div class="form-group">
@@ -156,11 +166,13 @@
 				if (result.status === 'true') {
 					$('#stckcompany_name').html('');
 					$('#company_namestk').html(data);
+					$('#company_namestk').select2();
 					$('#stckcompany_name').html(data);
 
 				} else {
 					$('#stckcompany_name').html('');
 					$('#company_namestk').html(data);
+					$('#company_namestk').select2();
 					$('#stckcompany_name').html(data);
 
 				}
@@ -171,7 +183,7 @@
 
 	function get_stockgrp_list() {
 		var company_name = $("#company_namestk").val();
-
+		get_unit_list();
 		$.ajax({
 			type: "POST",
 			url: "<?= base_url("ImportController/get_stockgroups") ?>",
@@ -186,8 +198,35 @@
 				console.log(data);
 				if (result.status === 'true') {
 					$('#stock_group').html(data);
+					$('#stock_group').select2();
 				} else {
 					$('#stock_group').html(data);
+					$('#stock_group').select2();
+				}
+			},
+		});
+	}
+	function get_unit_list() {
+		var company_name = $("#company_namestk").val();
+
+		$.ajax({
+			type: "POST",
+			url: "<?= base_url("ImportController/getUnitofMeasure") ?>",
+			dataType: "json",
+			async: false,
+			cache: false,
+			data: {
+				company_name
+			},
+			success: function(result) {
+				var data = result.unit_list;
+				console.log(data);
+				if (result.status === 'true') {
+					$('#unitofM').html(data);
+					$('#unitofM').select2();
+				} else {
+					$('#unitofM').html(data);
+					$('#unitofM').select2();
 				}
 			},
 		});

@@ -11,7 +11,7 @@ class ImportController extends CI_Controller
 		$this->load->helper('url');
 	}
 
-	public $url = "65.2.57.255:9000";
+	public $url = SERVER_IP;
 
 	public function import_legder()
 	{
@@ -28,14 +28,15 @@ class ImportController extends CI_Controller
 		$this->load->view('Import_data/create_stock_summary');
 	}
 
-	function customer_account(){
+	function customer_account()
+	{
 
 
 		$useragent = $_SERVER['HTTP_USER_AGENT'];
 
-		if(preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"])){
+		if (preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"])) {
 			$data["load_view"] = array("Invoice_management/customer_account_mobile.php");
-			$this->load->view('TallyProject/main_page_mobile.php',$data);
+			$this->load->view('TallyProject/main_page_mobile.php', $data);
 
 		} else {
 			$data["load_view"] = array("Invoice_management/customer_account.php");
@@ -194,6 +195,132 @@ class ImportController extends CI_Controller
 		}
 		//   $this->load->view('TallyProject/receipt_voucher');
 	}
+	public function dayBook($id = '')
+	{
+		$data['file_id'] = $id;
+		$useragent = $_SERVER['HTTP_USER_AGENT'];
+		if (preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"])) {
+			$data["load_view"] = array("TallyProject/dayBookPage.php");
+			$this->load->view('TallyProject/main_page_mobile.php', $data);
+		} else {
+			$data["load_view"] = array("TallyProject/dayBookPage.php");
+			$this->load->view("TallyProject/main_page.php", $data);
+
+		}
+		//   $this->load->view('TallyProject/receipt_voucher');
+	}
+	public function trialBalance($id = '')
+	{
+		$data['file_id'] = $id;
+		$useragent = $_SERVER['HTTP_USER_AGENT'];
+		if (preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"])) {
+			$data["load_view"] = array("TallyProject/trialBalance.php");
+			$this->load->view('TallyProject/main_page_mobile.php', $data);
+		} else {
+			$data["load_view"] = array("TallyProject/trialBalance.php");
+			$this->load->view("TallyProject/main_page.php", $data);
+
+		}
+		//   $this->load->view('TallyProject/receipt_voucher');
+	}
+	public function accountBook($id = '')
+	{
+		$data['file_id'] = $id;
+		$useragent = $_SERVER['HTTP_USER_AGENT'];
+		if (preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"])) {
+			$data["load_view"] = array("TallyProject/accountBook.php");
+			$this->load->view('TallyProject/main_page_mobile.php', $data);
+		} else {
+			$data["load_view"] = array("TallyProject/accountBook.php");
+			$this->load->view("TallyProject/main_page.php", $data);
+
+		}
+		//   $this->load->view('TallyProject/receipt_voucher');
+	}
+	public function statementAccount($id = '')
+	{
+		$data['file_id'] = $id;
+		$useragent = $_SERVER['HTTP_USER_AGENT'];
+		if (preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"])) {
+			$data["load_view"] = array("TallyProject/statementAccount.php");
+			$this->load->view('TallyProject/main_page_mobile.php', $data);
+		} else {
+			$data["load_view"] = array("TallyProject/statementAccount.php");
+			$this->load->view("TallyProject/main_page.php", $data);
+
+		}
+		//   $this->load->view('TallyProject/receipt_voucher');
+	}
+	public function inventoryBooks($id = '')
+	{
+		$data['file_id'] = $id;
+		$useragent = $_SERVER['HTTP_USER_AGENT'];
+		if (preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"])) {
+			$data["load_view"] = array("TallyProject/inventoryBooks.php");
+			$this->load->view('TallyProject/main_page_mobile.php', $data);
+		} else {
+			$data["load_view"] = array("TallyProject/inventoryBooks.php");
+			$this->load->view("TallyProject/main_page.php", $data);
+
+		}
+		//   $this->load->view('TallyProject/receipt_voucher');
+	}
+	public function statementsInventory($id = '')
+	{
+		$data['file_id'] = $id;
+		$useragent = $_SERVER['HTTP_USER_AGENT'];
+		if (preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"])) {
+			$data["load_view"] = array("TallyProject/statementsInventory.php");
+			$this->load->view('TallyProject/main_page_mobile.php', $data);
+		} else {
+			$data["load_view"] = array("TallyProject/statementsInventory.php");
+			$this->load->view("TallyProject/main_page.php", $data);
+
+		}
+		//   $this->load->view('TallyProject/receipt_voucher');
+	}
+	public function cashfundflow($id = '')
+	{
+		$data['file_id'] = $id;
+		$useragent = $_SERVER['HTTP_USER_AGENT'];
+		if (preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"])) {
+			$data["load_view"] = array("TallyProject/cashfundflow.php");
+			$this->load->view('TallyProject/main_page_mobile.php', $data);
+		} else {
+			$data["load_view"] = array("TallyProject/cashfundflow.php");
+			$this->load->view("TallyProject/main_page.php", $data);
+
+		}
+		//   $this->load->view('TallyProject/receipt_voucher');
+	}
+	public function listofAccounts($id = '')
+	{
+		$data['file_id'] = $id;
+		$useragent = $_SERVER['HTTP_USER_AGENT'];
+		if (preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"])) {
+			$data["load_view"] = array("TallyProject/listofAccounts.php");
+			$this->load->view('TallyProject/main_page_mobile.php', $data);
+		} else {
+			$data["load_view"] = array("TallyProject/listofAccounts.php");
+			$this->load->view("TallyProject/main_page.php", $data);
+
+		}
+		//   $this->load->view('TallyProject/receipt_voucher');
+	}
+	public function exceptionReport($id = '')
+	{
+		$data['file_id'] = $id;
+		$useragent = $_SERVER['HTTP_USER_AGENT'];
+		if (preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"])) {
+			$data["load_view"] = array("TallyProject/exceptionReport.php");
+			$this->load->view('TallyProject/main_page_mobile.php', $data);
+		} else {
+			$data["load_view"] = array("TallyProject/exceptionReport.php");
+			$this->load->view("TallyProject/main_page.php", $data);
+
+		}
+		//   $this->load->view('TallyProject/receipt_voucher');
+	}
 
 	public function create_voucher()
 	{
@@ -342,9 +469,11 @@ class ImportController extends CI_Controller
 							foreach ($r1 as $r2) {
 								foreach ($r2['LEDGER'] as $d) {
 									foreach ($d as $d1) {
-										//var_dump($d1['NAME']);
+										//var_dump($d1);
+
 										if (array_key_exists('NAME', $d1)) {
 											$opt = $d1['NAME'];
+
 											$option .= "<option value='" . $opt . "'>" . $opt . "</option>";
 										}
 									}
@@ -405,7 +534,7 @@ class ImportController extends CI_Controller
       <COUNTRYOFRESIDENCE>India</COUNTRYOFRESIDENCE>
       <PARTYGSTIN>' . $gst . '</PARTYGSTIN>
       <LEDSTATENAME>Maharashtra</LEDSTATENAME>
-      <INVENTORIESVALUEAFFECTED>'.$inventoryValuesAffected.'</INVENTORIESVALUEAFFECTED>
+      <INVENTORIESVALUEAFFECTED>' . $inventoryValuesAffected . '</INVENTORIESVALUEAFFECTED>
       <LANGUAGENAME.LIST>
        <NAME.LIST TYPE="String">
         <NAME>' . $ledger_name . '</NAME>
@@ -569,7 +698,7 @@ XML; */
 	public function get_stockgroups()
 	{
 		$company_id = $this->input->post('company_name');
-
+//<ID>List of Stock Groups</ID>
 		$requestXML = '<ENVELOPE>
 <HEADER>
 <VERSION>1</VERSION>
@@ -577,7 +706,8 @@ XML; */
 
 <TYPE>Collection</TYPE>
 
-<ID>List of Stock Groups</ID>
+
+	<ID>List of Stock Groups</ID>
      </HEADER>
 
     <BODY>
@@ -654,36 +784,33 @@ XML; */
 		$response['group_list'] = $option;
 		echo json_encode($response);
 	}
-	public function get_stockItems()
+
+	public function getUnitofMeasure()
 	{
 		$company_id = $this->input->post('company_name');
-
-		$requestXML='
-		<ENVELOPE>
-<HEADER>
-<VERSION>1</VERSION>
-<TALLYREQUEST>Export</TALLYREQUEST>
-<TYPE>Data</TYPE>
-<ID>Stock Summary</ID>
-</HEADER>
-<BODY>
-<DESC>
-<STATICVARIABLES>
-<EXPLODEFLAG>Yes</EXPLODEFLAG>
-       
-<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
-</STATICVARIABLES>
-<TDL>
-  <TDLMESSAGE>
-   <REPORT NAME="Stock Summary" ISMODIFY="Yes" ISFIXED="No" ISINITIALIZE="No" ISOPTION="No" ISINTERNAL="No">
-    <SET>IsItemWise: Yes</SET>
-   </REPORT>
-  </TDLMESSAGE>
-</TDL>
-</DESC>
-</BODY>
-</ENVELOPE>';
-
+		$requestXML =
+			"<ENVELOPE>" .
+			"<HEADER>" .
+			"<TALLYREQUEST>Export Data</TALLYREQUEST>" .
+			"</HEADER>" .
+			"<BODY>" .
+			"<EXPORTDATA>" .
+			"<REQUESTDESC>" .
+			"<REPORTNAME>List of Accounts</REPORTNAME>" .
+			"<STATICVARIABLES>" .
+			"<SVEXPORTFORMAT>\$\$SysName:XML</SVEXPORTFORMAT>" .
+			"<ACCOUNTTYPE>Units</ACCOUNTTYPE>" .
+			"<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>" .
+			"<!--Other possible values for ACCOUNTTYPE tag are given below-->" .
+			"<!--All Acctg. Masters, All Inventory Masters,All Statutory Masters-->" .
+			"<!--Ledgers,Groups,Cost Categories,Cost Centres-->" .
+			"<!--Units,Godowns,Stock Items,Stock Groups,Stock Categories-->" .
+			"<!--Voucher types,Currencies,Employees,Budgets & Scenarios-->" .
+			"</STATICVARIABLES>" .
+			"</REQUESTDESC>" .
+			"</EXPORTDATA>" .
+			"</BODY>" .
+			"</ENVELOPE>";
 		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
 
 		$ch = curl_init();
@@ -698,7 +825,6 @@ XML; */
 
 		$data = str_replace("", "", $data);
 		$data = str_replace('&#4;', '', $data);
-
 		if (curl_errno($ch)) {
 			print curl_error($ch);
 			echo "  something went wrong..... try later";
@@ -711,7 +837,7 @@ XML; */
 			$array = json_decode($json, TRUE);
 
 			$p = 1;
-			$option = "<option>Select Item</option>";
+			$option = "<option>Select Unit Of Measure</option>";
 
 			foreach ($array as $row) {
 
@@ -720,12 +846,108 @@ XML; */
 				$newarr = $row;
 				$m = 0;
 				foreach ($newarr as $r1) {
-					if (array_key_exists('DSPDISPNAME', $r1)) {
-						$option .= "<option value='" . $r1['DSPDISPNAME'] . "'>" . $r1['DSPDISPNAME'] . "</option>";
+					if (is_array($r1)) {
+						foreach ($r1 as $k) {
+							foreach ($k as $m){
+								if (is_array($m)) {
+									foreach ($m as $n){
+										if(is_array($n)){
+											foreach ($n as $i){
+												if(array_key_exists("@attributes",$i)){
+													$arr=$i["@attributes"];
+													foreach ($arr as $r2){
+														if($r2 != ""){
+															$option .= "<option value='".$r2."'>".$r2."</option>";
+														}
+													}
+												}
+
+											}
+										}
+									}
+								}
+							}
+						}
 					}
-					$m++;
+
 				}
 			}
+		}
+		$response['unit_list'] = $option;
+		echo json_encode($response);
+
+	}
+
+	public function get_stockItems()
+	{
+		$company_id = $this->input->post('company_name');
+$requestXML = '
+		<ENVELOPE>
+<HEADER>
+    <VERSION>1</VERSION>
+    <TALLYREQUEST>Export</TALLYREQUEST>
+    <TYPE>Collection</TYPE>
+    <ID>Custom List of StockItems</ID>
+</HEADER>
+
+<BODY>
+<DESC>
+<STATICVARIABLES>
+<EXPLODEFLAG>Yes</EXPLODEFLAG>
+       
+<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+</STATICVARIABLES>
+ <TDL>
+            <TDLMESSAGE>
+                <COLLECTION ISMODIFY="No" ISFIXED="No" ISINITIALIZE="Yes" ISOPTION="No" ISINTERNAL="No" NAME="Custom List of StockItems">
+                    <TYPE>StockItem</TYPE>
+                    <NATIVEMETHOD>Name</NATIVEMETHOD>
+                </COLLECTION>
+            </TDLMESSAGE>
+        </TDL>
+</DESC>
+</BODY>
+</ENVELOPE>
+';
+
+		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $this->url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
+
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		$data = curl_exec($ch);
+		$data = str_replace("", "", $data);
+		$data = str_replace('&#4;', '', $data);
+		if (curl_errno($ch)) {
+			print curl_error($ch);
+			echo "  something went wrong..... try later";
+		} else {
+			// echo "request accepted";
+			//echo $data;
+
+			curl_close($ch);
+			$xml = simplexml_load_string($data);
+			$json = json_encode($xml);
+			$array = json_decode($json, TRUE);
+
+			$p = 1;
+			$option = "<option>Select Item</option>";
+			//var_dump();
+			foreach ($array['BODY']['DATA']['COLLECTION']['STOCKITEM'] as $d){
+				foreach ($d as $da){
+					foreach ($da as $d1){
+						if(!is_array($d1) && !is_numeric($d1) && !empty($d1)){
+							$option .= "<option value='" . $d1 . "'>" . $d1 . "</option>";
+						}
+					}
+				}
+			}
+
 		}
 		$response['group_list'] = $option;
 		echo json_encode($response);
@@ -803,6 +1025,7 @@ XML;
 		$item_name = $this->input->post('item_name');
 		$opening_balance = $this->input->post('opening_balance');
 		$unit_price = $this->input->post('unit_price');
+		$unitofM= $this->input->post('unitofM');
 		$quantity = $this->input->post('quantity');
 		$res_str = <<<XML
 	<ENVELOPE>
@@ -825,7 +1048,7 @@ XML;
 <NAME>{$item_name}</NAME>
 </NAME.LIST>
 <PARENT>{$group_name}</PARENT>
-<BASEUNITS>NOS</BASEUNITS>
+<BASEUNITS>{$unitofM}</BASEUNITS>
 <OPENINGBALANCE>{$quantity} NOS</OPENINGBALANCE> 
 <OPENINGVALUE>{$opening_balance}</OPENINGVALUE>
 <OPENINGRATE>{$unit_price}</OPENINGRATE>
@@ -1788,7 +2011,8 @@ XML;
 		return $xml;
 	}
 
-	function getXmlForSale(){
+	function getXmlForSale()
+	{
 		$xml = '<ENVELOPE>
  <HEADER>
   <TALLYREQUEST>Import Data</TALLYREQUEST>
@@ -1850,7 +2074,8 @@ XML;
 		return $xml;
 	}
 
-	function getXmlForSaleItemN($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num){
+	function getXmlForSaleItemN($company_id, $date, $narration, $party_ledger, $amount, $get_all_xml, $vc_num)
+	{
 
 		$xml = '<ENVELOPE>
  <HEADER>
@@ -1913,7 +2138,8 @@ XML;
 		return $xml;
 	}
 
-	function getXmlForSaleAcc($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num){
+	function getXmlForSaleAcc($company_id, $date, $narration, $party_ledger, $amount, $get_all_xml, $vc_num)
+	{
 
 		$xml = '<ENVELOPE>
  <HEADER>
@@ -1977,7 +2203,8 @@ XML;
 		return $xml;
 	}
 
-	function getXmlForSaleExp($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num){
+	function getXmlForSaleExp($company_id, $date, $narration, $party_ledger, $amount, $get_all_xml, $vc_num)
+	{
 		$xml = '<ENVELOPE>
  <HEADER>
   <TALLYREQUEST>Import Data</TALLYREQUEST>
@@ -1993,7 +2220,7 @@ XML;
    </REQUESTDESC>
    <REQUESTDATA>
     <TALLYMESSAGE xmlns:UDF="TallyUDF">
-     <VOUCHER  VCHTYPE="Expense" ACTION="Create" OBJVIEW="Invoice Voucher View">
+     <VOUCHER  VCHTYPE="Expenses" ACTION="Create" OBJVIEW="Invoice Voucher View">
       <OLDAUDITENTRYIDS.LIST TYPE="Number">
        <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
       </OLDAUDITENTRYIDS.LIST>
@@ -2001,13 +2228,13 @@ XML;
 	  <NARRATION>{' . $narration . '}</NARRATION>
       <PARTYLEDGERNAME>' . $party_ledger . '</PARTYLEDGERNAME>
       <PARTYNAME>' . $party_ledger . '</PARTYNAME>
-      <VOUCHERTYPENAME>Expense</VOUCHERTYPENAME>
-      <REFERENCE>22</REFERENCE>
+      <VOUCHERTYPENAME>Expenses</VOUCHERTYPENAME>
       <VOUCHERNUMBER>' . $vc_num . '</VOUCHERNUMBER>
       <CSTFORMISSUETYPE/>
       <CSTFORMRECVTYPE/>
+      <PERSISTEDVIEW>Invoice Voucher View</PERSISTEDVIEW>
       <VCHGSTCLASS/>
-      <VOUCHERTYPEORIGNAME>Expense</VOUCHERTYPEORIGNAME>
+      <VOUCHERTYPEORIGNAME>Expenses</VOUCHERTYPEORIGNAME>
       <EFFECTIVEDATE>' . $date . '</EFFECTIVEDATE>
       <LEDGERENTRIES.LIST>
        <OLDAUDITENTRYIDS.LIST TYPE="Number">
@@ -2016,14 +2243,22 @@ XML;
 	   <ISPARTYLEDGER>Yes</ISPARTYLEDGER>
        <LEDGERNAME>' . $party_ledger . '</LEDGERNAME>
        <GSTCLASS/>
-	   <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+	   <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
        <LEDGERFROMITEM>No</LEDGERFROMITEM>
        <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
        <ISPARTYLEDGER>Yes</ISPARTYLEDGER>
        <ISLASTDEEMEDPOSITIVE>Yes</ISLASTDEEMEDPOSITIVE>
        <ISCAPVATTAXALTERED>No</ISCAPVATTAXALTERED>
        <ISCAPVATNOTCLAIMED>No</ISCAPVATNOTCLAIMED>
-      <AMOUNT>'.$amount.'</AMOUNT>
+      <AMOUNT>' . $amount . '</AMOUNT>
+      <BILLALLOCATIONS.LIST>
+        <NAME>1</NAME>
+        <BILLTYPE>New Ref</BILLTYPE>
+        <TDSDEDUCTEEISSPECIALRATE>No</TDSDEDUCTEEISSPECIALRATE>
+        <AMOUNT>' . $amount . '</AMOUNT>
+        <INTERESTCOLLECTION.LIST>        </INTERESTCOLLECTION.LIST>
+        <STBILLCATEGORIES.LIST>        </STBILLCATEGORIES.LIST>
+       </BILLALLOCATIONS.LIST>
       </LEDGERENTRIES.LIST>
 		 ' . $get_all_xml . '
       
@@ -2040,7 +2275,10 @@ XML;
 ';
 		return $xml;
 	}
-	function getXmlForSalePUR($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num){
+
+	function getXmlForSalePUR($company_id, $date, $narration, $party_ledger, $amount, $get_all_xml, $vc_num)
+	{
+
 		$xml = '<ENVELOPE>
  <HEADER>
   <TALLYREQUEST>Import Data</TALLYREQUEST>
@@ -2077,7 +2315,7 @@ XML;
 	   <ISPARTYLEDGER>Yes</ISPARTYLEDGER>
        <LEDGERNAME>' . $party_ledger . '</LEDGERNAME>
        <GSTCLASS/>
-	   <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+	   <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
        <LEDGERFROMITEM>No</LEDGERFROMITEM>
        <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
        <ISPARTYLEDGER>Yes</ISPARTYLEDGER>
@@ -2103,7 +2341,8 @@ XML;
 	}
 
 
-	function getXmlForPurchaseItem($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num){
+	function getXmlForPurchaseItem($company_id, $date, $narration, $party_ledger, $amount, $get_all_xml, $vc_num)
+	{
 		$xml = '<ENVELOPE>
  <HEADER>
   <TALLYREQUEST>Import Data</TALLYREQUEST>
@@ -2127,7 +2366,7 @@ XML;
       <PARTYLEDGERNAME>' . $party_ledger . '</PARTYLEDGERNAME>
       <VOUCHERTYPENAME>Purchase</VOUCHERTYPENAME>
       <REFERENCE>22</REFERENCE>
-      <VOUCHERNUMBER>' . $vc_num  . '</VOUCHERNUMBER>
+      <VOUCHERNUMBER>' . $vc_num . '</VOUCHERNUMBER>
       <CSTFORMISSUETYPE/>
       <CSTFORMRECVTYPE/>
       <VCHGSTCLASS/>
@@ -2140,7 +2379,7 @@ XML;
 	   <ISPARTYLEDGER>Yes</ISPARTYLEDGER>
        <LEDGERNAME>' . $party_ledger . '</LEDGERNAME>
        <GSTCLASS/>
-	   <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+	   <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
        <LEDGERFROMITEM>No</LEDGERFROMITEM>
        <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
        <ISPARTYLEDGER>Yes</ISPARTYLEDGER>
@@ -2170,6 +2409,7 @@ XML;
 		$company_id = $this->input->post('company_name');
 		$party_ledger = $this->input->post('party_ledger');
 		$date = $this->input->post('date');
+		$date = date('Ymd', strtotime($date));
 		$invoiceno = $this->input->post('invoiceno');
 		$amount = $this->input->post('amount');
 		$narration = $this->input->post('narration');
@@ -2190,10 +2430,10 @@ XML;
 				$rate = $this->input->post('rate' . $i);
 				$amt = $this->input->post('amt' . $i);
 				$allamt = array_sum($amt);
-				if($acc_item_invoice == 1){
-					$amt=$amt[0];
+				if ($acc_item_invoice == 1) {
+					$amt = $amt[0];
 				}
-					$get_item_xml .= $this->get_ledger_with_item_xml($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type,$acc_item_invoice);
+				$get_item_xml .= $this->get_ledger_with_item_xml($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type, $acc_item_invoice);
 				//taxasation details
 				$taxname = $this->input->post('taxname' . $i);
 				$taxper = $this->input->post('taxper' . $i);
@@ -2203,20 +2443,20 @@ XML;
 					if ($taxname[$n] == "") {
 
 					} else {
-						$get_tax_xml .= $this->get_tax_xml_new($taxname[$n], $taxper[$n], $taxamt[$n], $allamt, $type,$acc_item_invoice);
+						$get_tax_xml .= $this->get_tax_xml_new($taxname[$n], $taxper[$n], $taxamt[$n], $allamt, $type, $acc_item_invoice);
 					}
 				}
 				$get_all_xml .= $get_item_xml . $get_tax_xml;
 			}
-			if($acc_item_invoice == 2){
-				$xml=$this->getXmlForSaleItemN($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num);
-			}else{
-				 $xml=$this->getXmlForSaleAcc($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num);
+			if ($acc_item_invoice == 2) {
+				$xml = $this->getXmlForSaleItemN($company_id, $date, $narration, $party_ledger, $amount, $get_all_xml, $vc_num);
+			} else {
+				$xml = $this->getXmlForSaleAcc($company_id, $date, $narration, $party_ledger, $amount, $get_all_xml, $vc_num);
 
 			}
 
 
-		}else if ($type == "Expense") {
+		} else if ($type == "Expense") {
 			for ($i = 0; $i < $div_count; $i++) {
 				$ledger = $this->input->post('ledger' . $i);
 				//array of all items details
@@ -2225,11 +2465,11 @@ XML;
 				$rate = $this->input->post('rate' . $i);
 				$amt = $this->input->post('amt' . $i);
 				$allamt = array_sum($amt);
-				$get_item_xml .= $this->get_ledger_with_item_xmlEXP($ledger, $item_name, $rate, $quantity, $amt[0], $allamt, $type,$acc_item_invoice);
+				$get_item_xml .= $this->get_ledger_with_item_xmlEXP($ledger, $item_name, $rate, $quantity, $amt[0], $allamt, $type, $acc_item_invoice);
 				//taxasation details
 				$taxname = $this->input->post('taxname' . $i);
 				$taxper = $this->input->post('taxper' . $i);
-				$taxamt = ($this->input->post('taxamt' . $i)) ;
+				$taxamt = ($this->input->post('taxamt' . $i));
 
 				for ($n = 0; $n < count($taxname); $n++) {
 					if ($taxname[$n] == "") {
@@ -2240,7 +2480,7 @@ XML;
 				}
 				$get_all_xml .= $get_item_xml . $get_tax_xml;
 			}
-			 $xml=$this->getXmlForSaleExp($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num);
+			$xml = $this->getXmlForSaleExp($company_id, $date, $narration, $party_ledger, $amount, $get_all_xml, $vc_num);
 
 		} else {
 			for ($i = 0; $i < $div_count; $i++) {
@@ -2251,10 +2491,10 @@ XML;
 				$rate = $this->input->post('rate' . $i);
 				$amt = $this->input->post('amt' . $i);
 				$allamt = array_sum($amt);
-				if($acc_item_invoice == 1){
-					$amt=$amt[0];
+				if ($acc_item_invoice == 1) {
+					$amt = $amt[0];
 				}
-				$get_item_xml .= $this->get_ledger_with_item_xml($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type,$acc_item_invoice);
+				$get_item_xml .= $this->get_ledger_with_item_xml($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type, $acc_item_invoice);
 
 
 				//taxasation details
@@ -2266,17 +2506,17 @@ XML;
 					if ($taxname[$n] == "") {
 
 					} else {
-						$get_tax_xml .= $this->get_tax_xml_new($taxname[$n], $taxper[$n], $taxamt[$n], $allamt, $type,$acc_item_invoice);
+						$get_tax_xml .= $this->get_tax_xml_new($taxname[$n], $taxper[$n], $taxamt[$n], $allamt, $type, $acc_item_invoice);
 					}
 
 				}
 				$get_all_xml .= $get_item_xml . $get_tax_xml;
 
 			}
-			if($acc_item_invoice == 2){
-				$xml=$this->getXmlForPurchaseItem($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num);
-			}else{
-				$xml=$this->getXmlForSalePUR($company_id,$date,$narration,$party_ledger,$amount,$get_all_xml,$vc_num);
+			if ($acc_item_invoice == 2) {
+				$xml = $this->getXmlForPurchaseItem($company_id, $date, $narration, $party_ledger, $amount, $get_all_xml, $vc_num);
+			} else {
+				$xml = $this->getXmlForSalePUR($company_id, $date, $narration, $party_ledger, $amount, $get_all_xml, $vc_num);
 
 			}
 
@@ -2363,8 +2603,8 @@ XML;
 
 
 			}
-			$xml=$this->getXmlForSale($get_all_xml);
-		}else if($type == "Expense"){
+			$xml = $this->getXmlForSale($get_all_xml);
+		} else if ($type == "Expense") {
 			for ($i = 0; $i < $div_count; $i++) {
 				$ledger = $this->input->post('ledger' . $i);
 				//array of all items details
@@ -2394,7 +2634,7 @@ XML;
 
 
 			}
-			$xml='<ENVELOPE>
+			$xml = '<ENVELOPE>
  <HEADER>
   <TALLYREQUEST>Import Data</TALLYREQUEST>
  </HEADER>
@@ -2443,9 +2683,9 @@ XML;
 				$allamt = array_sum($amt);
 
 				//$get_item_xml .= $this->get_ledger_with_item_xml_purchase($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type);
-				if($acc_item_invoice == 1){
+				if ($acc_item_invoice == 1) {
 					$get_item_xml .= $this->get_ledger_with_item_xml_purchase($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type);
-				}else{
+				} else {
 					$get_item_xml .= $this->get_ledger_with_item_xml_purchaseITEM($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type);
 					//$get_tax_xml .= $this->get_tax_xml_newItem($taxname[$n], $taxper[$n], $taxamt[$n], $allamt, $type);
 				}
@@ -2468,7 +2708,7 @@ XML;
 
 
 			}
-			if($acc_item_invoice == 1){
+			if ($acc_item_invoice == 1) {
 				$xml = '<ENVELOPE>
  <HEADER>
   <TALLYREQUEST>Import Data</TALLYREQUEST>
@@ -2527,8 +2767,8 @@ XML;
 </ENVELOPE>
 
 ';
-			}else{
-				$xml='
+			} else {
+				$xml = '
 				<ENVELOPE>
  <HEADER>
   <TALLYREQUEST>Import Data</TALLYREQUEST>
@@ -2639,24 +2879,26 @@ XML;
 		echo json_encode($response);
 	}
 
-	function get_ledger_with_item_xml($ledger, $item_arr, $rate_arr, $quantity_arr, $amt_arr, $allamt, $type,$acc_item_invoice)
+	function get_ledger_with_item_xml($ledger, $item_arr, $rate_arr, $quantity_arr, $amt_arr, $allamt, $type, $acc_item_invoice)
 	{
 		/* <ACTUALQTY>'.$quantity.'</ACTUALQTY>
 	<BILLEDQTY>'.$quantity.'</BILLEDQTY>
 	<RATE>'.$rate.'</RATE> */
 
 		$bxml = "";
-		if($acc_item_invoice == 1){
+		if ($acc_item_invoice == 1) {
+			$isDeem=' <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>';
 			if ($type == "Purchase") {
 				$amt_arr = "-" . $amt_arr;
+				$isDeem=' <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>';
 			}
-			$xml='<LEDGERENTRIES.LIST>
+			$xml = '<LEDGERENTRIES.LIST>
        <OLDAUDITENTRYIDS.LIST TYPE="Number">
         <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
        </OLDAUDITENTRYIDS.LIST>
        <LEDGERNAME>' . $ledger . '</LEDGERNAME>
        <GSTCLASS/>
-       <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+      '.$isDeem.'
        <LEDGERFROMITEM>No</LEDGERFROMITEM>
        <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
        <ISPARTYLEDGER>No</ISPARTYLEDGER>
@@ -2674,8 +2916,10 @@ XML;
 			$rate = $rate_arr[$i];
 			$item = $item_arr[$i];
 			$amt = $amt_arr[$i];
+			$isDeem=' <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>';
 			if ($type == "Purchase") {
 				$amt = "-" . $amt_arr[$i];
+				$isDeem=' <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>';
 			}
 
 			if ($item_arr[0] == "" && $amt_arr[0] != "") {
@@ -2702,8 +2946,7 @@ XML;
 				$bxml .= '
 			<INVENTORYALLOCATIONS.LIST>
 			<STOCKITEMNAME>' . $item . '</STOCKITEMNAME>
-			<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
-        <ISLASTDEEMEDPOSITIVE>No</ISLASTDEEMEDPOSITIVE>
+			'.$isDeem.'
         <ISAUTONEGATE>No</ISAUTONEGATE>
         <ISCUSTOMSCLEARANCE>No</ISCUSTOMSCLEARANCE>
         <ISTRACKCOMPONENT>No</ISTRACKCOMPONENT>
@@ -2721,11 +2964,15 @@ XML;
 			 <ORDERNO/>
 			 <TRACKINGNUMBER/>
 			 <DYNAMICCSTISCLEARED>No</DYNAMICCSTISCLEARED>
-			 <AMOUNT>100.00</AMOUNT>
+			 <AMOUNT>'.$amt.'</AMOUNT>
 			</BATCHALLOCATIONS.LIST>
 		   </INVENTORYALLOCATIONS.LIST>
 			';
 			}
+		}
+		$isDeem=' <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>';
+		if ($type == "Purchase") {
+			$isDeem=' <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>';
 		}
 		$xml = '<ALLLEDGERENTRIES.LIST>
        <OLDAUDITENTRYIDS.LIST TYPE="Number">
@@ -2734,7 +2981,7 @@ XML;
        <LEDGERNAME>' . $ledger . '</LEDGERNAME>
        <GSTCLASS/>
 	   
-       <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
+       '.$isDeem.'
        <LEDGERFROMITEM>No</LEDGERFROMITEM>
        <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
        <ISPARTYLEDGER>No</ISPARTYLEDGER>
@@ -2747,7 +2994,7 @@ XML;
 		return $xml;
 	}
 
-	function get_ledger_with_item_xmlEXP($ledger, $item_arr, $rate_arr, $quantity_arr, $amt_arr, $allamt, $type,$acc_item_invoice)
+	function get_ledger_with_item_xmlEXP($ledger, $item_arr, $rate_arr, $quantity_arr, $amt_arr, $allamt, $type, $acc_item_invoice)
 	{
 		/* <ACTUALQTY>'.$quantity.'</ACTUALQTY>
 	<BILLEDQTY>'.$quantity.'</BILLEDQTY>
@@ -2755,7 +3002,7 @@ XML;
 //		$count = count($item_arr);
 		$bxml = "";
 
-			$xml='<LEDGERENTRIES.LIST>
+		$xml = '<LEDGERENTRIES.LIST>
        <OLDAUDITENTRYIDS.LIST TYPE="Number">
         <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
        </OLDAUDITENTRYIDS.LIST>
@@ -2771,16 +3018,16 @@ XML;
        <AMOUNT>-' . $amt_arr . '</AMOUNT>
        <VATEXPAMOUNT>-' . $amt_arr . '</VATEXPAMOUNT>
       </LEDGERENTRIES.LIST>';
-			return $xml;
+		return $xml;
 
 	}
 
-	function get_tax_xml_new($taxname, $taxper, $taxamt, $amount, $type,$acc_item_invoice)
+	function get_tax_xml_new($taxname, $taxper, $taxamt, $amount, $type, $acc_item_invoice)
 	{
 		if ($type == "Purchase") {
 			$taxamt = "-" . $taxamt;
 		}
-		if($acc_item_invoice  == 2){
+		if ($acc_item_invoice == 2) {
 			$xml = '<ALLLEDGERENTRIES.LIST>
        <OLDAUDITENTRYIDS.LIST TYPE="Number">
         <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
@@ -2801,7 +3048,7 @@ XML;
        <AMOUNT>' . $taxamt . '</AMOUNT>
        <VATASSESSABLEVALUE>' . $amount . '</VATASSESSABLEVALUE>
       </ALLLEDGERENTRIES.LIST>';
-		}else{
+		} else {
 			$xml = '<LEDGERENTRIES.LIST>
        <OLDAUDITENTRYIDS.LIST TYPE="Number">
         <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
@@ -2825,6 +3072,7 @@ XML;
 
 		return $xml;
 	}
+
 	function get_tax_xml_newEXP($taxname, $taxper, $taxamt, $amount, $type)
 	{
 		if ($type == "Purchase") {
@@ -2852,6 +3100,7 @@ XML;
       </LEDGERENTRIES.LIST>';
 		return $xml;
 	}
+
 	function get_tax_xml_newItem($taxname, $taxper, $taxamt, $amount, $type)
 	{
 		if ($type == "Purchase") {
@@ -2859,8 +3108,8 @@ XML;
 		}
 
 
-		$xml='<ALLINVENTORYENTRIES.LIST>
-       <STOCKITEMNAME>'.$taxname.'</STOCKITEMNAME>
+		$xml = '<ALLINVENTORYENTRIES.LIST>
+       <STOCKITEMNAME>' . $taxname . '</STOCKITEMNAME>
        <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
        <ISLASTDEEMEDPOSITIVE>Yes</ISLASTDEEMEDPOSITIVE>
        <ISAUTONEGATE>No</ISAUTONEGATE>
@@ -2990,7 +3239,8 @@ XML;
 		return $xml;
 	}
 
-	function get_ledger_with_item_xml_purchaseITEM($ledger, $item_arr, $rate_arr, $quantity_arr, $amt_arr, $allamt, $type){
+	function get_ledger_with_item_xml_purchaseITEM($ledger, $item_arr, $rate_arr, $quantity_arr, $amt_arr, $allamt, $type)
+	{
 
 		$count = count($item_arr);
 		$bxml = "";
@@ -3004,7 +3254,7 @@ XML;
 				$amt = "-" . $amt_arr[$i];
 			}
 			$bxml .= '<ALLINVENTORYENTRIES.LIST>
-       <STOCKITEMNAME>'.$ledger.'</STOCKITEMNAME>
+       <STOCKITEMNAME>' . $ledger . '</STOCKITEMNAME>
        <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
        <ISLASTDEEMEDPOSITIVE>Yes</ISLASTDEEMEDPOSITIVE>
        <ISAUTONEGATE>No</ISAUTONEGATE>
@@ -3013,7 +3263,7 @@ XML;
        <ISTRACKPRODUCTION>No</ISTRACKPRODUCTION>
        <ISPRIMARYITEM>No</ISPRIMARYITEM>
        <ISSCRAP>No</ISSCRAP>
-       <RATE>'.$rate.'</RATE>
+       <RATE>' . $rate . '</RATE>
        <AMOUNT>' . $amt . '</AMOUNT>
        <ACTUALQTY>' . $quantity . ' </ACTUALQTY>
        <BILLEDQTY>' . $quantity . ' </BILLEDQTY>
@@ -3092,7 +3342,7 @@ XML;
 	{
 		$company_id = $this->input->post('Jcompany_name');
 		$date = $this->input->post('Jdate');
-
+		$date = date('Ymd', strtotime($date));
 		$narration = $this->input->post('Jnarration');
 		$count = $this->input->post('Jdiv_count') + 1;
 
@@ -3219,6 +3469,7 @@ XML;
 		$party_ledger = $this->input->post('party_ledger');
 
 		$date = $this->input->post('date');
+		$date = date('Ymd', strtotime($date));
 		$invoiceno = $this->input->post('invoiceno');
 		$amount = $this->input->post('amount');
 		$narration = $this->input->post('narration');
@@ -3236,8 +3487,11 @@ XML;
 			$amt = $this->input->post('amt' . $i);
 			$Rtype = $this->input->post('Rtype' . $i);
 			$allamt = array_sum($amt);
-
-			$get_item_xml .= $this->get_ledger_receipt($ledger, $item_name, $rate, $quantity, $amt, $allamt, $Rtype);
+			if ($vtype == "Debit Note" || $vtype == "Credit Note") {
+				$get_item_xml .= $this->get_ledger_receipt($ledger, $item_name, $rate, $quantity, $amt, $allamt, $Rtype);
+			} else {
+				$get_item_xml .= $this->get_ledger_receiptoth($ledger, $item_name, $rate, $quantity, $amt[0], $allamt, $Rtype);
+			}
 
 		}
 		if ($vtype == "Debit Note" || $vtype == "Credit Note") {
@@ -3345,7 +3599,8 @@ XML;
 		}
 
 
-		//echo $xml;
+		/*echo $xml;
+		exit;*/
 
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $this->url);
@@ -3471,22 +3726,47 @@ XML;
       </ALLLEDGERENTRIES.LIST>';
 		return $xml;
 	}
-	function get_customers_invoice(){
+
+	function get_ledger_receiptoth($ledger, $item_arr, $rate, $quantity, $amt_arr, $allamt, $type)
+	{
+		//$count = count($item_arr);
+		$bxml = "";
+		if ($type == "dr") {
+			$amt = "-" . $amt_arr;
+		} else {
+			$amt = $amt_arr;
+		}
+
+
+		$xml = '<ALLLEDGERENTRIES.LIST>
+       <OLDAUDITENTRYIDS.LIST TYPE="Number">
+        <OLDAUDITENTRYIDS>-1</OLDAUDITENTRYIDS>
+       </OLDAUDITENTRYIDS.LIST>
+       <LEDGERNAME>' . $ledger . '</LEDGERNAME>
+       <GSTCLASS/>
+       <AMOUNT>' . $amt . '</AMOUNT>
+       <VATEXPAMOUNT>' . $amt . '</VATEXPAMOUNT>
+      </ALLLEDGERENTRIES.LIST>';
+		return $xml;
+	}
+
+	function get_customers_invoice()
+	{
 		$firm_id = $this->session->user_session->firm_id;
 
-		$query=$this->db->query("select distinct customer_id,(select customer_name from customer_master_data cm where cm.customer_id = dm.customer_id 
+		$query = $this->db->query("select distinct customer_id,(select customer_name from customer_master_data cm where cm.customer_id = dm.customer_id 
 		AND cm.customer_id=(select customer_id from customer_mapping_data where firm_id='$firm_id')) as customer_name from document_management_table dm");
-		$option="<option value=''>Select Customer</option>";
-		if($this->db->affected_rows() > 0){
-			$result=$query->result();
-			foreach($result as $row){
-				if($row->customer_name != ""){
-					$option .="<option value=".$row->customer_id.">".$row->customer_name."</option>";
+		$option = "<option value=''>Select Customer</option>";
+		if ($this->db->affected_rows() > 0) {
+			$result = $query->result();
+			foreach ($result as $row) {
+				if ($row->customer_name != "") {
+					$option .= "<option value=" . $row->customer_id . ">" . $row->customer_name . "</option>";
 				}
 			}
 			$response['code'] = 200;
 			$response['option'] = $option;
-		}else{
+		} else {
 			$response['code'] = 201;
 			$response['option'] = $option;
 		}

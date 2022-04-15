@@ -437,6 +437,7 @@ if ($this->session->user_session->user_type == '6') {
 						<i class='bx bx-line-chart'></i>
 							Other Entry</a>
 					</li>
+
 				</ul>
 			</li>
 			<li class="position-relative">
@@ -466,6 +467,62 @@ if ($this->session->user_session->user_type == '6') {
 						<i class='bx bx-trending-up'></i>
 							Profit and Loss</a>
 					</li>
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'dayBook' ? 'showMenu' : '' ?>">
+
+						<a href="<?php echo base_url("ImportController/dayBook"); ?>" class="w-100">
+							<i class='bx bx-line-chart'></i>
+							Day Book</a>
+					</li>
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'trialBalance' ? 'showMenu' : '' ?>">
+
+						<a href="<?php echo base_url("ImportController/trialBalance"); ?>" class="w-100">
+							<i class='bx bx-money'></i>
+							Trial Balance</a>
+					</li>
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'accountBook' ? 'showMenu' : '' ?>">
+
+						<a href="<?php echo base_url("ImportController/accountBook"); ?>" class="w-100">
+							<i class='bx bx-task'></i>
+							Account Book</a>
+					</li>
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'statementAccount' ? 'showMenu' : '' ?>">
+
+						<a href="<?php echo base_url("ImportController/statementAccount"); ?>" class="w-100">
+							<i class='bx bx-box'></i>
+							Statement of Accounts</a>
+					</li>
+					<!--<li style="display: flex; padding-left: 21px;" class="<?php /*echo $this->uri->segment(2) == 'inventoryBooks' ? 'showMenu' : '' */?>">
+
+						<a href="<?php /*echo base_url("ImportController/inventoryBooks"); */?>" class="w-100">
+							<i class='bx bx-box'></i>
+							Inventory Books</a>
+					</li>
+					<li style="display: flex; padding-left: 21px;" class="<?php /*echo $this->uri->segment(2) == 'statementsInventory' ? 'showMenu' : '' */?>">
+
+						<a href="<?php /*echo base_url("ImportController/statementsInventory"); */?>" class="w-100">
+							<i class='bx bx-box'></i>
+							Statements of Inventory</a>
+					</li>
+					-->
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'cashfundflow' ? 'showMenu' : '' ?>">
+
+						<a href="<?php echo base_url("ImportController/cashfundflow"); ?>" class="w-100">
+							<i class='bx bx-box'></i>
+							Cash / Funds Flow</a>
+					</li>
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'listofAccounts' ? 'showMenu' : '' ?>">
+
+						<a href="<?php echo base_url("ImportController/listofAccounts"); ?>" class="w-100">
+							<i class='bx bx-box'></i>
+							List of Accounts</a>
+					</li>
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'exceptionReport' ? 'showMenu' : '' ?>">
+
+						<a href="<?php echo base_url("ImportController/exceptionReport"); ?>" class="w-100">
+							<i class='bx bx-box'></i>
+							Exception Report</a>
+					</li>
+
 				</ul>
 			</li>
 		</ul>
@@ -525,6 +582,9 @@ if ($this->session->user_session->user_type == '6') {
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <script>
 	let arrow = document.querySelectorAll(".iocn-link");
 	$(".fm_lists").focus(function(){
