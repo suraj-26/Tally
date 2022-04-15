@@ -2433,12 +2433,12 @@ XML;
 				if ($acc_item_invoice == 1) {
 					$amt = $amt[0];
 				}
-				$get_item_xml .= $this->get_ledger_with_item_xml($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type, $acc_item_invoice);
+				$get_item_xml = $this->get_ledger_with_item_xml($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type, $acc_item_invoice);
 				//taxasation details
 				$taxname = $this->input->post('taxname' . $i);
 				$taxper = $this->input->post('taxper' . $i);
 				$taxamt = $this->input->post('taxamt' . $i);
-
+				$get_tax_xml='';
 				for ($n = 0; $n < count($taxname); $n++) {
 					if ($taxname[$n] == "") {
 
@@ -2458,6 +2458,7 @@ XML;
 
 		} else if ($type == "Expense") {
 			for ($i = 0; $i < $div_count; $i++) {
+
 				$ledger = $this->input->post('ledger' . $i);
 				//array of all items details
 				$item_name = $this->input->post('item_name' . $i);
@@ -2465,12 +2466,12 @@ XML;
 				$rate = $this->input->post('rate' . $i);
 				$amt = $this->input->post('amt' . $i);
 				$allamt = array_sum($amt);
-				$get_item_xml .= $this->get_ledger_with_item_xmlEXP($ledger, $item_name, $rate, $quantity, $amt[0], $allamt, $type, $acc_item_invoice);
+				$get_item_xml = $this->get_ledger_with_item_xmlEXP($ledger, $item_name, $rate, $quantity, $amt[0], $allamt, $type, $acc_item_invoice);
 				//taxasation details
 				$taxname = $this->input->post('taxname' . $i);
 				$taxper = $this->input->post('taxper' . $i);
 				$taxamt = ($this->input->post('taxamt' . $i));
-
+				$get_tax_xml='';
 				for ($n = 0; $n < count($taxname); $n++) {
 					if ($taxname[$n] == "") {
 
@@ -2478,9 +2479,10 @@ XML;
 						$get_tax_xml .= $this->get_tax_xml_newEXP($taxname[$n], $taxper[$n], $taxamt[$n], $allamt, $type);
 					}
 				}
+
 				$get_all_xml .= $get_item_xml . $get_tax_xml;
 			}
-			$xml = $this->getXmlForSaleExp($company_id, $date, $narration, $party_ledger, $amount, $get_all_xml, $vc_num);
+			 $xml = $this->getXmlForSaleExp($company_id, $date, $narration, $party_ledger, $amount, $get_all_xml, $vc_num);
 
 		} else {
 			for ($i = 0; $i < $div_count; $i++) {
@@ -2494,14 +2496,14 @@ XML;
 				if ($acc_item_invoice == 1) {
 					$amt = $amt[0];
 				}
-				$get_item_xml .= $this->get_ledger_with_item_xml($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type, $acc_item_invoice);
+				$get_item_xml = $this->get_ledger_with_item_xml($ledger, $item_name, $rate, $quantity, $amt, $allamt, $type, $acc_item_invoice);
 
 
 				//taxasation details
 				$taxname = $this->input->post('taxname' . $i);
 				$taxper = $this->input->post('taxper' . $i);
 				$taxamt = $this->input->post('taxamt' . $i);
-
+				$get_tax_xml='';
 				for ($n = 0; $n < count($taxname); $n++) {
 					if ($taxname[$n] == "") {
 
@@ -2513,6 +2515,7 @@ XML;
 				$get_all_xml .= $get_item_xml . $get_tax_xml;
 
 			}
+
 			if ($acc_item_invoice == 2) {
 				$xml = $this->getXmlForPurchaseItem($company_id, $date, $narration, $party_ledger, $amount, $get_all_xml, $vc_num);
 			} else {
