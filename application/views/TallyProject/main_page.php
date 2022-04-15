@@ -491,19 +491,20 @@ if ($this->session->user_session->user_type == '6') {
 							<i class='bx bx-box'></i>
 							Statement of Accounts</a>
 					</li>
-					<!--<li style="display: flex; padding-left: 21px;" class="<?php /*echo $this->uri->segment(2) == 'inventoryBooks' ? 'showMenu' : '' */?>">
+<!--					below code was commented before start here -->
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'inventoryBooks' ? 'showMenu' : '' ?>">
 
-						<a href="<?php /*echo base_url("ImportController/inventoryBooks"); */?>" class="w-100">
+						<a href="<?php echo base_url("ImportController/inventoryBooks"); ?>" class="w-100">
 							<i class='bx bx-box'></i>
 							Inventory Books</a>
 					</li>
 					<li style="display: flex; padding-left: 21px;" class="<?php /*echo $this->uri->segment(2) == 'statementsInventory' ? 'showMenu' : '' */?>">
 
-						<a href="<?php /*echo base_url("ImportController/statementsInventory"); */?>" class="w-100">
+						<a href="<?php echo base_url("ImportController/statementsInventory"); ?>" class="w-100">
 							<i class='bx bx-box'></i>
 							Statements of Inventory</a>
 					</li>
-					-->
+					<!--					below code was commented before end here -->
 					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'cashfundflow' ? 'showMenu' : '' ?>">
 
 						<a href="<?php echo base_url("ImportController/cashfundflow"); ?>" class="w-100">

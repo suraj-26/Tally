@@ -34,8 +34,10 @@
 				<input type="date" id="toDate" name="toDate" class="form-control">
 			</div><br>
 			<select class="form-control" id="reportName" name="reportName">
-				<option value="Bills Receivable">Stock Transfer</option>
-				<option value="Bills Payable">Physical Stock Register</option>
+<!--				<option value="Bills Receivable">Stock Transfer</option>-->
+<!--				<option value="Bills Payable">Physical Stock Register</option>-->
+				<option value="STOCKVOUCHERS">Stock Transfer</option>
+				<option value="ITEMMONTHLYSUMMARY">Physical Stock Register</option>
 			</select>
 			<div class="">
 				<button type="button" class="btn btn-primary" onclick="get_trialBalance()">View</button>

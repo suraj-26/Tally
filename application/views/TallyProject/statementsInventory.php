@@ -35,6 +35,8 @@
 			</div><br>
 			<select class="form-control" id="reportName" name="reportName">
 				<option value="Stock Query">Stock Query</option>
+<!--				<option value="Cost Estimation">Cost Estimation</option>-->
+				<option value="Statistics">Statistics</option>
 			</select>
 			<div class="">
 				<button type="button" class="btn btn-primary" onclick="get_trialBalance()">View</button>
