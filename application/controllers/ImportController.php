@@ -322,6 +322,21 @@ class ImportController extends CI_Controller
 		//   $this->load->view('TallyProject/receipt_voucher');
 	}
 
+	public function statutoryReport($id = '')
+	{
+		$data['file_id'] = $id;
+		$useragent = $_SERVER['HTTP_USER_AGENT'];
+		if (preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"])) {
+			$data["load_view"] = array("TallyProject/statutoryReport.php");
+			$this->load->view('TallyProject/main_page_mobile.php', $data);
+		} else {
+			$data["load_view"] = array("TallyProject/statutoryReport.php");
+			$this->load->view("TallyProject/main_page.php", $data);
+
+		}
+		//   $this->load->view('TallyProject/receipt_voucher');
+	}
+
 	public function create_voucher()
 	{
 		$this->load->view('Import_data/create_voucher');

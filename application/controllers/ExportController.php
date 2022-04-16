@@ -158,6 +158,7 @@ class ExportController extends CI_Controller {
 
 	public function get_balancesheet() {
 		$company_id = $this->input->post('company_name');
+//		<REPORTNAME>Balance Sheet</REPORTNAME>
 		$requestXML = '<ENVELOPE>
 <HEADER>
 <TALLYREQUEST>Export Data</TALLYREQUEST>
@@ -175,7 +176,7 @@ class ExportController extends CI_Controller {
 <!--$$SysName:HTML-->
 
 </STATICVARIABLES>
-<REPORTNAME>Balance Sheet </REPORTNAME>
+<REPORTNAME>Balance Sheet</REPORTNAME>
 </REQUESTDESC>
 </EXPORTDATA>
 </BODY>
@@ -607,4 +608,70 @@ class ExportController extends CI_Controller {
 		}echo json_encode($response);
 	}
 
+	public function get_statutaryReport(){
+//		var_dump($_POST);exit;
+		$company_id = $this->input->post('company_name');
+		$ledger_value = $this->input->post('value');
+		$ledger_id = $this->input->post('ledger_id');
+		$ledger = $this->input->post('ledger');
+		$reportName = $this->input->post('reportName');
+		$toDate = $this->input->post('toDate');
+		$fromDate = $this->input->post('fromDate');
+		$toDate=date('d-M-Y',strtotime($toDate));
+		$fromDate=date('d-M-Y',strtotime($fromDate));
+//		<REPORTNAME>'.$reportName.'</REPORTNAME>
+		$requestXML = '
+<ENVELOPE> 
+<HEADER> 
+<TALLYREQUEST>Export Data</TALLYREQUEST> 
+</HEADER> 
+<BODY> 
+<EXPORTDATA> 
+<REQUESTDESC> 
+<STATICVARIABLES> 
+<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+<SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
+<!-- Specify the period here -->
+<SVFROMDATE>'.$fromDate.'</SVFROMDATE>
+<SVTODATE>'.$toDate.'</SVTODATE>
+
+<!-- F12 @ Show billwise is set to Yes -->
+<DBBILLEXPLODEFLAG>YES</DBBILLEXPLODEFLAG>
+
+<!-- Specify the Ledger Name here -->
+<LEDGERNAME>' . $ledger_id . '</LEDGERNAME> 
+
+</STATICVARIABLES>
+<REPORTNAME>'.$reportName.'</REPORTNAME>
+</REQUESTDESC> 
+</EXPORTDATA> 
+</BODY> 
+</ENVELOPE> 
+    ';
+
+		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $this->url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
+
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		$data = curl_exec($ch);
+
+
+//var_dump($data);
+//echo '<pre>', htmlentities($data), '</pre>';
+
+
+		if (curl_errno($ch)) {
+			print curl_error($ch);
+			echo "  something went wrong..... try later";
+			$response['data'] = $data;
+		} else {
+			$response['data'] = $data;
+		}echo json_encode($response);
+	}
 }

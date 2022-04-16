@@ -523,6 +523,12 @@ if ($this->session->user_session->user_type == '6') {
 							<i class='bx bx-box'></i>
 							Exception Report</a>
 					</li>
+					<li style="display: flex; padding-left: 21px;" class="<?php echo $this->uri->segment(2) == 'statutoryReport' ? 'showMenu' : '' ?>">
+
+						<a href="<?php echo base_url("ImportController/statutoryReport"); ?>" class="w-100">
+							<i class='bx bx-box'></i>
+							Statutory Report</a>
+					</li>
 
 				</ul>
 			</li>
