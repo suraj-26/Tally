@@ -216,6 +216,70 @@ class ExportController extends CI_Controller {
 			$response['data'] = $data;
 		}echo json_encode($response);
 	}
+
+
+	public function get_inventoryBooks() {
+		$reportName = $this->input->post('reportName');
+		$company_id = $this->input->post('company_name');
+		$fromDate = $this->input->post("fromDate");
+		$toDate = $this->input->post("toDate");
+		$toDate=date('d-M-Y',strtotime($toDate));
+		$fromDate=date('d-M-Y',strtotime($fromDate));
+//		<REPORTNAME>Balance Sheet</REPORTNAME>
+		$requestXML = '<ENVELOPE>
+<HEADER>
+<TALLYREQUEST>Export Data</TALLYREQUEST>
+</HEADER>
+<BODY>
+<EXPORTDATA>
+<REQUESTDESC>
+<STATICVARIABLES>
+
+<!--To Fetch data in XML format-->
+<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+<SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
+
+<!--Specify the Period here-->
+<SVFROMDATE>'.$fromDate.'</SVFROMDATE>
+<SVTODATE>'.$toDate.'</SVTODATE>
+
+<!--To Fetch data in HTML format, change the SVEXPORTFORMAT Tag value as -->
+<!--$$SysName:HTML-->
+</STATICVARIABLES>
+<REPORTNAME>'.$reportName.'</REPORTNAME>
+
+</REQUESTDESC>
+</EXPORTDATA>
+</BODY>
+</ENVELOPE>
+    ';
+
+		//$server = '192.168.1.25:9000';
+		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $this->url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
+
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		$data = curl_exec($ch);
+
+
+//var_dump($data);
+//echo '<pre>', htmlentities($data), '</pre>';
+
+
+		if (curl_errno($ch)) {
+			print curl_error($ch);
+			echo "  something went wrong..... try later";
+			$response['data'] = $data;
+		} else {
+			$response['data'] = $data;
+		}echo json_encode($response);
+	}
 	public function getListOFAccounts() {
 		$company_id = $this->input->post('company_name');
 		$requestXML = '<ENVELOPE>

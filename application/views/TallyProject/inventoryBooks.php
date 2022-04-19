@@ -36,8 +36,8 @@
 			<select class="form-control" id="reportName" name="reportName">
 <!--				<option value="Bills Receivable">Stock Transfer</option>-->
 <!--				<option value="Bills Payable">Physical Stock Register</option>-->
-				<option value="STOCKVOUCHERS">Stock Transfer</option>
-				<option value="ITEMMONTHLYSUMMARY">Physical Stock Register</option>
+				<option value="STOCK JOURNAL REGISTER">Stock Transfer</option>
+				<option value="PHYSICAL STOCK REGISTER">Physical Stock Register</option>
 			</select>
 			<div class="">
 				<button type="button" class="btn btn-primary" onclick="get_trialBalance()">View</button>
@@ -88,7 +88,7 @@
 		}else{
 			$.ajax({
 				type: "POST",
-				url: "<?= base_url("ExportController/get_AccountBook") ?>",
+				url: "<?= base_url("ExportController/get_inventoryBooks") ?>",
 				dataType: "json",
 				async: false,
 				cache: false,
