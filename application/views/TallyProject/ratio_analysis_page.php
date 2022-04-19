@@ -26,11 +26,18 @@
 							<div class="form-group">
 								<div class="col-sm-4">
 								<label for="group-name" >Company Name</label>
-									<select id='company_name_ra' class="form-control" name='company_name_ra' onchange="get_ratioAnalysis()">
-
-
+									<select id='company_name_ra' class="form-control" name='company_name_ra'>
 									</select>
 								</div>
+								<div class="form-group">
+									<label>From Date:</label>
+									<input type="date" id="fromDate" name="fromDate" class="form-control">
+								</div>
+								<div class="form-group">
+									<label>To Date:</label>
+									<input type="date" id="toDate" name="toDate" class="form-control">
+								</div><br>
+								<button type="button" class="btn btn-primary" onclick="get_ratioAnalysis()">View</button>
 							</div>
 						</div>
 						<div class="col-sm-12" id="div_ra" align="center" width="100%"></div>
@@ -71,13 +78,15 @@
 								function get_ratioAnalysis()
 								{
 									var company_name = $("#company_name_ra").val();
+									var fromDate = $("#fromDate").val();
+									var toDate = $("#toDate").val();
                                     $.ajax({
                                         type: "POST",
                                         url: "<?= base_url("ExportController/get_ratioan") ?>",
                                         dataType: "json",
                                         async: false,
                                         cache: false,
-                                        data: {company_name},
+                                        data: {company_name,fromDate,toDate},
                                         success: function (result) {
                                             var data = result.data;
                                             console.log(data);

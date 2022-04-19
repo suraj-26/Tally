@@ -21,13 +21,20 @@
 							<div class="col-sm-12">
 							<div class="form-group">
 								
-								<div class="col-sm-4">
+								<div class="col-sm-4 form-group">
 								<label for="group-name" >Company Name</label>
-									<select id='company_name1' class="form-control" name='company_name1' onchange="get_balancesheet()">
-
-
+									<select id='company_name1' class="form-control" name='company_name1'>
 									</select>
 								</div>
+								<div class="form-group">
+									<label>From Date:</label>
+									<input type="date" id="fromDate" name="fromDate" class="form-control">
+								</div>
+								<div class="form-group">
+									<label>To Date:</label>
+									<input type="date" id="toDate" name="toDate" class="form-control">
+								</div><br>
+								<button type="button" class="btn btn-primary" onclick="get_balancesheet()">View</button>
 							</div>
 						</div>
 						<div class="col-sm-12" id="div_bas" align="center" width="100%"></div>
@@ -66,14 +73,16 @@
 
 							
 								 function get_balancesheet() {
-                                    var company_name = $("#company_name1").val();
+									 var company_name = $("#company_name1").val();
+									 var fromDate = $("#fromDate").val();
+									 var toDate = $("#toDate").val();
                                      $.ajax({
                                         type: "POST",
                                         url: "<?= base_url("ExportController/get_balancesheet") ?>",
                                         dataType: "json",
                                         async: false,
                                         cache: false,
-                                        data: {company_name},
+                                        data: {company_name,fromDate,toDate},
                                         success: function (result) {
                                             var data = result.data;
                                             console.log(data);

@@ -12,7 +12,7 @@
 
 <div class="card-title">
 	<h5 class="card-header">
-		Balance Sheet View
+		Trial Balance View
 	</h5>
 </div>
 

@@ -158,6 +158,10 @@ class ExportController extends CI_Controller {
 
 	public function get_balancesheet() {
 		$company_id = $this->input->post('company_name');
+		$fromDate = $this->input->post("fromDate");
+		$toDate = $this->input->post("toDate");
+		$toDate=date('d-M-Y',strtotime($toDate));
+		$fromDate=date('d-M-Y',strtotime($fromDate));
 //		<REPORTNAME>Balance Sheet</REPORTNAME>
 		$requestXML = '<ENVELOPE>
 <HEADER>
@@ -172,6 +176,9 @@ class ExportController extends CI_Controller {
 <SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
 <SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
 
+<!--Specify the Period here-->
+<SVFROMDATE>'.$fromDate.'</SVFROMDATE>
+<SVTODATE>'.$toDate.'</SVTODATE>
 <!--To Fetch data in HTML format, change the SVEXPORTFORMAT Tag value as -->
 <!--$$SysName:HTML-->
 
@@ -182,6 +189,7 @@ class ExportController extends CI_Controller {
 </BODY>
 </ENVELOPE>
     ';
+
 		//$server = '192.168.1.25:9000';
 		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
 
@@ -335,6 +343,14 @@ class ExportController extends CI_Controller {
 <REPORTNAME>Trial Balance</REPORTNAME>
 <STATICVARIABLES>
 <SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+
+
+<!--This will fetch detailed TB-->
+
+
+<EXPLODEALLLEVELS>YES</EXPLODEALLLEVELS>
+
+<EXPLODEFLAG>YES</EXPLODEFLAG>
 <SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
 <SVFROMDATE>'.$fromDate.'</SVFROMDATE>
 <SVTODATE>'.$toDate.'</SVTODATE>
@@ -448,6 +464,10 @@ class ExportController extends CI_Controller {
 
 	public function get_ratioan() {
 		$company_id = $this->input->post('company_name');
+		$fromDate = $this->input->post('fromDate');
+		$toDate = $this->input->post('toDate');
+		$toDate=date('d-M-Y',strtotime($toDate));
+		$fromDate=date('d-M-Y',strtotime($fromDate));
 		$requestXML = '<!--THIS WILL FETCH RATIO ANALYSIS DETAILS PROGRAMMATICALLY-->
 <!--WHICH IS EQUIVALENT TO USING THE FOLLOWING OPTION MANUALLY IN TALLY-->
 <!--OPTION:-->
@@ -462,6 +482,8 @@ class ExportController extends CI_Controller {
 <STATICVARIABLES>
 <SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
 <SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
+<SVFROMDATE>'.$fromDate.'</SVFROMDATE>
+<SVTODATE>'.$toDate.'</SVTODATE>
 </STATICVARIABLES>
 <REPORTNAME>Ratio Analysis</REPORTNAME>
 </REQUESTDESC>
