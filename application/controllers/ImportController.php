@@ -2461,6 +2461,7 @@ XML;
 						$get_tax_xml .= $this->get_tax_xml_new($taxname[$n], $taxper[$n], $taxamt[$n], $allamt, $type, $acc_item_invoice);
 					}
 				}
+
 				$get_all_xml .= $get_item_xml . $get_tax_xml;
 			}
 			if ($acc_item_invoice == 2) {
