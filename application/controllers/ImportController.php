@@ -2434,7 +2434,7 @@ XML;
 		$get_tax_xml = "";
 		$get_all_xml = "";
 
-		$vc_num = $this->voucher_number();
+		$vc_num = $invoiceno;//$this->voucher_number();
 		$type = $this->input->post('vctype');;
 		if ($type == "Sales") {
 			for ($i = 0; $i < $div_count; $i++) {
