@@ -126,7 +126,7 @@ $file_id
 						</div>
 						<div class="col-sm-4">
 							<label for="group-name" class=" control-label">Amount</label>
-							<input type="text" class="form-control amt0" value="0" onKeyup="getValue(this)" id="amt00" placeholder="Amount" name="amt0[]">
+							<input type="text" class="form-control amt0" value="0"  id="amt00" placeholder="Amount" name="amt0[]">
 
 						</div>
 					</div>
@@ -139,8 +139,11 @@ $file_id
 				</div>
 				<div class="row">
 					<hr>
-					<div class="col-sm-12">
-						<h5> &nbsp;&nbsp;&nbsp;Taxation</h5>
+					<div class="row col-sm-12">
+						<input type="hidden" id="tax_count0" name="tax_count0" value="1">
+						<h5> &nbsp;&nbsp;&nbsp;Taxation</h5><button type="button" id="" class="btn btn-link " style=""
+																	onclick="repeat_tax_div(0)"><i class="fa fa-plus"></i>Add more taxation..
+						</button>
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Name</label>
@@ -150,14 +153,15 @@ $file_id
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Percent</label>
-						<input type="text" class="form-control taxper0" onKeyup="getTotal(this)" value="0" id="taxper" placeholder="Percent" name="taxper0[]">
+						<input type="text" class="form-control taxper0" onKeyup="getTotal(this,0)" value="0" id="taxper" placeholder="Percent" name="taxper0[]">
 					</div>
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Amount</label>
 						<input type="text" class="form-control taxamt0" value="0" id="taxamt" placeholder="Amount" name="taxamt0[]">
 					</div>
 				</div>
-				<div class="row">
+				<div id="dynamic_div_tax0"></div>
+				<!--<div class="row">
 					<div class="col-sm-4">
 						<label for="group-name" class=" control-label">Name</label>
 						<select id='taxname1' class="form-control" name='taxname0[]'>
@@ -172,7 +176,7 @@ $file_id
 						<label for="group-name" class=" control-label">Amount</label>
 						<input type="text" class="form-control taxamt10"  value="0" id="taxamt" placeholder="Amount" name="taxamt0[]">
 					</div>
-				</div>
+				</div>-->
 			</div>
 			<hr>
 			<div id="dynamic_div_n1"></div>
@@ -465,6 +469,29 @@ $file_id
 
 
 	}
+	function get_ledger_listChange(cnt,cnt1) {
+		console.log(cnt,cnt1);
+		var acc_item_invoice=$('input[name="acc_item_invoice"]:checked').val();
+
+		var company_name = $("#company_name").val();
+		$.ajax({
+			type: "POST",
+			url: "<?= base_url("ImportController/get_ledgers") ?>",
+			dataType: "json",
+			async: false,
+			cache: false,
+			data: {company_name},
+			success: function (result) {
+				var data = result.ledger_list;
+			//	console.log(data);
+				$('#taxname'+cnt+cnt1).html(data);
+				$('#taxname'+cnt+cnt1).select2();
+
+			},
+		});
+
+
+	}
 
 	function remove_div(id,val) {
 		var cl_id = '';
@@ -535,7 +562,7 @@ $file_id
 				' </div>' +
 				'<div class="col-sm-4">' +
 				' <label for="group-name" class=" control-label">Amount</label>' +
-				'<input type="text" class="form-control amt' + id + '" onKeyup="getValue(this)" value="0" id="amt' + id + div_count + '" placeholder="Amount" name="amt' + id + '[]" >' +
+				'<input type="text" class="form-control amt' + id + '"  value="0" id="amt' + id + div_count + '" placeholder="Amount" name="amt' + id + '[]" >' +
 				'</div>' +
 				'</div>' +
 				'</div>';
@@ -583,7 +610,7 @@ $file_id
 				'</div>' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Amount</label>' +
-				'<input type="text" class="form-control amt' + div_count1 + '" onKeyup="getValue(this)"  value="0" id="amt' + div_count1 + '" placeholder="Amount" name="amt' + div_count1 + '[]" >' +
+				'<input type="text" class="form-control amt' + div_count1 + '"   value="0" id="amt' + div_count1 + '" placeholder="Amount" name="amt' + div_count1 + '[]" >' +
 				'</div>' +
 				'</div>' +
 				'</div>' +
@@ -592,19 +619,23 @@ $file_id
 				'<button type="button" class="btn btn-link itemClass" style="outline: none;" onclick="repeat_div(' + div_count1 + ')">Add Entries <i class="fa fa-plus"></i></button>' +
 				' </div>' +
 				'<div class="row"> <hr>' +
-				'<div class="col-sm-12">' +
-				'<h5> &nbsp;&nbsp;&nbsp;Taxation</h5></div>' +
+				'<div class="col-sm-12 row"><input type="hidden" id="tax_count'+div_count1+'" name="tax_count'+div_count1+'" value="1">' +
+				'<h5> &nbsp;&nbsp;&nbsp;Taxation</h5><button type="button" id="" class="btn btn-link " style=""\n' +
+				'\t\tonclick="repeat_tax_div('+div_count1+')"><i class="fa fa-plus"></i>Add more taxation..\n' +
+				'\t\t\t\t</button></div>' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Name</label>' +
 				'<select id="taxname' + tax_inp + '" class="form-control" name="taxname' + div_count1 + '[]" >' +
 				'<option>Select Value</option>' +
 				'</select>' +
 				'</div>';
+
+
 		var first = tax_inp;
 
 		task_data2 += '<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Percent</label>' +
-				'<input type="text" class="form-control taxper'+div_count1+'" id="taxper" onKeyup="getTotal(this)" value="0" placeholder="Percent" name="taxper' + div_count1 + '[]" >' +
+				'<input type="text" class="form-control taxper'+div_count1+'" id="taxper" onKeyup="getTotal(this,'+div_count1+')" value="0" placeholder="Percent" name="taxper' + div_count1 + '[]" >' +
 				'</div>' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Amount</label>' +
@@ -612,15 +643,16 @@ $file_id
 				'</div>' +
 				'</div>' +
 				'</div>' +
-				'<div class="row">' +
+				'<div id="dynamic_div_tax'+div_count1+'"></div>' ;
+				/*'<div class="row">' +
 				'<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Name</label>' +
 				'<select id="taxname' + (tax_inp = (tax_inp) * 1 + 1) + '" class="form-control" name="taxname' + div_count1 + '[]" >' +
 				'<option>Select Value</option>' +
 				'</select>' +
-				'</div>';
+				'</div>';*/
 
-		task_data2 += '<div class="col-sm-4">' +
+		/*task_data2 += '<div class="col-sm-4">' +
 				'<label for="group-name" class=" control-label">Percent</label>' +
 				'<input type="text" class="form-control taxper1'+div_count1+'" value="0" onKeyup="getTotal(this)" " id="taxper" placeholder="Percent" name="taxper' + div_count1 + '[]" >' +
 				'</div>' +
@@ -629,7 +661,7 @@ $file_id
 				'<input type="text" class="form-control taxamt1'+div_count1+'"  value="0" id="taxamt" placeholder="Amount" name="taxamt' + div_count1 + '[]" >' +
 				'</div>' +
 				'</div>' +
-				'</div><hr>';
+				'</div><hr>';*/
 
 		$('#dynamic_div_n1').append(task_data2);
 		var acc_item_invoice=$('input[name="acc_item_invoice"]:checked').val();
@@ -697,19 +729,21 @@ $file_id
 		$('.taxamt1'+id).val(total1);
 	}
 
-	function getTotal(val) {
+	function getTotal(val,divCount) {
 		var cl = val.className.split(" ")[1];
 		var all = [];
 		let sum = 0;
-		var id = cl.slice(-1);
-		$('.amt'+id).map(function () {
+	var	id = cl.match(/\d+/)[0];
+		//var id = cl.slice(-2);
+	//	var id2 = cl.slice(-2);
+		$('.amt'+divCount).map(function () {
 			all.push(this.value);
 		}).get();
 		if(all.length > 0){
 			sum = eval(all.join("+"));
 		}
 		var percent = $('.taxper'+id).val();
-		var percent1 = $('.taxper1'+id).val();
+		var percent1 = $('.taxper'+id).val();
 
 		var total = 0;
 		var total1 = 0;
@@ -722,8 +756,34 @@ $file_id
 		if(Number.isNaN(total1)){
 			total1 = 0;
 		}
-		$('.taxamt'+id).val(total);
-		$('.taxamt1'+id).val(total1);
+		//$('.taxamt'+id).val(total);
+		$('.taxamt'+id).val(total1);
+	}
+	
+	function repeat_tax_div(num) {
+	var	num1 = (num*1) +1;
+	var count=$("#tax_count"+num).val();
+		var html= `<div class="row">
+				<div class="col-sm-4">
+				<label for="group-name" class=" control-label">Name</label>
+				<select id='taxname${num1}${count}'  class="form-control" name='taxname${num}[]'>
+				<option>Select Value</option>
+		</select>
+		</div>
+		<div class="col-sm-4">
+				<label for="group-name" class=" control-label">Percent</label>
+				<input type="text" class="form-control taxper${count}${num1}" onKeyup="getTotal(this,${num})" value="0" id="taxper" placeholder="Percent" name="taxper${num}[]">
+				</div>
+				<div class="col-sm-4">
+				<label for="group-name" class=" control-label">Amount</label>
+				<input type="text" class="form-control taxamt${count}${num1}"  value="0" id="taxamt" placeholder="Amount" name="taxamt${num}[]">
+				</div>
+				</div>`;
+
+		$("#dynamic_div_tax"+num).append(html);
+		get_ledger_listChange(num1,count);
+		count=count*1 + 1;
+		$("#tax_count"+num).val(count);
 	}
 
 </script>

@@ -3043,8 +3043,11 @@ XML;
 
 	function get_tax_xml_new($taxname, $taxper, $taxamt, $amount, $type, $acc_item_invoice)
 	{
+
+		$isDeem=' <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>';
 		if ($type == "Purchase") {
 			$taxamt = "-" . $taxamt;
+			$isDeem=' <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>';
 		}
 		if ($acc_item_invoice == 2) {
 			$xml = '<ALLLEDGERENTRIES.LIST>
@@ -3054,7 +3057,7 @@ XML;
 	   <ISPARTYLEDGER>No</ISPARTYLEDGER>
        <LEDGERNAME>' . $taxname . '</LEDGERNAME>
 	   <GSTCLASS/>
-       <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
+      '.$isDeem.'
        <LEDGERFROMITEM>No</LEDGERFROMITEM>
        <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
        <ISPARTYLEDGER>No</ISPARTYLEDGER>
@@ -3075,7 +3078,7 @@ XML;
 	   <ISPARTYLEDGER>No</ISPARTYLEDGER>
        <LEDGERNAME>' . $taxname . '</LEDGERNAME>
 	   <GSTCLASS/>
-       <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
+       '.$isDeem.'
        <LEDGERFROMITEM>No</LEDGERFROMITEM>
        <REMOVEZEROENTRIES>No</REMOVEZEROENTRIES>
        <ISPARTYLEDGER>No</ISPARTYLEDGER>
