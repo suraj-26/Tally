@@ -141,36 +141,7 @@ class ExportController extends CI_Controller {
 
 
 ';
-		$requestXML='<ENVELOPE>
-    <HEADER>
-        <VERSION>1</VERSION>
-        <TALLYREQUEST>Export</TALLYREQUEST>
-        <TYPE>Collection</TYPE>
-        <ID>Vouchers</ID>
-    </HEADER>
-    <BODY>
-        <DESC>
-            <STATICVARIABLES>
-                <SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT> <!-- * Supports only xml format -->
-              <SVViewName>Accounting Voucher View</SVViewName>
-                <SVFROMDATE>'.date('d-M-Y',strtotime($from_date)).'</SVFROMDATE>
-<SVTODATE>'.date('d-M-Y',strtotime($to_date)).'</SVTODATE>
-            </STATICVARIABLES>
-            <TDL>
-                <TDLMESSAGE>
-                    <COLLECTION ISMODIFY="No" ISFIXED="No" ISINITIALIZE="No" ISOPTION="No" ISINTERNAL="No" NAME="Vouchers">
-                        <TYPE> Vouchers : Group</TYPE>
-                            <!--Replace Sales Accounts with GroupName you want to search -->
-                        <Childof>Sales Accounts</Childof>
-                        <NATIVEMETHOD>*</NATIVEMETHOD>
-                    
-                    </COLLECTION>
-  
-                </TDLMESSAGE>
-            </TDL>
-        </DESC>
-    </BODY>
-</ENVELOPE>';
+		
 
 		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
 
