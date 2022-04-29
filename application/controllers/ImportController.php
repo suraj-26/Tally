@@ -2091,7 +2091,6 @@ XML;
 
 	function getXmlForSaleItemN($company_id, $date, $narration, $party_ledger, $amount, $get_all_xml, $vc_num)
 	{
-
 		$xml = '<ENVELOPE>
  <HEADER>
   <TALLYREQUEST>Import Data</TALLYREQUEST>
@@ -2114,7 +2113,7 @@ XML;
 	  <NARRATION>{' . $narration . '}</NARRATION>
       <PARTYLEDGERNAME>' . $party_ledger . '</PARTYLEDGERNAME>
       <VOUCHERTYPENAME>Sales</VOUCHERTYPENAME>
-      <REFERENCE>22</REFERENCE>
+      <REFERENCE>' . $vc_num . '</REFERENCE>
       <VOUCHERNUMBER>' . $vc_num . '</VOUCHERNUMBER>
       <CSTFORMISSUETYPE/>
       <CSTFORMRECVTYPE/>
@@ -2179,7 +2178,7 @@ XML;
 	  <NARRATION>{' . $narration . '}</NARRATION>
       <PARTYLEDGERNAME>' . $party_ledger . '</PARTYLEDGERNAME>
       <VOUCHERTYPENAME>Sales</VOUCHERTYPENAME>
-      <REFERENCE>22</REFERENCE>
+      <REFERENCE>' . $vc_num . '</REFERENCE>
       <VOUCHERNUMBER>' . $vc_num . '</VOUCHERNUMBER>
       <CSTFORMISSUETYPE/>
       <CSTFORMRECVTYPE/>
@@ -2244,6 +2243,7 @@ XML;
       <PARTYLEDGERNAME>' . $party_ledger . '</PARTYLEDGERNAME>
       <PARTYNAME>' . $party_ledger . '</PARTYNAME>
       <VOUCHERTYPENAME>Expenses</VOUCHERTYPENAME>
+      <REFERENCE>' . $vc_num . '</REFERENCE>
       <VOUCHERNUMBER>' . $vc_num . '</VOUCHERNUMBER>
       <CSTFORMISSUETYPE/>
       <CSTFORMRECVTYPE/>
@@ -2316,7 +2316,7 @@ XML;
 	  <NARRATION>{' . $narration . '}</NARRATION>
       <PARTYLEDGERNAME>' . $party_ledger . '</PARTYLEDGERNAME>
       <VOUCHERTYPENAME>Purchase</VOUCHERTYPENAME>
-      <REFERENCE>22</REFERENCE>
+      <REFERENCE>' . $vc_num . '</REFERENCE>
       <VOUCHERNUMBER>' . $vc_num . '</VOUCHERNUMBER>
       <CSTFORMISSUETYPE/>
       <CSTFORMRECVTYPE/>
@@ -2380,7 +2380,7 @@ XML;
 	  <NARRATION>{' . $narration . '}</NARRATION>
       <PARTYLEDGERNAME>' . $party_ledger . '</PARTYLEDGERNAME>
       <VOUCHERTYPENAME>Purchase</VOUCHERTYPENAME>
-      <REFERENCE>22</REFERENCE>
+      <REFERENCE>' . $vc_num . '</REFERENCE>
       <VOUCHERNUMBER>' . $vc_num . '</VOUCHERNUMBER>
       <CSTFORMISSUETYPE/>
       <CSTFORMRECVTYPE/>
@@ -2433,7 +2433,6 @@ XML;
 		$get_item_xml = "";
 		$get_tax_xml = "";
 		$get_all_xml = "";
-
 		$vc_num = $invoiceno;//$this->voucher_number();
 		$type = $this->input->post('vctype');;
 		if ($type == "Sales") {
@@ -2470,7 +2469,6 @@ XML;
 				$xml = $this->getXmlForSaleAcc($company_id, $date, $narration, $party_ledger, $amount, $get_all_xml, $vc_num);
 
 			}
-
 
 		} else if ($type == "Expense") {
 			for ($i = 0; $i < $div_count; $i++) {
@@ -2536,11 +2534,9 @@ XML;
 				$xml = $this->getXmlForPurchaseItem($company_id, $date, $narration, $party_ledger, $amount, $get_all_xml, $vc_num);
 			} else {
 				$xml = $this->getXmlForSalePUR($company_id, $date, $narration, $party_ledger, $amount, $get_all_xml, $vc_num);
-
 			}
 
 		}
-
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $this->url);
 // Following line is compulsary to add as it is:
@@ -2548,12 +2544,10 @@ XML;
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 300);
 		$data = curl_exec($ch);
-		// var_dump($data);
 
 		$xml = simplexml_load_string($data);
 		$json = json_encode($xml);
 		$array = json_decode($json, TRUE);
-		//var_dump($array);
 		if ($array['CREATED'] == 1) {
 			$response['status'] = 200;
 			$user_id = $this->session->user_session->user_id;
