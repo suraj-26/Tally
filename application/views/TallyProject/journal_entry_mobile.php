@@ -217,6 +217,7 @@
                                         console.log(data);
                                         if (result.status == 200) {
                                             alert('Voucher Added Successfully');
+                                            tallyTransaction();
 										//	location.reload();
                                         } else {
                                             alert('Something went wrong');
@@ -224,6 +225,24 @@
                                         }
                                     },
                                 });
+							}
+
+
+							function tallyTransaction() {
+								var company_name = $("#Jcompany_name").val();
+								$.ajax({
+									type: "POST",
+									url: "<?= base_url("ImportController/tallyTransaction") ?>",
+									dataType: "json",
+									data: $("#add_led_formsale").serialize()+'&formName=1',
+									success: function (result) {
+										if (result.status == 200){
+											console.log('Added');
+										}else{
+											console.log("something went wrong.");
+										}
+									},
+								});
 							}
                             function get_ledger_list(id) {
 								

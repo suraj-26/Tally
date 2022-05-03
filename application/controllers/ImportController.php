@@ -2434,7 +2434,7 @@ XML;
 		$get_tax_xml = "";
 		$get_all_xml = "";
 		$vc_num = $invoiceno;//$this->voucher_number();
-		$type = $this->input->post('vctype');;
+		$type = $this->input->post('vctype');
 		if ($type == "Sales") {
 			for ($i = 0; $i < $div_count; $i++) {
 				$ledger = $this->input->post('ledger' . $i);
@@ -2566,6 +2566,68 @@ XML;
 			$response['status'] = 201;
 		}
 		curl_close($ch);
+		echo json_encode($response);
+	}
+
+
+	public function tallyTransaction(){
+		$user_id = $this->session->user_session->user_id;
+		$formName = $this->input->post('formName');
+		$data = array();
+		if ($formName == 1){
+			$company_name = $this->input->post('Jcompany_name');
+			$narration = $this->input->post('Jnarration');
+			$date = $this->input->post('Jdate');
+			$vcdate =  date('d-m-Y', strtotime($date));
+			$form_name = 'Journal Entry';
+		}else if ($formName == 2){
+			$company_name = $this->input->post('company_name');
+			$narration = $this->input->post('narration');
+			$date = $this->input->post('date');
+			$vcdate =  date('d-m-Y', strtotime($date));
+			$form_name = 'Sale/Purchase';
+			$vctype = $this->input->post('vctype');
+			$acc_item_invoice = $this->input->post("acc_item_invoice");
+			$party_ledger = $this->input->post('party_ledger');
+			$vcamount = $this->input->post('amount');
+			$invoice_no = $this->input->post('invoiceno');
+			$data["vctype"]=$vctype;
+			$data["acc_item_invoice"]=$acc_item_invoice;
+			$data["party_ledger"]=$party_ledger;
+			$data["vcamount"]=$vcamount;
+			$data["invoice_no"]=$invoice_no;
+		}else{
+			$company_name = $this->input->post('company_name');
+			$form_name = 'Other Entry';
+			$vctype = $this->input->post('vtype');
+			$narration = $this->input->post('narration');
+			$party_ledger = $this->input->post('party_ledger');
+			$invoice_no = $this->input->post('invoice');
+			$date = $this->input->post('date');
+			$vcdate =  date('d-m-Y', strtotime($date));
+			$data["vctype"]=$vctype;
+			$data["party_ledger"]=$party_ledger;
+			$data["invoice_no"]=$invoice_no;
+		}
+
+		$data["user_id"]=$user_id;
+		$data["form_name"] = $form_name;
+		$data["company_name"] = $company_name;
+		$data["vcdate"]=$vcdate;
+		$data["narration"]=$narration;
+		$data["created_on"]=date('d-m-Y H:i:s');
+		$data["created_by"]= $user_id;
+		$data["status"]="1";
+
+		$transaction = $this->db->insert('tally_transaction',$data);
+		$response = array();
+		if ($transaction){
+			$response['status'] = 200;
+			$response['data'] = 'Transaction Added Successfully';
+		}else{
+			$response['status'] = 201;
+			$response['data'] = 'Transaction Added Failed';
+		}
 		echo json_encode($response);
 	}
 

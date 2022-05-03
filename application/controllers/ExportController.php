@@ -106,7 +106,7 @@ class ExportController extends CI_Controller {
 		$a_date = $year."-".$mon."-01";
 		$last_date= date("Ymt", strtotime($a_date));
 		$a_date = $year.$mon."01";*/
-		$requestXML='<!--Option: Gateway of Tally @Display @Account Books @Journal Register-->
+		$requestXML1='<!--Option: Gateway of Tally @Display @Account Books @Journal Register-->
 <ENVELOPE>
 <HEADER>
 <TALLYREQUEST>Export Data</TALLYREQUEST>
@@ -141,7 +141,42 @@ class ExportController extends CI_Controller {
 
 
 ';
-		
+		$requestXML='<!--Option: Gateway of Tally @Display @Account Books @Journal Register-->
+<ENVELOPE>
+<HEADER>
+<TALLYREQUEST>Export Data</TALLYREQUEST>
+</HEADER>
+<BODY>
+<EXPORTDATA>
+<REQUESTDESC>
+<STATICVARIABLES>
+<SVFROMDATE>'.date('d-M-Y',strtotime($from_date)).'</SVFROMDATE>
+<SVTODATE>'.date('d-M-Y',strtotime($to_date)).'</SVTODATE>
+            <SVCURRENTCOMPANY>{'.$company_id.'}</SVCURRENTCOMPANY>
+            <VOUCHERTYPENAME>'.$vctype1.'</VOUCHERTYPENAME>
+
+<!--Detailed or Condensed Format-->
+<EXPLODEFLAG>Yes</EXPLODEFLAG>
+<DBBILLEXPLODEFLAG>Yes</DBBILLEXPLODEFLAG>
+<DBINVEXPLODEFLAG>Yes</DBINVEXPLODEFLAG>
+
+<!--Specify the Report FORMAT here-->
+<SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
+<!--Specify the Period here-->
+
+<COLUMNARDAYBOOK>Yes</COLUMNARDAYBOOK>
+
+</STATICVARIABLES>
+
+<!--Specify the Report Name here-->
+<REPORTNAME>Voucher Register</REPORTNAME>
+</REQUESTDESC>
+</EXPORTDATA>
+</BODY>
+</ENVELOPE>
+
+
+';
 
 		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
 

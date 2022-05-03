@@ -311,12 +311,30 @@ $file_id
                                         console.log(data);
                                         if (result.status == 200) {
                                             alert('Voucher Added Successfully');
+											tallyTransaction();
                                         } else {
                                             alert('Something went wrong');
                                         }
                                     },
                                 });
 							}
+
+							function tallyTransaction() {
+								$.ajax({
+									type: "POST",
+									url: "<?= base_url("ImportController/tallyTransaction") ?>",
+									dataType: "json",
+									data: $("#add_led_formsale").serialize()+'&formName=2',
+									success: function (result) {
+										if (result.status == 200){
+											console.log('Added');
+										}else{
+											console.log("something went wrong.");
+										}
+									},
+								});
+							}
+
                             function get_ledger_list(id) {
 								
                                 var company_name = $("#company_name").val();

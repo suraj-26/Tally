@@ -346,7 +346,7 @@ $file_id
 	}
 
 	function add_voucher() {
-		//add_sale_purchase_data
+		// add_sale_purchase_data
 		$.ajax({
 			type: "POST",
 			// url: "<?= base_url("ImportController/add_sale_purchase_data") ?>",
@@ -360,6 +360,7 @@ $file_id
 				console.log(data);
 				if (result.status == 200) {
 					alert('Voucher Added Successfully');
+					tallyTransaction();
 				} else {
 					alert('Something went wrong...ERROR : ' + result.error);
 				}
@@ -367,6 +368,21 @@ $file_id
 		});
 	}
 
+	function tallyTransaction() {
+		$.ajax({
+			type: "POST",
+			url: "<?= base_url("ImportController/tallyTransaction") ?>",
+			dataType: "json",
+			data: $("#add_led_formsale").serialize()+'&formName=2',
+			success: function (result) {
+				if (result.status == 200){
+					console.log($("#add_led_formsale").serialize()+'&formName=2');
+				}else{
+					console.log("something went wrong.");
+				}
+			},
+		});
+	}
 	function get_ledger_list(id) {
 
 		var company_name = $("#company_name").val();

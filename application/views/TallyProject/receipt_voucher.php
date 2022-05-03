@@ -301,8 +301,27 @@
 				console.log(data);
 				if (result.status == 200) {
 					alert('Voucher Added Successfully');
+					tallyTransaction();
 				} else {
 					alert('Something went wrong...ERROR : ' + result.error);
+				}
+			},
+		});
+	}
+
+
+	function tallyTransaction() {
+		var company_name = $("#Jcompany_name").val();
+		$.ajax({
+			type: "POST",
+			url: "<?= base_url("ImportController/tallyTransaction") ?>",
+			dataType: "json",
+			data: $("#add_led_formsale").serialize()+'&formName=3',
+			success: function (result) {
+				if (result.status == 200){
+					console.log('Added');
+				}else{
+					console.log("something went wrong.");
 				}
 			},
 		});

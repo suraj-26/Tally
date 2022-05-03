@@ -218,9 +218,27 @@
 				if (result.status == 200) {
 					alert('Voucher Added Successfully');
 					//	location.reload();
+					tallyTransaction();
 				} else {
 					alert('Something went wrong');
 					//location.reload();
+				}
+			},
+		});
+	}
+
+	function tallyTransaction() {
+		var company_name = $("#Jcompany_name").val();
+		$.ajax({
+			type: "POST",
+			url: "<?= base_url("ImportController/tallyTransaction") ?>",
+			dataType: "json",
+			data: $("#add_led_formsale").serialize()+'&formName=1',
+			success: function (result) {
+				if (result.status == 200){
+					console.log('Added');
+				}else{
+					console.log("something went wrong.");
 				}
 			},
 		});
