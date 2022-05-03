@@ -96,6 +96,7 @@ class ExportController extends CI_Controller {
 			$response['status'] = true;
 		}echo json_encode($response);
 	}
+	
 	public function exportsalepurchase(){
 		$from_date=$this->input->post('from_date');
 		$to_date=$this->input->post('to_date');
@@ -106,41 +107,6 @@ class ExportController extends CI_Controller {
 		$a_date = $year."-".$mon."-01";
 		$last_date= date("Ymt", strtotime($a_date));
 		$a_date = $year.$mon."01";*/
-		$requestXML1='<!--Option: Gateway of Tally @Display @Account Books @Journal Register-->
-<ENVELOPE>
-<HEADER>
-<TALLYREQUEST>Export Data</TALLYREQUEST>
-</HEADER>
-<BODY>
-<EXPORTDATA>
-<REQUESTDESC>
-<STATICVARIABLES>
-<SVFROMDATE>'.date('d-M-Y',strtotime($from_date)).'</SVFROMDATE>
-<SVTODATE>'.date('d-M-Y',strtotime($to_date)).'</SVTODATE>
-            <SVCURRENTCOMPANY>{'.$company_id.'}</SVCURRENTCOMPANY>
-            <VOUCHERTYPENAME>'.$vctype1.'</VOUCHERTYPENAME>
-
-<!--Detailed or Condensed Format-->
-<EXPLODEFLAG>Yes</EXPLODEFLAG>
-<DBBILLEXPLODEFLAG>Yes</DBBILLEXPLODEFLAG>
-<DBINVEXPLODEFLAG>Yes</DBINVEXPLODEFLAG>
-
-<!--Specify the Report FORMAT here-->
-<SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
-<!--Specify the Period here-->
-
-
-</STATICVARIABLES>
-
-<!--Specify the Report Name here-->
-<REPORTNAME>Voucher Register</REPORTNAME>
-</REQUESTDESC>
-</EXPORTDATA>
-</BODY>
-</ENVELOPE>
-
-
-';
 		$requestXML='<!--Option: Gateway of Tally @Display @Account Books @Journal Register-->
 <ENVELOPE>
 <HEADER>
@@ -156,15 +122,14 @@ class ExportController extends CI_Controller {
             <VOUCHERTYPENAME>'.$vctype1.'</VOUCHERTYPENAME>
 
 <!--Detailed or Condensed Format-->
-<EXPLODEFLAG>Yes</EXPLODEFLAG>
-<DBBILLEXPLODEFLAG>Yes</DBBILLEXPLODEFLAG>
-<DBINVEXPLODEFLAG>Yes</DBINVEXPLODEFLAG>
 
 <!--Specify the Report FORMAT here-->
 <SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
 <!--Specify the Period here-->
-
 <COLUMNARDAYBOOK>Yes</COLUMNARDAYBOOK>
+
+<!--Set the SVColumntype variable here -->
+<SVCOLUMNTYPE>$$SysName:AllItems</SVCOLUMNTYPE>
 
 </STATICVARIABLES>
 
@@ -177,6 +142,7 @@ class ExportController extends CI_Controller {
 
 
 ';
+
 
 		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
 
@@ -195,67 +161,6 @@ class ExportController extends CI_Controller {
 		} else {
 			$response['data'] = $data;
 			$response['status'] = true;
-		}echo json_encode($response);
-	}
-
-	public function get_balancesheet() {
-		$company_id = $this->input->post('company_name');
-		$fromDate = $this->input->post("fromDate");
-		$toDate = $this->input->post("toDate");
-		$toDate=date('d-M-Y',strtotime($toDate));
-		$fromDate=date('d-M-Y',strtotime($fromDate));
-//		<REPORTNAME>Balance Sheet</REPORTNAME>
-		$requestXML = '<ENVELOPE>
-<HEADER>
-<TALLYREQUEST>Export Data</TALLYREQUEST>
-</HEADER>
-<BODY>
-<EXPORTDATA>
-<REQUESTDESC>
-<STATICVARIABLES>
-
-<!--To Fetch data in XML format-->
-<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
-<SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
-
-<!--Specify the Period here-->
-<SVFROMDATE>'.$fromDate.'</SVFROMDATE>
-<SVTODATE>'.$toDate.'</SVTODATE>
-<!--To Fetch data in HTML format, change the SVEXPORTFORMAT Tag value as -->
-<!--$$SysName:HTML-->
-
-</STATICVARIABLES>
-<REPORTNAME>Balance Sheet</REPORTNAME>
-</REQUESTDESC>
-</EXPORTDATA>
-</BODY>
-</ENVELOPE>
-    ';
-
-		//$server = '192.168.1.25:9000';
-		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
-
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $this->url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 100);
-		curl_setopt($ch, CURLOPT_POST, true);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
-
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-		$data = curl_exec($ch);
-
-
-//var_dump($data);
-//echo '<pre>', htmlentities($data), '</pre>';
-
-
-		if (curl_errno($ch)) {
-			print curl_error($ch);
-			echo "  something went wrong..... try later";
-			$response['data'] = $data;
-		} else {
-			$response['data'] = $data;
 		}echo json_encode($response);
 	}
 
