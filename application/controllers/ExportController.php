@@ -121,14 +121,14 @@ class ExportController extends CI_Controller {
             <VOUCHERTYPENAME>'.$vctype1.'</VOUCHERTYPENAME>
 
 <!--Detailed or Condensed Format-->
-<EXPLODEFLAG>Yes</EXPLODEFLAG>
-<DBBILLEXPLODEFLAG>Yes</DBBILLEXPLODEFLAG>
-<DBINVEXPLODEFLAG>Yes</DBINVEXPLODEFLAG>
 
 <!--Specify the Report FORMAT here-->
 <SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
 <!--Specify the Period here-->
+<COLUMNARDAYBOOK>Yes</COLUMNARDAYBOOK>
 
+<!--Set the SVColumntype variable here -->
+<SVCOLUMNTYPE>$$SysName:AllItems</SVCOLUMNTYPE>
 
 </STATICVARIABLES>
 
@@ -141,7 +141,7 @@ class ExportController extends CI_Controller {
 
 
 ';
-		
+
 
 		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
 
