@@ -411,7 +411,7 @@ if ($this->session->user_session->user_type == '6') {
 						
 						<a href="<?php echo base_url("ImportController/add_stock_summary_page"); ?>" class="w-100">
 						<i class='bx bx-bar-chart-square'></i>
-							Stock summary</a>
+							Stock Item Creation</a>
 					</li>
 				</ul>
 			</li>
@@ -442,7 +442,7 @@ if ($this->session->user_session->user_type == '6') {
 						
 						<a href="<?php echo base_url("ImportController/receipt_voucher"); ?>" class="w-100">
 						<i class='bx bx-line-chart'></i>
-							Other Entry</a>
+							Accounting Vouchers</a>
 					</li>
 
 				</ul>

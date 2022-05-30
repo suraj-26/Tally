@@ -355,15 +355,11 @@ class ExportController extends CI_Controller {
 <REPORTNAME>Trial Balance</REPORTNAME>
 <STATICVARIABLES>
 <SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
-
-
-<!--This will fetch detailed TB-->
-
-
+<DSPSHOWOPENING>YES</DSPSHOWOPENING>
+<DSPSHOWTRANS>YES</DSPSHOWTRANS>
 <EXPLODEALLLEVELS>YES</EXPLODEALLLEVELS>
-
 <EXPLODEFLAG>YES</EXPLODEFLAG>
-<SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
+<SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT>
 <SVFROMDATE>'.$fromDate.'</SVFROMDATE>
 <SVTODATE>'.$toDate.'</SVTODATE>
 </STATICVARIABLES>
@@ -386,18 +382,162 @@ class ExportController extends CI_Controller {
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 		$data = curl_exec($ch);
 
+		$xml = simplexml_load_string($data);
+		$json = json_encode($xml);
+		$array = json_decode($json, TRUE);
+		$getTrialBalanceData=$this->getTrialBalanceData($array);
+		$particulars=$getTrialBalanceData[0];
+		$openingBalance=$getTrialBalanceData[1];
+		$creditArray=$getTrialBalanceData[2];
+		$debitArray=$getTrialBalanceData[3];
+		$closingBalance=$getTrialBalanceData[4];
 
-//var_dump($data);
-//echo '<pre>', htmlentities($data), '</pre>';
+		$html = '<table class="table" id="TrialBalTable">
+<thead>
+<tr>
+<th>Particulars</th>
+<th>Opening Balance</th>
+<th>Debit Amount</th>
+<th>Credit Amount</th>
+<th>Closing Balance</th>
+</tr>
+</thead>
+<tbody>
+';
+		$key=0;
+		foreach ($particulars as $item){
 
+			$html .='<tr>
+<td>'.$item.'</td>
+<td>'.$openingBalance[$key].'</td>
+<td>'.$debitArray[$key].'</td>
+<td>'.$creditArray[$key].'</td>
+<td>'.$closingBalance[$key].'</td>
+</tr>';
+			$key++;
+		}
+		$html .= '</tbody></table>';
 
 		if (curl_errno($ch)) {
 			print curl_error($ch);
 			echo "  something went wrong..... try later";
-			$response['data'] = $data;
+			$response['data'] = $html;
 		} else {
-			$response['data'] = $data;
+			$response['data'] = $html;
 		}echo json_encode($response);
+	}
+
+	function DownLoadTrialBal(){
+		$company_id = $this->input->post('company_name');
+		$toDate = $this->input->post('toDate');
+		$fromDate = $this->input->post('fromDate');
+		$toDate=date('d-M-Y',strtotime($toDate));
+		$fromDate=date('d-M-Y',strtotime($fromDate));
+		$requestXML = '
+<!--THIS WILL FETCH TRIAL BALANCE DETAILS PROGRAMMATICALLY-->
+<!--WHICH IS EQUIVALENT TO USING THE FOLLOWING OPTION MANUALLY IN TALLY-->
+<!--OPTION:-->
+<!--Gateway of Tally @Display @Trial Balance-->
+<ENVELOPE>
+<HEADER>
+<TALLYREQUEST>Export Data</TALLYREQUEST>
+</HEADER>
+<BODY>
+<EXPORTDATA>
+<REQUESTDESC>
+<!--Specify the Report Name here-->
+<REPORTNAME>Trial Balance</REPORTNAME>
+<STATICVARIABLES>
+<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+<DSPSHOWOPENING>YES</DSPSHOWOPENING>
+<DSPSHOWTRANS>YES</DSPSHOWTRANS>
+<EXPLODEALLLEVELS>YES</EXPLODEALLLEVELS>
+<EXPLODEFLAG>YES</EXPLODEFLAG>
+<SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT>
+<SVFROMDATE>'.$fromDate.'</SVFROMDATE>
+<SVTODATE>'.$toDate.'</SVTODATE>
+</STATICVARIABLES>
+</REQUESTDESC>
+</EXPORTDATA>
+</BODY>
+</ENVELOPE>
+
+    ';
+		//$server = '192.168.1.25:9000';
+		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $this->url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
+
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		$data = curl_exec($ch);
+
+		$xml = simplexml_load_string($data);
+		$json = json_encode($xml);
+		$array = json_decode($json, TRUE);
+		$getTrialBalanceData=$this->getTrialBalanceData($array);
+		$particulars=$getTrialBalanceData[0];
+		$openingBalance=$getTrialBalanceData[1];
+		$creditArray=$getTrialBalanceData[2];
+		$debitArray=$getTrialBalanceData[3];
+		$closingBalance=$getTrialBalanceData[4];
+		$objPHPExcel = new PHPExcel();
+		$objPHPExcel->setActiveSheetIndex(0);
+		$objPHPExcel->getActiveSheet()->SetCellValue('A1', "Particulars");
+		$objPHPExcel->getActiveSheet()->SetCellValue('B1', "Opening Balance");
+		$objPHPExcel->getActiveSheet()->SetCellValue('C1', "Debit");
+		$objPHPExcel->getActiveSheet()->SetCellValue('D1', "Credit");
+		$objPHPExcel->getActiveSheet()->SetCellValue('E1', "Closing Balance");
+		$i=2;
+		$key=0;
+		foreach ($particulars as $item){
+			$objPHPExcel->getActiveSheet()->SetCellValue('A'.$i, $item);
+			$objPHPExcel->getActiveSheet()->SetCellValue('B'.$i, $openingBalance[$key]);
+			$objPHPExcel->getActiveSheet()->SetCellValue('C'.$i, $debitArray[$key]);
+			$objPHPExcel->getActiveSheet()->SetCellValue('D'.$i, $creditArray[$key]);
+			$objPHPExcel->getActiveSheet()->SetCellValue('E'.$i, $closingBalance[$key]);
+			$i++;
+			$key++;
+		}
+		ob_end_clean();
+		$filename = "TrialBalance" . date("Y-m-d") . ".xls";
+
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="' . $filename . '"');
+		header('Cache-Control: max-age=0');
+		foreach (range('A', $objPHPExcel->getActiveSheet()->getHighestDataColumn()) as $col) {
+			$objPHPExcel->getActiveSheet()
+				->getColumnDimension($col)
+				->setAutoSize(true);
+		}
+		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+
+		$objWriter->save('php://output');
+	}
+
+	function getTrialBalanceData($array){
+		$particularsArr=$array['DSPACCNAME'];
+		$AccountInfoArr=$array['DSPACCINFO'];
+		$particulars=array();
+		$OpeningArray=array();
+		$debitArray=array();
+		$creditArray=array();
+		$closingBalance=array();
+		foreach ($particularsArr as $key=>$item){
+			$particulars[]=$item['DSPDISPNAME'];
+			$itemAccount=$AccountInfoArr[$key];
+			$OpeningArray[]=$this->checkType($itemAccount['DSPOPAMT']['DSPOPAMTA']);
+			$creditArray[]=$this->checkType($itemAccount['DSPCRAMT']['DSPCRAMTA']);
+			$debitArray[]=$this->checkType($itemAccount['DSPDRAMT']['DSPDRAMTA']);
+			$closingBalance[]=$this->checkType($itemAccount['DSPCLAMT']['DSPCLAMTA']);
+
+		}
+
+		return array($particulars,$OpeningArray,$creditArray,$debitArray,$closingBalance);
 	}
 
 	function checkString($string,$key){
