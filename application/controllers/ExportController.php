@@ -751,11 +751,11 @@ else if($reportName == "Bank Group summary" || $reportName == "Group Summary"){
 
 //check company id available
 
-		$requestXML = '
-<!--THIS WILL FETCH TRIAL BALANCE DETAILS PROGRAMMATICALLY-->
+
+	$requestXML = '<!--THIS WILL FETCH RATIO ANALYSIS DETAILS PROGRAMMATICALLY-->
 <!--WHICH IS EQUIVALENT TO USING THE FOLLOWING OPTION MANUALLY IN TALLY-->
 <!--OPTION:-->
-<!--Gateway of Tally @Display @Trial Balance-->
+<!--Gateway of Tally @Ratio Analysis-->
 <ENVELOPE>
 <HEADER>
 <TALLYREQUEST>Export Data</TALLYREQUEST>
@@ -763,21 +763,17 @@ else if($reportName == "Bank Group summary" || $reportName == "Group Summary"){
 <BODY>
 <EXPORTDATA>
 <REQUESTDESC>
-<!--Specify the Report Name here-->
-<REPORTNAME>'.$reportName.'</REPORTNAME>
 <STATICVARIABLES>
 <SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
-<SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
+<SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT>
 <SVFROMDATE>'.$fromDate.'</SVFROMDATE>
 <SVTODATE>'.$toDate.'</SVTODATE>
-<VOUCHERTYPENAME>'.$voucherType.'</VOUCHERTYPENAME>
 </STATICVARIABLES>
- 
+<REPORTNAME>'.$reportName.'</REPORTNAME>
 </REQUESTDESC>
 </EXPORTDATA>
 </BODY>
 </ENVELOPE>
-
     ';
 
 
@@ -797,18 +793,54 @@ else if($reportName == "Bank Group summary" || $reportName == "Group Summary"){
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 		$data = curl_exec($ch);
 
-
-//var_dump($data);
-//echo '<pre>', htmlentities($data), '</pre>';
-
-
+		$xml = simplexml_load_string($data);
+		$json = json_encode($xml);
+		$array = json_decode($json, TRUE);
+		$getRegisteredData=$this->getRegisteredData($array,$reportName);
+		$particulars=$getRegisteredData[0];
+		$creditArray=$getRegisteredData[1];
+		$debitArray=$getRegisteredData[2];
+		$closingBalance=$getRegisteredData[3];
+		if($reportName != 'Journal Register'){
+			$tr='<th>Particulars</th>
+<th>Debit Amount</th>
+<th>Credit Amount</th>
+<th>Closing Balance</th>';
+		}else{
+			$tr='<th>Particulars</th>
+<th>Debit Amount</th>
+<th>Credit Amount</th>';
+		}
+		$html = '<table class="table">
+<thead>
+<tr>
+'.$tr.'
+</tr>
+</thead>
+<tbody>
+';
+		$key=0;
+		foreach ($particulars as $item){
+			$td='';
+			if($reportName != 'Journal Register'){
+				$td ='<td>'.$closingBalance[$key].'</td>';
+			}
+			$html .='<tr>
+<td>'.$item.'</td>
+<td>'.$debitArray[$key].'</td>
+<td>'.$creditArray[$key].'</td>
+'.$td.'
+</tr>';
+			$key++;
+		}
+		$html .= '</tbody></table>';
 		if (curl_errno($ch))
 		{
 			print curl_error($ch);
 			echo "  something went wrong..... try later";
-			$response['data'] = $data;
+			$response['data'] = $html;
 		} else {
-			$response['data'] = $data;
+			$response['data'] = $html;
 			$response['status'] = true;
 		}
 
@@ -820,6 +852,26 @@ else if($reportName == "Bank Group summary" || $reportName == "Group Summary"){
 
 		//$server = '192.168.1.25:9000';
 
+	}
+
+	function getRegisteredData($array,$reportName){
+
+		$particularsArr=$array['DSPPERIOD'];
+		$AccountInfoArr=$array['DSPACCINFO'];
+		$particulars=array();
+		$debitArray=array();
+		$creditArray=array();
+		$closingBalance=array();
+		foreach ($particularsArr as $key=>$item){
+			$particulars[]=$item;
+			$itemAccount=$AccountInfoArr[$key];
+			$creditArray[]=$this->checkType($itemAccount['DSPCRAMT']['DSPCRAMTA']);
+			$debitArray[]=$this->checkType($itemAccount['DSPDRAMT']['DSPDRAMTA']);
+			if($reportName != 'Journal Register'){
+				$closingBalance[]=$this->checkType($itemAccount['DSPCLAMT']['DSPCLAMTA']);
+			}
+		}
+		return array($particulars,$creditArray,$debitArray,$closingBalance);
 	}
 
 

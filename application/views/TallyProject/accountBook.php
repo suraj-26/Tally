@@ -39,9 +39,9 @@
 				<option value="Bank Group summary">Cash/Bank Book</option>
 				<option value="Group Summary">Group Summary</option>
 				<option value="Group Vouchers">Group Voucher</option>
-				<option value="Voucher Register-Sales">Sales Register</option>
-				<option value="Voucher Register-Purchase">Purchase Register</option>
-				<option value="Voucher Register-Journal">Journal Register</option>
+				<option value="Sales Register">Sales Register</option>
+				<option value="Purchase Register">Purchase Register</option>
+				<option value="Journal Register">Journal Register</option>
 			</select>
 			</div><br>
 			<div class="ledgerWiseDiv" style="display: none">
