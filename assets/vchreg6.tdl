@@ -1,0 +1,6 @@
+;;To be used with VCHREG6.XML file to fetch Columnar Sales Register in
+;;HTML or XML format 
+[#Report: Voucher Register]
+  Set: ColumnarDaybook: ##ColumnarDaybook
+  Set: SVColumnType: ##SVColumnType
+  Set: SVColumnName: ##SVColumnName

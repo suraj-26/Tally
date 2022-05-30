@@ -15,7 +15,7 @@ $file_id
     flex: 1;
 	background-color:#ffffff;
 	">
-	<div class="col-md-6">
+	<div class="col-md-12">
 		<br>
 		<h3>Create Sale/Purchase Voucher</h3>
 		<hr>
@@ -195,7 +195,7 @@ $file_id
 			</div>
 		</form>
 	</div>
-	<div class="col-md-6"><br>
+	<!--<div class="col-md-6"><br>
 		<div class="row">
 			<h3>View Sale/Purchase Entry </h3>
 			<hr>
@@ -226,7 +226,7 @@ $file_id
 
 			</div>
 		</div>
-	</div>
+	</div>-->
 </div>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script>
@@ -687,7 +687,8 @@ $file_id
 			get_ledger_list('taxname' + first);
 			get_ledger_list('taxname' + tax_inp);
 		}else{
-			get_stockgrp_list('ledger' + div_count1);
+			// get_stockgrp_list('ledger' + div_count1);
+			get_ledger_list('ledger' + div_count1);
 			$('#ledger' + div_count1).select2();
 			get_ledger_list('taxname' + first);
 			get_ledger_list('taxname' + tax_inp);

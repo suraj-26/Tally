@@ -28,6 +28,18 @@ class ImportController extends CI_Controller
 		$this->load->view('Import_data/create_stock_summary');
 	}
 
+	public function loadTallyData()
+	{
+
+
+		$data["load_view"] = array("TallyProject/loadDatabase.php");
+		if (preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"])) {
+			$this->load->view('TallyProject/main_page_mobile.php', $data);
+		} else {
+			$this->load->view("TallyProject/main_page.php", $data);
+		}
+	}
+
 	function customer_account()
 	{
 
@@ -43,6 +55,7 @@ class ImportController extends CI_Controller
 			$this->load->view("TallyProject/main_page.php", $data);
 
 		}
+
 
 
 	}

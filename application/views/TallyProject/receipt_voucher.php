@@ -13,7 +13,7 @@
     flex: 1;
 	background-color:#ffffff;
 	">
-	<div class="col-md-6"><br>
+	<div class="col-md-12"><br>
 
 
 		<h5>Create Receipt/Payment Voucher</h5>
@@ -143,7 +143,7 @@
 			</div>
 		</form>
 	</div>
-	<div class="col-md-6"><br>
+	<!--<div class="col-md-6"><br>
 		<div class="row">
 			<h5>View Receipt/Payment/Contra/Debit/Credit Note Entry </h5>
 			<hr>
@@ -161,12 +161,12 @@
 				<label for="vehicle2">Credit Note</label>
 
 			</div>
-			<!--<div class="col-md-6">
+			<div class="col-md-6">
 
 				<select id="month11" name="month11" class="form-control" Onchange="get_sale_purchase_data()">
 					<option value="0">select month</option>
 				</select>
-			</div>-->
+			</div>
 
 			<div class="col-md-6">
 				<label>From Date:</label>
@@ -183,7 +183,7 @@
 
 
 			</div>
-		</div>
+		</div>-->
 	</div>
 </div>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

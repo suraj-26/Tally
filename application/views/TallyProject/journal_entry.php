@@ -15,7 +15,7 @@
 	background-color:#ffffff;
 	">
 
-	<div class="col-md-6"><br>
+	<div class="col-md-12"><br>
 		<h3>Create Journal Entry </h3>
 		<hr>
 
@@ -99,14 +99,14 @@
 		</form>
 	</div>
 </div>
-<div class="col-md-6"><br>
+<!--<div class="col-md-6"><br>
 	<div class="row">
 		<div class="col-md-12">
 			<h3>View Journal Entry </h3>
 			<hr>
-			<!--<select id="month11" name="month11" class="form-control" Onchange="get_journal_entry_data()">
+			<select id="month11" name="month11" class="form-control" Onchange="get_journal_entry_data()">
 				<option value="0">select month</option>
-			</select>-->
+			</select>
 			<label>From Date:</label>
 			<input type="date" id="from_date" name="from_date" class="form-control">
 			<label>To Date:</label>
@@ -118,7 +118,7 @@
 		<div class="col-md-12" id="jdata" style="overflow: scroll;height:700px">
 		</div>
 	</div>
-</div>
+</div>-->
 </div>
 </body>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
