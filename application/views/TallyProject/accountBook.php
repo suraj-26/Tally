@@ -63,6 +63,7 @@
 			</div><br>
 			<div class="">
 				<button type="button" class="btn btn-primary" onclick="get_trialBalance()">View</button>
+				<button type="button" class="btn btn-primary" onclick="download_Excel()">Download</button>
 			</div>
 		</div>
 		<div class="col-sm-12" id="div_bas" align="center" width="100%"></div>
@@ -207,5 +208,21 @@
 			},
 		});
 	}
+	function download_Excel() {
+		var company_name = $("#company_name1").val();
+		var fromDate = $("#fromDate").val();
+		var toDate = $("#toDate").val();
+		var reportName = $("#reportName").val();
+		var ledgerWise = $('input[name="ledgerWise"]:checked').val();
+		var ledger = $("#ledgerName").val();
+		var groupName = $("#groupName").val();
+		if(company_name == "" || fromDate== "" || toDate==""){
+			alert("Company Name,From Date and To Date are Mandatory!!");
+		}else{
+			location.href = "<?= base_url() ?>"+"ExportController/download_ExcelStatementAccount?comp="+btoa(company_name)+"&fromDate="+
+					btoa(fromDate)+"&toDate="+btoa(toDate)+"&reportName="+btoa(reportName)+"&ledgerWise="+btoa(ledgerWise)+"&ledger="+
+					btoa(ledger)+"&groupName="+btoa(groupName);
+		}
 
+	}
 </script>

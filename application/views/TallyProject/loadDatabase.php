@@ -38,7 +38,6 @@
 					<option value="Contra">Contra</option>
 					<option value="Debit Note">Debit Note</option>
 					<option value="Credit Note">Credit Note</option>
-					<option value="Narration">Narration</option>
 				</select>
 			</div>
 				<div class="col-md-3">

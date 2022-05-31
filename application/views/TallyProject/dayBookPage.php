@@ -12,7 +12,7 @@
 
 <div class="card-title">
 	<h5 class="card-header">
-		Balance Sheet View
+		Day Book
 	</h5>
 </div>
 
@@ -35,6 +35,9 @@
 				</div><br>
 				<div class="">
 					<button type="button" class="btn btn-primary" onclick="get_balancesheet()">View</button>
+
+					<button type="button" id="DownloadPDF" class="btn btn-primary" style="display: none" onclick="DownloadPDF()">DownloadPDF</button>
+
 				</div>
 		</div>
 		<div class="col-sm-12" id="div_bas" align="center" width="100%"></div>
@@ -45,6 +48,7 @@
 
 <script>
 	$(document).ready(function () {
+		$("#DownloadPDF").hide();
 		get_company_list();
 	});
 	function get_company_list() {
@@ -73,6 +77,7 @@
 
 
 	function get_balancesheet() {
+		$("#DownloadPDF").hide();
 		var company_name = $("#company_name1").val();
 		var fromDate = $("#fromDate").val();
 		var toDate = $("#toDate").val();
@@ -90,6 +95,7 @@
 					var data = result.data;
 					console.log(data);
 					$('#div_bas').html(data);
+					$("#DownloadPDF").show();
 
 				},
 			});
@@ -97,6 +103,16 @@
 
 
 	}
-
+	function DownloadPDF() {
+		//div_pl
+		let divName="#div_bas";
+		$('#DownloadPDF').toggleClass('d-none');
+		var printContents = document.querySelector(divName).innerHTML;
+		var originalContents = document.body.innerHTML;
+		document.body.innerHTML = printContents;
+		window.print();
+		document.body.innerHTML = originalContents;
+		$('#DownloadPDF').toggleClass('d-none');
+	}
 
 </script>
