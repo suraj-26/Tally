@@ -2593,19 +2593,12 @@ class ExportController extends CI_Controller
 			}
 		}else if($reportName == 'Negative Ledgers' || $reportName=='Negative Stock' || $reportName=='Overdue Receivables' || $reportName=='Overdue Payables' || $reportName=='memorandum register'){
 			$getarrayData=$getStatementofAccountData;
-			$account_names = $getarrayData[0];
-			$debit = $getarrayData[1];
-			$credit = $getarrayData[2];
-			$quntity = $getarrayData[3];
-			$rate = $getarrayData[4];
-			$unit = $getarrayData[5];
-			$bill_date = $getarrayData[6];
-			$bill_ref = $getarrayData[7];
-			$pending_amount = $getarrayData[8];
-			$over_due = $getarrayData[9];
-			$due_on = $getarrayData[10];
+
 
 			if($reportName == "Negative Ledgers"){
+				$account_names = $getarrayData[0];
+				$debit = $getarrayData[1];
+				$credit = $getarrayData[2];
 				$objPHPExcel->getActiveSheet()->SetCellValue('A1', "Particulars");
 				$objPHPExcel->getActiveSheet()->SetCellValue('B1', "Debit");
 				$objPHPExcel->getActiveSheet()->SetCellValue('C1', "Credit");
@@ -2621,6 +2614,10 @@ class ExportController extends CI_Controller
 				}
 
 			}else if($reportName == "Negative Stock"){
+				$account_names = $getarrayData[0];
+				$quntity = $getarrayData[1];
+				$rate = $getarrayData[2];
+				$unit = $getarrayData[3];
 				$objPHPExcel->getActiveSheet()->SetCellValue('A1', "Particulars");
 				$objPHPExcel->getActiveSheet()->SetCellValue('B1', "Opening");
 				$objPHPExcel->getActiveSheet()->SetCellValue('C1', "Closing");
@@ -2637,7 +2634,14 @@ class ExportController extends CI_Controller
 				$i++;
 				$key++;
 			}
-		}else if($reportName == "Overdue Receivables") {
+		 }else if($reportName == "Overdue Receivables" || $reportName == "Overdue Payables") {
+
+				$bill_date = $getarrayData[0];
+				$bill_party =$getarrayData[1];
+				$bill_ref = $getarrayData[2];
+				$pending_amount = $getarrayData[3];
+				$over_due = $getarrayData[4];
+				$due_on = $getarrayData[5];
 				$objPHPExcel->getActiveSheet()->SetCellValue('A1', "Date");
 				$objPHPExcel->getActiveSheet()->SetCellValue('B1', "Ref.No");
 				$objPHPExcel->getActiveSheet()->SetCellValue('C1', "Partys Name");
@@ -2647,18 +2651,39 @@ class ExportController extends CI_Controller
 
 				$i = 2;
 				$key = 0;
-				foreach ($account_names as $item) {
+				foreach ($bill_date as $item) {
 					$objPHPExcel->getActiveSheet()->SetCellValue('A' . $i, $item);
-					$objPHPExcel->getActiveSheet()->SetCellValue('B' . $i, $this->checkType($bill_date[$key]));
 					$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($bill_ref[$key]));
+					$objPHPExcel->getActiveSheet()->SetCellValue('B' . $i, $this->checkType($bill_party[$key]));
+
 					$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($pending_amount[$key]));
 					$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($over_due[$key]));
 					$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($due_on[$key]));
 					$i++;
 					$key++;
 				}
+			}else if($reportName == "memorandum register") {
+
+				$particulars = $getarrayData[0];
+				$total_voucher = $getarrayData[1];
+				$cancled = $getarrayData[2];
+
+				$objPHPExcel->getActiveSheet()->SetCellValue('A1', "Particulares");
+				$objPHPExcel->getActiveSheet()->SetCellValue('B1', "Total Vouchers");
+				$objPHPExcel->getActiveSheet()->SetCellValue('C1', "Cancled");
+				$i = 2;
+				$key = 0;
+				foreach ($particulars as $item) {
+					$objPHPExcel->getActiveSheet()->SetCellValue('A' . $i, $item);
+					$objPHPExcel->getActiveSheet()->SetCellValue('B' . $i, $this->checkType($total_voucher[$key]));
+					$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($cancled[$key]));
+
+					$i++;
+					$key++;
+				}
 			}
-	}
+
+	     }
 		ob_end_clean();
 		$filename = $reportName . date("Y-m-d") . ".xls";
 
