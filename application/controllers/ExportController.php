@@ -1583,7 +1583,7 @@ class ExportController extends CI_Controller
 
 <!--To Fetch data in XML format-->
 <SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
-<SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT>
+<SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
 
 <!--Specify the Period here-->
 <SVFROMDATE>' . $fromDate . '</SVFROMDATE>
