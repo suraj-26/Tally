@@ -93,6 +93,7 @@
 				</div><br>
 				<div class="">
 					<button type="button" class="btn btn-primary" onclick="getLedgerData()">View</button>
+					<button type="button" class="btn btn-primary" onclick="download_Excel()">Download</button>
 				</div>
 				<div id="ledger_Details"></div>
 			</div>
@@ -225,13 +226,27 @@
 					console.log(data);
 					if (result.status === 'true') {
 						$('#ledger_Details').html(data);
-
+						$("#TableData").dataTable();
 					} else {
 						$('#ledger_Details').html(data);
+						$("#TableData").dataTable();
 
 					}
 				},
 			});
+		}
+
+	}
+	function download_Excel() {
+		var company_name = $("#company_name").val();
+		var value = $("#ledger_id1").val();
+		var fromDate = $("#fromDate").val();
+		var toDate = $("#toDate").val();
+		if(value == "" || fromDate== "" || toDate==""){
+			alert("Company Name,From Date and To Date are Mandatory!!");
+		}else{
+			location.href = "<?= base_url() ?>"+"ExportController/download_LedgerDetails?comp="+btoa(company_name)+"&fromDate="+
+					btoa(fromDate)+"&toDate="+btoa(toDate)+"&value="+btoa(value);
 		}
 
 	}
