@@ -1362,15 +1362,7 @@ class ExportController extends CI_Controller
 		}
 		echo json_encode($response);
 	}
-
-	public function get_ledger_details()
-	{
-		$company_id = $this->input->post('company_name');
-		$ledger_value = $this->input->post('value');
-		$toDate = $this->input->post('toDate');
-		$fromDate = $this->input->post('fromDate');
-		$toDate = date('d-M-Y', strtotime($toDate));
-		$fromDate = date('d-M-Y', strtotime($fromDate));
+	function getLedgerXML($company_id,$fromDate,$toDate,$ledger_value){
 		$requestXML = '
 <ENVELOPE> 
 <HEADER> 
@@ -1381,12 +1373,11 @@ class ExportController extends CI_Controller
 <REQUESTDESC> 
 <STATICVARIABLES> 
 <SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
-<SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
+<SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT>
 <!-- Specify the period here -->
 <SVFROMDATE>' . $fromDate . '</SVFROMDATE>
 <SVTODATE>' . $toDate . '</SVTODATE>
-
-<!-- F12 @ Show billwise is set to Yes -->
+   
 <DBBILLEXPLODEFLAG>YES</DBBILLEXPLODEFLAG>
 
 <!-- Specify the Ledger Name here -->
@@ -1399,7 +1390,6 @@ class ExportController extends CI_Controller
 </BODY> 
 </ENVELOPE> 
     ';
-
 		$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
 
 		$ch = curl_init();
@@ -1412,19 +1402,94 @@ class ExportController extends CI_Controller
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 		$data = curl_exec($ch);
 
+		$xml = simplexml_load_string($data);
+		$json = json_encode($xml);
+		$array = json_decode($json, TRUE);
+		return $array;
+	}
+	public function get_ledger_details()
+	{
+		$company_id = $this->input->post('company_name');
+		$ledger_value = $this->input->post('value');
+		$toDate = $this->input->post('toDate');
+		$fromDate = $this->input->post('fromDate');
+		$toDate = date('d-M-Y', strtotime($toDate));
+		$fromDate = date('d-M-Y', strtotime($fromDate));
 
-//var_dump($data);
-//echo '<pre>', htmlentities($data), '</pre>';
+		$array=$this->getLedgerXML($company_id,$fromDate,$toDate,$ledger_value);
+		if(count($array)>0){
+			$getDataLedgerWise=$this->getDataLedgerWise($array);
+			$date=$getDataLedgerWise[0];
+			$accounts=$getDataLedgerWise[1];
+			$voucherType=$getDataLedgerWise[2];
+			$Debit=$getDataLedgerWise[3];
+			$Credit=$getDataLedgerWise[4];
+			$BillType=$getDataLedgerWise[5];
+			$BillCreditPeriod=$getDataLedgerWise[6];
+			$BillTypeName=$getDataLedgerWise[7];
+			$html = '<table class="table" id="TableData">
+						<thead>
+						<tr>
+						<th>Date</th>
+						<th>Particular</th>
+						<th>Voucher Type</th>
+						<th>Bill Type</th>
+						<th>Bill Type Name</th>
+						<th>Debit</th>
+						<th>Credit</th>
+						<th>Bill Credit Period</th>
+						</tr>
+						</thead>
+						<tbody>
+						';
+			$key = 0;
+			foreach ($date as $item) {
 
-
-		if (curl_errno($ch)) {
-			print curl_error($ch);
-			echo "  something went wrong..... try later";
-			$response['data'] = $data;
-		} else {
-			$response['data'] = $data;
+				$html .= '<tr>
+							<td>' . $item . '</td>
+							<td>' . $this->checkType($accounts[$key]) . '</td>
+							<td>' . $this->checkType($voucherType[$key]) . '</td>
+							<td>' . $this->checkType($BillType[$key]) . '</td>
+							<td>' . $this->checkType($BillTypeName[$key]) . '</td>
+							<td>' . $this->checkType($Debit[$key]) . '</td>
+							<td>' . $this->checkType($Credit[$key]) . '</td>
+							<td>' . $this->checkType($BillCreditPeriod[$key]) . '</td>
+							</tr>';
+				$key++;
+			}
+			$html .= '</tbody></table>';
+			$response['data'] = $html;
+		}else{
+			$response['data'] = "No Data Found";
 		}
+
 		echo json_encode($response);
+	}
+
+	function download_LedgerDetails(){
+		$company_id = base64_decode($this->input->post_get('comp'));
+		$toDate = base64_decode($this->input->post_get('toDate'));
+		$fromDate = base64_decode($this->input->post_get('fromDate'));
+		$ledger_value = base64_decode($this->input->post_get('value'));
+		$toDate = date('d-M-Y', strtotime($toDate));
+		$fromDate = date('d-M-Y', strtotime($fromDate));
+
+		$array=$this->getLedgerXML($company_id,$fromDate,$toDate,$ledger_value);
+		if(count($array)>0) {
+			$getDataLedgerWise = $this->getDataLedgerWise($array);
+			$this->DownloadExcelSheet("LedgerDetails", $getDataLedgerWise);
+		}
+	}
+	function getDataLedgerWise($array){
+		$date=array_values(array_filter($array['DSPVCHDATE']));
+		$accounts=$array['DSPVCHLEDACCOUNT'];
+		$voucherType=$array['DSPVCHTYPE'];
+		$Debit=$array['DSPVCHDRAMT'];
+		$Credit=$array['DSPVCHCRAMT'];
+		$BillType=$array['BILLTYPE'];
+		$BillCreditPeriod=$array['BILLCREDITPERIOD'];
+		$BillTypeName=$array['NAME'];
+		return array($date,$accounts,$voucherType,$Debit,$Credit,$BillType,$BillCreditPeriod,$BillTypeName);
 	}
 
 	public function get_statutaryReport()
@@ -1518,7 +1583,7 @@ class ExportController extends CI_Controller
 
 <!--To Fetch data in XML format-->
 <SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
-<SVEXPORTFORMAT>$$SysName:HTML</SVEXPORTFORMAT>
+<SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT>
 
 <!--Specify the Period here-->
 <SVFROMDATE>' . $fromDate . '</SVFROMDATE>
@@ -1547,8 +1612,11 @@ class ExportController extends CI_Controller
 
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 		$data = curl_exec($ch);
-
-
+		/*$xml = simplexml_load_string($data);
+		$json = json_encode($xml);
+		$array = json_decode($json, TRUE);
+		var_dump($array);
+		exit;*/
 //var_dump($data);
 //echo '<pre>', htmlentities($data), '</pre>';
 
@@ -2461,6 +2529,38 @@ class ExportController extends CI_Controller
 				if ($reportName != 'Journal Register') {
 					$objPHPExcel->getActiveSheet()->SetCellValue('D' . $i, $this->checkType($closingBalance[$key]));
 				}
+				$i++;
+				$key++;
+			}
+		}else if($reportName == "LedgerDetails"){
+			$getDataLedgerWise = $getStatementofAccountData;
+			$date = $getDataLedgerWise[0];
+			$accounts = $getDataLedgerWise[1];
+			$voucherType = $getDataLedgerWise[2];
+			$Debit = $getDataLedgerWise[3];
+			$Credit = $getDataLedgerWise[4];
+			$BillType = $getDataLedgerWise[5];
+			$BillCreditPeriod = $getDataLedgerWise[6];
+			$BillTypeName = $getDataLedgerWise[7];
+			$objPHPExcel->getActiveSheet()->SetCellValue('A1', "Date");
+			$objPHPExcel->getActiveSheet()->SetCellValue('B1', "Particular");
+			$objPHPExcel->getActiveSheet()->SetCellValue('C1', "Voucher Type");
+			$objPHPExcel->getActiveSheet()->SetCellValue('D1', "Bill Type");
+			$objPHPExcel->getActiveSheet()->SetCellValue('E1', "Bill Type Name");
+			$objPHPExcel->getActiveSheet()->SetCellValue('F1', "Debit");
+			$objPHPExcel->getActiveSheet()->SetCellValue('G1', "Credit");
+			$objPHPExcel->getActiveSheet()->SetCellValue('H1', "Bill Credit Period");
+			$i = 2;
+			$key = 0;
+			foreach ($date as $item) {
+				$objPHPExcel->getActiveSheet()->SetCellValue('A' . $i, $item);
+				$objPHPExcel->getActiveSheet()->SetCellValue('B' . $i, $this->checkType($accounts[$key]));
+				$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($voucherType[$key]));
+				$objPHPExcel->getActiveSheet()->SetCellValue('D' . $i, $this->checkType($BillType[$key]));
+				$objPHPExcel->getActiveSheet()->SetCellValue('E' . $i, $this->checkType($BillTypeName[$key]));
+				$objPHPExcel->getActiveSheet()->SetCellValue('F' . $i, $this->checkType($Debit[$key]));
+				$objPHPExcel->getActiveSheet()->SetCellValue('G' . $i, $this->checkType($Credit[$key]));
+				$objPHPExcel->getActiveSheet()->SetCellValue('H' . $i, $this->checkType($BillCreditPeriod[$key]));
 				$i++;
 				$key++;
 			}
