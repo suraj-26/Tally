@@ -88,7 +88,7 @@
 		}else{
 			$.ajax({
 				type: "POST",
-				url: "<?= base_url("ExportController/get_inventoryBooks") ?>",
+				url: "<?= base_url("ExportController/getInventoryBooksReport") ?>",
 				dataType: "json",
 				async: false,
 				cache: false,

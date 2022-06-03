@@ -60,3 +60,4 @@ $route["logout"] = "LoginController/logout";
 $route['View_tallyData'] = "ImportController/View_tallyData";
 $route["home"]="ImportController/customer_account";
 $route["loadTallyData"]="ImportController/loadTallyData";
+$route["getInventoryReports"]="ExportController/getInventoryReports";

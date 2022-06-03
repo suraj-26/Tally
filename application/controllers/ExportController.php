@@ -2564,7 +2564,101 @@ class ExportController extends CI_Controller
 				$i++;
 				$key++;
 			}
-		}
+		}else if($reportName == "Cash Flow" || $reportName == "Funds Flow"){
+			$getarrayData=$getStatementofAccountData;
+			$dates = $getarrayData[0];
+			$opening = $getarrayData[1];
+			$closing = $getarrayData[2];
+			$fundflow = $getarrayData[3];
+			if($reportName == "Cash Flow"){
+				$objPHPExcel->getActiveSheet()->SetCellValue('A1', "Particulars");
+				$objPHPExcel->getActiveSheet()->SetCellValue('B1', "Inflow");
+				$objPHPExcel->getActiveSheet()->SetCellValue('C1', "OutFlow");
+				$objPHPExcel->getActiveSheet()->SetCellValue('D1', "Net Flow");
+			}else{
+				$objPHPExcel->getActiveSheet()->SetCellValue('A1', "Particulars");
+				$objPHPExcel->getActiveSheet()->SetCellValue('B1', "Opening");
+				$objPHPExcel->getActiveSheet()->SetCellValue('C1', "Closing");
+				$objPHPExcel->getActiveSheet()->SetCellValue('D1', "Fund Flow");
+			}
+			$i = 2;
+			$key = 0;
+			foreach ($dates as $item) {
+				$objPHPExcel->getActiveSheet()->SetCellValue('A' . $i, $item);
+				$objPHPExcel->getActiveSheet()->SetCellValue('B' . $i, $this->checkType($opening[$key]));
+				$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($closing[$key]));
+				$objPHPExcel->getActiveSheet()->SetCellValue('D' . $i, $this->checkType($fundflow[$key]));
+				$i++;
+				$key++;
+			}
+		}else if($reportName == 'Negative Ledgers' || $reportName=='Negative Stock' || $reportName=='Overdue Receivables' || $reportName=='Overdue Payables' || $reportName=='memorandum register'){
+			$getarrayData=$getStatementofAccountData;
+			$account_names = $getarrayData[0];
+			$debit = $getarrayData[1];
+			$credit = $getarrayData[2];
+			$quntity = $getarrayData[3];
+			$rate = $getarrayData[4];
+			$unit = $getarrayData[5];
+			$bill_date = $getarrayData[6];
+			$bill_ref = $getarrayData[7];
+			$pending_amount = $getarrayData[8];
+			$over_due = $getarrayData[9];
+			$due_on = $getarrayData[10];
+
+			if($reportName == "Negative Ledgers"){
+				$objPHPExcel->getActiveSheet()->SetCellValue('A1', "Particulars");
+				$objPHPExcel->getActiveSheet()->SetCellValue('B1', "Debit");
+				$objPHPExcel->getActiveSheet()->SetCellValue('C1', "Credit");
+				$i = 2;
+				$key = 0;
+				foreach ($account_names as $item) {
+					$objPHPExcel->getActiveSheet()->SetCellValue('A' . $i, $item);
+					$objPHPExcel->getActiveSheet()->SetCellValue('B' . $i, $this->checkType($debit[$key]));
+					$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($credit[$key]));
+
+					$i++;
+					$key++;
+				}
+
+			}else if($reportName == "Negative Stock"){
+				$objPHPExcel->getActiveSheet()->SetCellValue('A1', "Particulars");
+				$objPHPExcel->getActiveSheet()->SetCellValue('B1', "Opening");
+				$objPHPExcel->getActiveSheet()->SetCellValue('C1', "Closing");
+				$objPHPExcel->getActiveSheet()->SetCellValue('D1', "Fund Flow");
+
+			$i = 2;
+			$key = 0;
+			foreach ($account_names as $item) {
+				$objPHPExcel->getActiveSheet()->SetCellValue('A' . $i, $item);
+				$objPHPExcel->getActiveSheet()->SetCellValue('B' . $i, $this->checkType($quntity[$key]));
+				$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($rate[$key]));
+				$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($unit[$key]));
+
+				$i++;
+				$key++;
+			}
+		}else if($reportName == "Overdue Receivables") {
+				$objPHPExcel->getActiveSheet()->SetCellValue('A1', "Date");
+				$objPHPExcel->getActiveSheet()->SetCellValue('B1', "Ref.No");
+				$objPHPExcel->getActiveSheet()->SetCellValue('C1', "Partys Name");
+				$objPHPExcel->getActiveSheet()->SetCellValue('D1', "Pending Amount");
+				$objPHPExcel->getActiveSheet()->SetCellValue('D1', "Due On");
+				$objPHPExcel->getActiveSheet()->SetCellValue('D1', "OverDue By Day");
+
+				$i = 2;
+				$key = 0;
+				foreach ($account_names as $item) {
+					$objPHPExcel->getActiveSheet()->SetCellValue('A' . $i, $item);
+					$objPHPExcel->getActiveSheet()->SetCellValue('B' . $i, $this->checkType($bill_date[$key]));
+					$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($bill_ref[$key]));
+					$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($pending_amount[$key]));
+					$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($over_due[$key]));
+					$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($due_on[$key]));
+					$i++;
+					$key++;
+				}
+			}
+	}
 		ob_end_clean();
 		$filename = $reportName . date("Y-m-d") . ".xls";
 
@@ -2649,8 +2743,8 @@ class ExportController extends CI_Controller
 				$opening=$getarrayData[1];
 				$closing=$getarrayData[2];
 				$fundflow=$getarrayData[3];
-				
-							$html = '<table class="table" id="FundFlowTable">
+				if($reportName == 'Funds Flow') {
+					$html = '<table class="table" id="FundFlowTable">
 			<thead>
 			<tr>
 			<th>Particulars</th>
@@ -2660,19 +2754,32 @@ class ExportController extends CI_Controller
 			</tr>
 			</thead>
 			<tbody>
+			';}else{
+					$html = '<table class="table" id="FundFlowTable">
+			<thead>
+			<tr>
+			<th>Particulars</th>
+			<th>Inflow</th>
+			<th>OutFlow</th>
+			<th>Net Flow</th>
+			</tr>
+			</thead>
+			<tbody>
 			';
-				$key=0;
-				foreach ($dates as $item){
-
-					$html .='<tr>
-<td>'.$item.'</td>
-<td>'.$opening[$key].'</td>
-<td>'.$closing[$key].'</td>
-<td>'.$fundflow[$key].'</td>
-</tr>';
-					$key++;
 				}
-				$html .= '</tbody></table>';
+					$key = 0;
+					foreach ($dates as $item) {
+
+						$html .= '<tr>
+			<td>' . $item . '</td>
+			<td>' . $opening[$key] . '</td>
+			<td>' . $closing[$key] . '</td>
+			<td>' . $fundflow[$key] . '</td>
+			</tr>';
+						$key++;
+					}
+					$html .= '</tbody></table>';
+
 			}else
 			{
 				$html=$data;
@@ -2691,8 +2798,146 @@ class ExportController extends CI_Controller
 		}
 		echo json_encode($response);
 	}
+	function DownLoadExcelCashFund(){
+		$company_id = base64_decode($this->input->post_get('comp'));
+		$toDate = date("Ymd", strtotime(base64_decode($this->input->post_get('toDate'))));
+		$fromDate = date("Ymd", strtotime(base64_decode($this->input->post_get('fromDate'))));
+		$reportName = base64_decode($this->input->post_get('reportName'));
+		$ledger = $this->input->post('ledger');
+		$ledgerWise = $this->input->post('ledgerWise');
+		$groupName = $this->input->post('groupName');
+		$x = '';
+		if ($ledger != "") {
+			$x = '<STOCKITEM>' . $ledger . '</STOCKITEM> ';
+		}
 
+		$exp = explode('-', $reportName);
+		$reportName = $exp[0];
+		$voucherType = '';
+		if (array_key_exists(1, $exp)) {
+			$voucherType = $exp[1];
+		}
+		if($reportName == 'Cash Flow Projection'){
+			$type='HTML';
+		}else{
+			$type='XML';
+		}
+		$requestXML = '
+				<ENVELOPE>
+				<HEADER>
+				<TALLYREQUEST>Export Data</TALLYREQUEST>
+				</HEADER>
+				<BODY>
+				<EXPORTDATA>
+				<REQUESTDESC>
+				<STATICVARIABLES>
+				<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+				<SVEXPORTFORMAT>$$SysName:'.$type.'</SVEXPORTFORMAT>
+				<SVFROMDATE>' . $fromDate . '</SVFROMDATE>
+				<SVTODATE>' . $toDate . '</SVTODATE>
+				' . $x . '
+				</STATICVARIABLES>
+				<REPORTNAME>' . $reportName . '</REPORTNAME>
+				</REQUESTDESC>
+				</EXPORTDATA>
+				</BODY>
+				</ENVELOPE>
+					';
+		try {
+			$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
+			$ch = curl_init();
+
+			curl_setopt($ch, CURLOPT_URL, $this->url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
+
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+			$data = curl_exec($ch);
+			if($reportName == 'Cash Flow' || $reportName=="Funds Flow") {
+				$xml = simplexml_load_string($data);
+				$json = json_encode($xml);
+				$array = json_decode($json, TRUE);
+				$getarrayData = $this->getArrayData($array);
+
+				$this->DownloadExcelSheet($reportName,$getarrayData);
+			}
+		} catch (Exception $e) {
+			$response['data'] = "Something went Wrong";
+		}
+	}
+	function DownLoadExcelExceptionReport(){
+		$company_id = base64_decode($this->input->post_get('comp'));
+		$toDate = date("Ymd", strtotime(base64_decode($this->input->post_get('toDate'))));
+		$fromDate = date("Ymd", strtotime(base64_decode($this->input->post_get('fromDate'))));
+		$reportName = base64_decode($this->input->post_get('reportName'));
+		$ledger = $this->input->post('ledger');
+		$ledgerWise = $this->input->post('ledgerWise');
+		$groupName = $this->input->post('groupName');
+		$x = '';
+		if ($ledger != "") {
+			$x = '<STOCKITEM>' . $ledger . '</STOCKITEM> ';
+		}
+
+		$exp = explode('-', $reportName);
+		$reportName = $exp[0];
+		$voucherType = '';
+		if (array_key_exists(1, $exp)) {
+			$voucherType = $exp[1];
+		}
+		if($reportName == 'Negative Ledgers' || $reportName=='Negative Stock' || $reportName=='Overdue Receivables' || $reportName=='Overdue Payables' || $reportName=='memorandum register'){
+			$type='HTML';
+		}else{
+			$type='XML';
+		}
+		$requestXML = '
+				<ENVELOPE>
+				<HEADER>
+				<TALLYREQUEST>Export Data</TALLYREQUEST>
+				</HEADER>
+				<BODY>
+				<EXPORTDATA>
+				<REQUESTDESC>
+				<STATICVARIABLES>
+				<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+				<SVEXPORTFORMAT>$$SysName:'.$type.'</SVEXPORTFORMAT>
+				<SVFROMDATE>' . $fromDate . '</SVFROMDATE>
+				<SVTODATE>' . $toDate . '</SVTODATE>
+				' . $x . '
+				</STATICVARIABLES>
+				<REPORTNAME>' . $reportName . '</REPORTNAME>
+				</REQUESTDESC>
+				</EXPORTDATA>
+				</BODY>
+				</ENVELOPE>
+					';
+		try {
+			$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
+			$ch = curl_init();
+
+			curl_setopt($ch, CURLOPT_URL, $this->url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
+
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+			$data = curl_exec($ch);
+			if($reportName == 'Negative Ledgers' || $reportName=='Negative Stock' || $reportName=='Overdue Receivables' || $reportName=='Overdue Payables' || $reportName=='memorandum register') {
+				$xml = simplexml_load_string($data);
+				$json = json_encode($xml);
+				$array = json_decode($json, TRUE);
+				$getarrayData = $this->getExceptionArrayData($array);
+
+				$this->DownloadExcelSheet($reportName,$getarrayData);
+			}
+		} catch (Exception $e) {
+			$response['data'] = "Something went Wrong";
+		}
+	}
 	function getArrayData($array){
+
 		$dates=$array['DSPPERIOD'];
 		$info=$array['DSPACCINFO'];
 		$opening=array();
@@ -2704,5 +2949,560 @@ class ExportController extends CI_Controller
 			$fundflow[]=$this->checkType($info[$key]['DSPCLAMT']['DSPCLAMTA']);
 		}
 		return array($dates,$opening,$closing,$fundflow);
+	}
+	function getExceptionReports(){
+		$company_id = $this->input->post('company_name');
+		$toDate = date("Ymd", strtotime($this->input->post('toDate')));
+		$fromDate = date("Ymd", strtotime($this->input->post('fromDate')));
+		$reportName = $this->input->post('reportName');
+		$ledger = $this->input->post('ledger');
+		$ledgerWise = $this->input->post('ledgerWise');
+		$groupName = $this->input->post('groupName');
+		$x = '';
+		if ($ledger != "") {
+			$x = '<STOCKITEM>' . $ledger . '</STOCKITEM> ';
+		}
+
+		$exp = explode('-', $reportName);
+		$reportName = $exp[0];
+		$voucherType = '';
+		if (array_key_exists(1, $exp)) {
+			$voucherType = $exp[1];
+		}
+		if($reportName == 'Negative Ledgers'|| $reportName == 'Negative Stock' || $reportName == 'Overdue Receivables' || $reportName=='Overdue Payables' || $reportName=='memorandum register' )
+		{
+			$type='XML';
+		}else{
+			$type='HTML';
+		}
+		$requestXML = '
+				<ENVELOPE>
+				<HEADER>
+				<TALLYREQUEST>Export Data</TALLYREQUEST>
+				</HEADER>
+				<BODY>
+				<EXPORTDATA>
+				<REQUESTDESC>
+				<STATICVARIABLES>
+				<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+				<SVEXPORTFORMAT>$$SysName:'.$type.'</SVEXPORTFORMAT>
+				<SVFROMDATE>' . $fromDate . '</SVFROMDATE>
+				<SVTODATE>' . $toDate . '</SVTODATE>
+				' . $x . '
+				</STATICVARIABLES>
+				<REPORTNAME>' . $reportName . '</REPORTNAME>
+				</REQUESTDESC>
+				</EXPORTDATA>
+				</BODY>
+				</ENVELOPE>
+					';
+
+
+		try {
+			$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
+			$ch = curl_init();
+
+			curl_setopt($ch, CURLOPT_URL, $this->url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
+
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+			$data = curl_exec($ch);
+			if($reportName == 'Negative Ledgers'){
+				$xml = simplexml_load_string($data);
+				$json = json_encode($xml);
+				$array = json_decode($json, TRUE);
+
+				$getarrayData=$this->getExceptionArrayData($array,$reportName);
+
+				$particulars=$getarrayData[0];
+				$debit=$getarrayData[1];
+				$credit=$getarrayData[2];
+				$html = '<table class="table" id="FundFlowTable">
+			<thead>
+			<tr>
+			<th>Particulars</th>
+			<th>Debit</th>
+			<th>Credit</th>
+			
+			</tr>
+			</thead>
+			<tbody>
+			';
+
+			$key = 0;
+			foreach ($particulars as $item) {
+
+				$html .= '<tr>
+			<td>' . $item . '</td>
+			
+			<td>' . $debit[$key] . '</td>
+			<td>' . $credit[$key] . '</td>
+			</tr>';
+				$key++;
+			}
+			$html .= '</tbody></table>';
+
+			} elseif($reportName == 'Negative Stock'){
+				$xml = simplexml_load_string($data);
+				$json = json_encode($xml);
+				$array = json_decode($json, TRUE);
+
+				$getarrayData=$this->getExceptionArrayData($array,$reportName);
+
+				$particulars=$getarrayData[0];
+				$quntity=$getarrayData[1];
+				$rate=$getarrayData[2];
+				$unit=$getarrayData[3];
+				$html = '<table class="table" id="FundFlowTable">
+			<thead>
+			<tr>
+			<th>Particulars</th>
+			<th>Quantity</th>
+			<th>Rate</th>
+			<th>Value</th>
+			</tr>
+			</thead>
+			<tbody>
+			';
+
+				$key = 0;
+				foreach ($particulars as $item) {
+
+					$html .= '<tr>
+			<td>' . $item . '</td>
+			
+			<td>' . $quntity[$key] . '</td>
+			<td>' . $rate[$key] . '</td>
+			<td>' . $unit[$key] . '</td>
+			</tr>';
+					$key++;
+				}
+				$html .= '</tbody></table>';
+
+			} elseif($reportName == 'Overdue Receivables' || $reportName == 'Overdue Payables' ){
+				$xml = simplexml_load_string($data);
+				$json = json_encode($xml);
+				$array = json_decode($json, TRUE);
+
+				$getarrayData=$this->getExceptionArrayData($array,$reportName);
+
+				$bill_date=$getarrayData[0];
+				$bill_ref=$getarrayData[1];
+				$bill_party=$getarrayData[2];
+				$pending_amount=$getarrayData[3];
+				$over_due=$getarrayData[4];
+				$due_on=$getarrayData[5];
+
+				$html = '<table class="table" id="FundFlowTable">
+			<thead>
+			<tr>
+			<th>Date</th>
+			<th>Ref.No</th>
+			<th>Partys Name</th>
+			<th>Pending Amount</th>
+			<th>Due On</th>
+			<th>OverDue By Day</th>
+			</tr>
+			</thead>
+			<tbody>
+			';
+
+				$key = 0;
+				foreach ($bill_date as $item) {
+
+					$html .= '<tr>
+			<td>' . $item . '</td>
+			
+			<td>' . $bill_ref[$key] . '</td>
+			<td>' . $bill_party[$key] . '</td>
+			<td>' . $pending_amount[$key] . '</td>
+			<td>' . $due_on[$key] . '</td>
+			<td>' . $over_due[$key] . '</td>
+			
+			</tr>';
+					$key++;
+				}
+				$html .= '</tbody></table>';
+
+			}elseif($reportName == 'memorandum register'){
+				$xml = simplexml_load_string($data);
+				$json = json_encode($xml);
+				$array = json_decode($json, TRUE);
+
+				$getarrayData=$this->getExceptionArrayData($array,$reportName);
+
+				$particulars=$getarrayData[0];
+				$total_voucher=$getarrayData[1];
+				$cancled=$getarrayData[2];
+
+				$html = '<table class="table" id="FundFlowTable">
+			<thead>
+			<tr>
+			<th>Particulares</th>
+			<th>Total Vouchers</th>
+			<th>Cancled</th>
+			
+			</tr>
+			</thead>
+			<tbody>
+			';
+
+				$key = 0;
+				foreach ($particulars as $item) {
+
+					$html .= '<tr>
+			<td>' . $item . '</td>
+			
+			<td>' . $total_voucher[$key] . '</td>
+			<td>' . $cancled[$key] . '</td>
+			
+			
+			</tr>';
+					$key++;
+				}
+				$html .= '</tbody></table>';
+
+			}else
+			{
+				$html=$data;
+			}
+			if (curl_errno($ch)) {
+				print curl_error($ch);
+				echo "  something went wrong..... try later";
+				$response['data'] = $html;
+			} else {
+				$response['data'] = $html;
+				$response['status'] = true;
+			}
+
+		} catch (Exception $e) {
+			$response['data'] = "Something went Wrong";
+		}
+		echo json_encode($response);
+	}
+	function getExceptionArrayData($array,$reportName)
+	{
+		if($reportName == 'Negative Ledgers') {
+			$account_names = $array['DSPACCNAME'];
+			$info = $array['DSPACCINFO'];
+			$particulars = array();
+			$credit = array();
+			$debit = array();
+			foreach ($account_names as $key => $item) {
+				$particulars[] = $this->checkType($item['DSPDISPNAME']);
+				$debit[] = $this->checkType($info[$key]['DSPCLDRAMT']['DSPCLDRAMTA']);
+				$credit[] = $this->checkType($info[$key]['DSPCLCRAMT']['DSPCLCRAMTA']);
+			}
+			return array($particulars, $debit, $credit);
+		}else if($reportName == 'Negative Stock'){
+			$account_names = $array['DSPACCNAME'];
+			$info = $array['DSPSTKINFO'];
+			$particulars = array();
+			$quntity = array();
+			$rate = array();
+			$unit=array();
+			foreach ($account_names as $key => $item) {
+				$particulars[] = $this->checkType($item['DSPDISPNAME']);
+				$quntity[] = $this->checkType($info[$key]['DSPSTKCL']['DSPCLQTY']);
+				$rate[] = $this->checkType($info[$key]['DSPSTKCL']['DSPCLRATE']);
+				$unit[] = $this->checkType($info[$key]['DSPSTKCL']['DSPCLAMTA']);
+			}
+
+			return array($particulars, $quntity, $rate,$unit);
+		}else if($reportName == 'Overdue Receivables' || $reportName == 'Overdue Payables'){
+			$billfixed = $array['BILLFIXED'];
+			$pending_amount = $array['BILLCL'];
+			$over_due = $array['BILLOVERDUE'];
+			$due_on = $array['BILLDUE'];
+			$bill_date = array();
+			$bill_ref = array();
+			$bill_party= array();
+
+			foreach ($billfixed as $key => $item) {
+
+				$bill_date[] = $this->checkType($item['BILLDATE']);
+				$bill_ref[] = $this->checkType($item['BILLREF']);
+				$bill_party[] = $this->checkType($item['BILLPARTY']);
+
+			}
+
+			return array($bill_date,$bill_ref, $bill_party,$pending_amount,$over_due,$due_on);
+		}else if($reportName == 'memorandum register'){
+			$particulars = $array['DSPPERIOD'];
+			$info = $array['DSPACCINFO'];
+
+			$total_voucher = array();
+			$cancled = array();
+
+			foreach ($info as $key => $item) {
+
+
+				$total_voucher[] = $this->checkType($item['DSPDRAMT']['DSPDRAMTA']);
+				$cancled[] = $this->checkType($item['DSPCRAMT']['DSPCRAMTA']);
+
+			}
+
+			return array($particulars,$total_voucher, $cancled);
+		}
+
+
+	}
+	function getInventoryReports(){
+		$company_id = $this->input->post('company_name');
+		$toDate = date("Ymd", strtotime($this->input->post('toDate')));
+		$fromDate = date("Ymd", strtotime($this->input->post('fromDate')));
+		$reportName = $this->input->post('reportName');
+		$ledger = $this->input->post('ledger');
+		$ledgerWise = $this->input->post('ledgerWise');
+		$groupName = $this->input->post('groupName');
+		$x = '';
+		if ($ledger != "") {
+			$x = '<STOCKITEM>' . $ledger . '</STOCKITEM> ';
+
+		}
+
+		$exp = explode('-', $reportName);
+		$reportName = $exp[0];
+		$voucherType = '';
+		if (array_key_exists(1, $exp)) {
+			$voucherType = $exp[1];
+		}
+		if($reportName == 'Statistics')
+		{
+			$type='XML';
+		}else{
+			$type='HTML';
+		}
+		$requestXML = '
+				<ENVELOPE>
+				<HEADER>
+				<TALLYREQUEST>Export Data</TALLYREQUEST>
+				</HEADER>
+				<BODY>
+				<EXPORTDATA>
+				<REQUESTDESC>
+				<STATICVARIABLES>
+				<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+				<SVEXPORTFORMAT>$$SysName:'.$type.'</SVEXPORTFORMAT>
+				<SVFROMDATE>' . $fromDate . '</SVFROMDATE>
+				<SVTODATE>' . $toDate . '</SVTODATE>
+				' . $x . '
+				</STATICVARIABLES>
+				<REPORTNAME>' . $reportName . '</REPORTNAME>
+				</REQUESTDESC>
+				</EXPORTDATA>
+				</BODY>
+				</ENVELOPE>
+					';
+
+
+		try {
+			$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
+			$ch = curl_init();
+
+			curl_setopt($ch, CURLOPT_URL, $this->url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
+
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+			$data = curl_exec($ch);
+			if($reportName == 'Statistics'){
+				$xml = simplexml_load_string($data);
+				$json = json_encode($xml);
+				$array = json_decode($json, TRUE);
+
+				$getarrayData=$this->getInventoryArrayData($array,$reportName);
+
+				$statement=$getarrayData[0];
+				$statecount=$getarrayData[1];
+
+				$html = '<table class="table" id="FundFlowTable">
+			<thead>
+			<tr>
+			<th>Types of Vouchers</th>
+			<th>Statistics Count</th>
+			
+			</tr>
+			</thead>
+			<tbody>
+			';
+
+				$key = 0;
+				foreach ($statement as $item) {
+
+					$html .= '<tr>
+			<td>' . $item . '</td>
+			
+			<td>' . $statecount[$key] . '</td>
+		
+			</tr>';
+					$key++;
+				}
+				$html .= '</tbody></table>';
+
+			}else
+			{
+				$html=$data;
+			}
+			if (curl_errno($ch)) {
+				print curl_error($ch);
+				echo "  something went wrong..... try later";
+				$response['data'] = $html;
+			} else {
+				$response['data'] = $html;
+				$response['status'] = true;
+			}
+
+		} catch (Exception $e) {
+			$response['data'] = "Something went Wrong";
+		}
+		echo json_encode($response);
+	}
+	function getInventoryArrayData($array){
+		$statement=$array['STATNAME'];
+		$state_value=$array['STATVALUE'];
+		$statecount=array();
+
+
+		foreach ($state_value as $key=>$item){
+
+			$statecount[]=$this->checkType($item['STATDIRECT']);
+
+
+		}
+		return array($statement,$statecount);
+	}
+	function getInventoryBooksReport(){
+		$company_id = $this->input->post('company_name');
+		$toDate = date("Ymd", strtotime($this->input->post('toDate')));
+		$fromDate = date("Ymd", strtotime($this->input->post('fromDate')));
+		$reportName = $this->input->post('reportName');
+		$ledger = $this->input->post('ledger');
+		$ledgerWise = $this->input->post('ledgerWise');
+		$groupName = $this->input->post('groupName');
+		$x = '';
+		if ($ledger != "") {
+			$x = '<STOCKITEM>' . $ledger . '</STOCKITEM> ';
+
+		}
+
+		$exp = explode('-', $reportName);
+		$reportName = $exp[0];
+		$voucherType = '';
+		if (array_key_exists(1, $exp)) {
+			$voucherType = $exp[1];
+		}
+		if($reportName == 'PHYSICAL STOCK REGISTER' || $reportName=='STOCK JOURNAL REGISTER')
+		{
+			$type='XML';
+		}else{
+			$type='HTML';
+		}
+		$requestXML = '
+				<ENVELOPE>
+				<HEADER>
+				<TALLYREQUEST>Export Data</TALLYREQUEST>
+				</HEADER>
+				<BODY>
+				<EXPORTDATA>
+				<REQUESTDESC>
+				<STATICVARIABLES>
+				<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+				<SVEXPORTFORMAT>$$SysName:'.$type.'</SVEXPORTFORMAT>
+				<SVFROMDATE>' . $fromDate . '</SVFROMDATE>
+				<SVTODATE>' . $toDate . '</SVTODATE>
+				' . $x . '
+				</STATICVARIABLES>
+				<REPORTNAME>' . $reportName . '</REPORTNAME>
+				</REQUESTDESC>
+				</EXPORTDATA>
+				</BODY>
+				</ENVELOPE>
+					';
+
+
+		try {
+			$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
+			$ch = curl_init();
+
+			curl_setopt($ch, CURLOPT_URL, $this->url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
+
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+			$data = curl_exec($ch);
+			if($reportName == 'PHYSICAL STOCK REGISTER' || $reportName=='STOCK JOURNAL REGISTER'){
+				$xml = simplexml_load_string($data);
+				$json = json_encode($xml);
+				$array = json_decode($json, TRUE);
+
+				$getarrayData=$this->getInventoryBookArrayData($array,$reportName);
+
+				$statement=$getarrayData[0];
+				$totalvoucher=$getarrayData[1];
+				$cancled=$getarrayData[2];
+
+				$html = '<table class="table" id="FundFlowTable">
+			<thead>
+			<tr>
+			<th>Particulars</th>
+			<th>Total Vouchers</th>
+			<th>Cancelled </th>
+			</tr>
+			</thead>
+			<tbody>
+			';
+
+				$key = 0;
+				foreach ($statement as $item) {
+
+					$html .= '<tr>
+			<td>' . $item . '</td>
+			<td>' . $totalvoucher[$key] . '</td>
+		    <td>' . $cancled[$key] . '</td>
+			</tr>';
+					$key++;
+				}
+				$html .= '</tbody></table>';
+
+			}else
+			{
+				$html=$data;
+			}
+			if (curl_errno($ch)) {
+				print curl_error($ch);
+				echo "  something went wrong..... try later";
+				$response['data'] = $html;
+			} else {
+				$response['data'] = $html;
+				$response['status'] = true;
+			}
+
+		} catch (Exception $e) {
+			$response['data'] = "Something went Wrong";
+		}
+		echo json_encode($response);
+	}
+	function getInventoryBookArrayData($array){
+		$statement=$array['DSPPERIOD'];
+		$info=$array['DSPACCINFO'];
+		$totalvoucher=array();
+		$cancled=array();
+
+
+		foreach ($info as $key=>$item){
+
+			$totalvoucher[]=$this->checkType($item['DSPDRAMT']['DSPDRAMTA']);
+			$cancled[]=$this->checkType($item['DSPDRAMT']['DSPDRAMTA']);
+
+		}
+		return array($statement,$totalvoucher,$cancled);
 	}
 }
