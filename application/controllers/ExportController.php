@@ -768,7 +768,8 @@ class ExportController extends CI_Controller
 			}
 
 			echo json_encode($response);
-		} else if ($reportName == "Bank Group summary" || $reportName == "Group Summary") {
+		}
+		else if ($reportName == "Bank Group summary" || $reportName == "Group Summary") {
 
 			if ($ledgerWise == 1) {
 				$requestXML = '<ENVELOPE>
@@ -958,7 +959,8 @@ class ExportController extends CI_Controller
 				}
 				echo json_encode($response);
 			}
-		} else if ($reportName == "Sales Register" || $reportName == "Purchase Register" || $reportName == "Journal Register") {
+		}
+		else if ($reportName == "Sales Register" || $reportName == "Purchase Register" || $reportName == "Journal Register") {
 			$requestXML = '
 					<ENVELOPE>
 					<HEADER>
@@ -1050,7 +1052,8 @@ class ExportController extends CI_Controller
 				$response['data'] = "Something went Wrong";
 			}
 			echo json_encode($response);
-		} else if ($reportName == "Bills Receivable" || $reportName == "Bills Payable") {
+		}
+		else if ($reportName == "Bills Receivable" || $reportName == "Bills Payable") {
 			//Statements of Accounts 1. Outstanding Receivable 2. Outstanding Payable
 			$requestXML = '
 				<ENVELOPE>
@@ -1139,7 +1142,8 @@ class ExportController extends CI_Controller
 				$response['data'] = "Something went Wrong";
 			}
 			echo json_encode($response);
-		} else {
+		}
+		else {
 			$requestXML = '
 				<ENVELOPE>
 				<HEADER>
@@ -2475,5 +2479,130 @@ class ExportController extends CI_Controller
 		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
 
 		$objWriter->save('php://output');
+	}
+
+	function getOtherReports(){
+		$company_id = $this->input->post('company_name');
+		$toDate = date("Ymd", strtotime($this->input->post('toDate')));
+		$fromDate = date("Ymd", strtotime($this->input->post('fromDate')));
+		$reportName = $this->input->post('reportName');
+		$ledger = $this->input->post('ledger');
+		$ledgerWise = $this->input->post('ledgerWise');
+		$groupName = $this->input->post('groupName');
+		$x = '';
+		if ($ledger != "") {
+			$x = '<STOCKITEM>' . $ledger . '</STOCKITEM> ';
+		}
+
+		$exp = explode('-', $reportName);
+		$reportName = $exp[0];
+		$voucherType = '';
+		if (array_key_exists(1, $exp)) {
+			$voucherType = $exp[1];
+		}
+		if($reportName == 'Cash Flow Projection'){
+			$type='HTML';
+		}else{
+			$type='XML';
+		}
+		$requestXML = '
+				<ENVELOPE>
+				<HEADER>
+				<TALLYREQUEST>Export Data</TALLYREQUEST>
+				</HEADER>
+				<BODY>
+				<EXPORTDATA>
+				<REQUESTDESC>
+				<STATICVARIABLES>
+				<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+				<SVEXPORTFORMAT>$$SysName:'.$type.'</SVEXPORTFORMAT>
+				<SVFROMDATE>' . $fromDate . '</SVFROMDATE>
+				<SVTODATE>' . $toDate . '</SVTODATE>
+				' . $x . '
+				</STATICVARIABLES>
+				<REPORTNAME>' . $reportName . '</REPORTNAME>
+				</REQUESTDESC>
+				</EXPORTDATA>
+				</BODY>
+				</ENVELOPE>
+					';
+
+
+		try {
+			$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
+			$ch = curl_init();
+
+			curl_setopt($ch, CURLOPT_URL, $this->url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
+
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+			$data = curl_exec($ch);
+			if($reportName != 'Cash Flow Projection'){
+				$xml = simplexml_load_string($data);
+				$json = json_encode($xml);
+				$array = json_decode($json, TRUE);
+				$getarrayData=$this->getArrayData($array);
+				$dates=$getarrayData[0];
+				$opening=$getarrayData[1];
+				$closing=$getarrayData[2];
+				$fundflow=$getarrayData[3];
+				
+							$html = '<table class="table" id="FundFlowTable">
+			<thead>
+			<tr>
+			<th>Particulars</th>
+			<th>Opening</th>
+			<th>Closing</th>
+			<th>Fund Flow</th>
+			</tr>
+			</thead>
+			<tbody>
+			';
+				$key=0;
+				foreach ($dates as $item){
+
+					$html .='<tr>
+<td>'.$item.'</td>
+<td>'.$opening[$key].'</td>
+<td>'.$closing[$key].'</td>
+<td>'.$fundflow[$key].'</td>
+</tr>';
+					$key++;
+				}
+				$html .= '</tbody></table>';
+			}else
+			{
+				$html=$data;
+			}
+			if (curl_errno($ch)) {
+				print curl_error($ch);
+				echo "  something went wrong..... try later";
+				$response['data'] = $html;
+			} else {
+				$response['data'] = $html;
+				$response['status'] = true;
+			}
+
+		} catch (Exception $e) {
+			$response['data'] = "Something went Wrong";
+		}
+		echo json_encode($response);
+	}
+
+	function getArrayData($array){
+		$dates=$array['DSPPERIOD'];
+		$info=$array['DSPACCINFO'];
+		$opening=array();
+		$closing=array();
+		$fundflow=array();
+		foreach ($dates as $key=>$date){
+			$opening[]=$this->checkType($info[$key]['DSPDRAMT']['DSPDRAMTA']);
+			$closing[]=$this->checkType($info[$key]['DSPCRAMT']['DSPCRAMTA']);
+			$fundflow[]=$this->checkType($info[$key]['DSPCLAMT']['DSPCLAMTA']);
+		}
+		return array($dates,$opening,$closing,$fundflow);
 	}
 }

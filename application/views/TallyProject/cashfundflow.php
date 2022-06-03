@@ -87,7 +87,7 @@
 		}else{
 			$.ajax({
 				type: "POST",
-				url: "<?= base_url("ExportController/get_AccountBook") ?>",
+				url: "<?= base_url("ExportController/getOtherReports") ?>",
 				dataType: "json",
 				async: false,
 				cache: false,
@@ -96,7 +96,12 @@
 					var data = result.data;
 					console.log(data);
 					$('#div_bas').html(data);
+					$("#FundFlowTable").dataTable(
+							{
+								"ordering": false
 
+							}
+					);
 				},
 			});
 		}
