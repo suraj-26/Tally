@@ -2655,7 +2655,6 @@ class ExportController extends CI_Controller
 					$objPHPExcel->getActiveSheet()->SetCellValue('A' . $i, $item);
 					$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($bill_ref[$key]));
 					$objPHPExcel->getActiveSheet()->SetCellValue('B' . $i, $this->checkType($bill_party[$key]));
-
 					$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($pending_amount[$key]));
 					$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($over_due[$key]));
 					$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($due_on[$key]));
@@ -2952,9 +2951,9 @@ class ExportController extends CI_Controller
 			$voucherType = $exp[1];
 		}
 		if($reportName == 'PHYSICAL STOCK REGISTER' || $reportName=='STOCK JOURNAL REGISTER'){
-			$type='HTML';
-		}else{
 			$type='XML';
+		}else{
+			$type='HTML';
 		}
 		$requestXML = '
 				<ENVELOPE>
@@ -2993,7 +2992,7 @@ class ExportController extends CI_Controller
 				$xml = simplexml_load_string($data);
 				$json = json_encode($xml);
 				$array = json_decode($json, TRUE);
-				$getarrayData = $this->getArrayData($array);
+				$getarrayData = $this->getInventoryBooksReport($array);
 
 				$this->DownloadExcelSheet($reportName,$getarrayData);
 			}
@@ -3021,9 +3020,9 @@ class ExportController extends CI_Controller
 			$voucherType = $exp[1];
 		}
 		if($reportName == 'Negative Ledgers' || $reportName=='Negative Stock' || $reportName=='Overdue Receivables' || $reportName=='Overdue Payables' || $reportName=='memorandum register'){
-			$type='HTML';
-		}else{
 			$type='XML';
+		}else{
+			$type='HTML';
 		}
 		$requestXML = '
 				<ENVELOPE>
@@ -3090,9 +3089,9 @@ class ExportController extends CI_Controller
 			$voucherType = $exp[1];
 		}
 		if($reportName == 'Statistics'){
-			$type='HTML';
-		}else{
 			$type='XML';
+		}else{
+			$type='HTML';
 		}
 		$requestXML = '
 				<ENVELOPE>
@@ -3131,7 +3130,7 @@ class ExportController extends CI_Controller
 				$xml = simplexml_load_string($data);
 				$json = json_encode($xml);
 				$array = json_decode($json, TRUE);
-				$getarrayData = $this->getArrayData($array);
+				$getarrayData = $this->getInventoryArrayData($array);
 
 				$this->DownloadExcelSheet($reportName,$getarrayData);
 			}
@@ -3146,10 +3145,10 @@ class ExportController extends CI_Controller
 		$opening=array();
 		$closing=array();
 		$fundflow=array();
-		foreach ($dates as $key=>$date){
-			$opening[]=$this->checkType($info[$key]['DSPDRAMT']['DSPDRAMTA']);
-			$closing[]=$this->checkType($info[$key]['DSPCRAMT']['DSPCRAMTA']);
-			$fundflow[]=$this->checkType($info[$key]['DSPCLAMT']['DSPCLAMTA']);
+		foreach ($info as $item){
+			$opening[]=$this->checkType($item['DSPDRAMT']['DSPDRAMTA']);
+			$closing[]=$this->checkType($item['DSPCRAMT']['DSPCRAMTA']);
+			$fundflow[]=$this->checkType($item['DSPCRAMT']['DSPCLAMTA']);
 		}
 		return array($dates,$opening,$closing,$fundflow);
 	}

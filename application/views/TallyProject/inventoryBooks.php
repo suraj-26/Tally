@@ -98,7 +98,12 @@
 					var data = result.data;
 					console.log(data);
 					$('#div_bas').html(data);
+					$("#FundFlowTable").dataTable(
+							{
+								"ordering": false
 
+							}
+					);
 				},
 			});
 		}
