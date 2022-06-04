@@ -2681,6 +2681,46 @@ class ExportController extends CI_Controller
 					$i++;
 					$key++;
 				}
+			}else if($reportName == 'PHYSICAL STOCK REGISTER' || $reportName=='STOCK JOURNAL REGISTER'){
+				$getarrayData=$getStatementofAccountData;
+				$statement = $getarrayData[0];
+				$totalvoucher = $getarrayData[1];
+				$cancled = $getarrayData[2];
+
+				if($reportName == "Cash Flow"){
+					$objPHPExcel->getActiveSheet()->SetCellValue('A1', "Particulars");
+					$objPHPExcel->getActiveSheet()->SetCellValue('B1', "Total Vouchers");
+					$objPHPExcel->getActiveSheet()->SetCellValue('C1', "Cancelled");
+
+				}
+				$i = 2;
+				$key = 0;
+				foreach ($statement as $item) {
+					$objPHPExcel->getActiveSheet()->SetCellValue('A' . $i, $item);
+					$objPHPExcel->getActiveSheet()->SetCellValue('B' . $i, $this->checkType($totalvoucher[$key]));
+					$objPHPExcel->getActiveSheet()->SetCellValue('C' . $i, $this->checkType($cancled[$key]));
+					$i++;
+					$key++;
+				}
+			}else if($reportName == 'Statistics'){
+				$getarrayData=$getStatementofAccountData;
+				$statement = $getarrayData[0];
+				$statecount = $getarrayData[1];
+
+				if($reportName == "Cash Flow"){
+					$objPHPExcel->getActiveSheet()->SetCellValue('A1', "Types of Vouchers");
+					$objPHPExcel->getActiveSheet()->SetCellValue('B1', "Statistics Count");
+
+				}
+				$i = 2;
+				$key = 0;
+				foreach ($statement as $item) {
+					$objPHPExcel->getActiveSheet()->SetCellValue('A' . $i, $item);
+					$objPHPExcel->getActiveSheet()->SetCellValue('B' . $i, $this->checkType($statecount[$key]));
+
+					$i++;
+					$key++;
+				}
 			}
 
 	     }
@@ -2892,6 +2932,75 @@ class ExportController extends CI_Controller
 			$response['data'] = "Something went Wrong";
 		}
 	}
+	function DownLoadExcelInventoryBooks(){
+		$company_id = base64_decode($this->input->post_get('comp'));
+		$toDate = date("Ymd", strtotime(base64_decode($this->input->post_get('toDate'))));
+		$fromDate = date("Ymd", strtotime(base64_decode($this->input->post_get('fromDate'))));
+		$reportName = base64_decode($this->input->post_get('reportName'));
+		$ledger = $this->input->post('ledger');
+		$ledgerWise = $this->input->post('ledgerWise');
+		$groupName = $this->input->post('groupName');
+		$x = '';
+		if ($ledger != "") {
+			$x = '<STOCKITEM>' . $ledger . '</STOCKITEM> ';
+		}
+
+		$exp = explode('-', $reportName);
+		$reportName = $exp[0];
+		$voucherType = '';
+		if (array_key_exists(1, $exp)) {
+			$voucherType = $exp[1];
+		}
+		if($reportName == 'PHYSICAL STOCK REGISTER' || $reportName=='STOCK JOURNAL REGISTER'){
+			$type='HTML';
+		}else{
+			$type='XML';
+		}
+		$requestXML = '
+				<ENVELOPE>
+				<HEADER>
+				<TALLYREQUEST>Export Data</TALLYREQUEST>
+				</HEADER>
+				<BODY>
+				<EXPORTDATA>
+				<REQUESTDESC>
+				<STATICVARIABLES>
+				<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+				<SVEXPORTFORMAT>$$SysName:'.$type.'</SVEXPORTFORMAT>
+				<SVFROMDATE>' . $fromDate . '</SVFROMDATE>
+				<SVTODATE>' . $toDate . '</SVTODATE>
+				' . $x . '
+				</STATICVARIABLES>
+				<REPORTNAME>' . $reportName . '</REPORTNAME>
+				</REQUESTDESC>
+				</EXPORTDATA>
+				</BODY>
+				</ENVELOPE>
+					';
+		try {
+			$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
+			$ch = curl_init();
+
+			curl_setopt($ch, CURLOPT_URL, $this->url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
+
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+			$data = curl_exec($ch);
+			if($reportName == 'PHYSICAL STOCK REGISTER' || $reportName=='STOCK JOURNAL REGISTER') {
+				$xml = simplexml_load_string($data);
+				$json = json_encode($xml);
+				$array = json_decode($json, TRUE);
+				$getarrayData = $this->getArrayData($array);
+
+				$this->DownloadExcelSheet($reportName,$getarrayData);
+			}
+		} catch (Exception $e) {
+			$response['data'] = "Something went Wrong";
+		}
+	}
 	function DownLoadExcelExceptionReport(){
 		$company_id = base64_decode($this->input->post_get('comp'));
 		$toDate = date("Ymd", strtotime(base64_decode($this->input->post_get('toDate'))));
@@ -2912,9 +3021,9 @@ class ExportController extends CI_Controller
 			$voucherType = $exp[1];
 		}
 		if($reportName == 'Negative Ledgers' || $reportName=='Negative Stock' || $reportName=='Overdue Receivables' || $reportName=='Overdue Payables' || $reportName=='memorandum register'){
-			$type='XML';
-		}else{
 			$type='HTML';
+		}else{
+			$type='XML';
 		}
 		$requestXML = '
 				<ENVELOPE>
@@ -2954,6 +3063,75 @@ class ExportController extends CI_Controller
 				$json = json_encode($xml);
 				$array = json_decode($json, TRUE);
 				$getarrayData = $this->getExceptionArrayData($array,$reportName);
+
+				$this->DownloadExcelSheet($reportName,$getarrayData);
+			}
+		} catch (Exception $e) {
+			$response['data'] = "Something went Wrong";
+		}
+	}
+	function DownLoadExcelStatementInventory(){
+		$company_id = base64_decode($this->input->post_get('comp'));
+		$toDate = date("Ymd", strtotime(base64_decode($this->input->post_get('toDate'))));
+		$fromDate = date("Ymd", strtotime(base64_decode($this->input->post_get('fromDate'))));
+		$reportName = base64_decode($this->input->post_get('reportName'));
+		$ledger = $this->input->post('ledger');
+		$ledgerWise = $this->input->post('ledgerWise');
+		$groupName = $this->input->post('groupName');
+		$x = '';
+		if ($ledger != "") {
+			$x = '<STOCKITEM>' . $ledger . '</STOCKITEM> ';
+		}
+
+		$exp = explode('-', $reportName);
+		$reportName = $exp[0];
+		$voucherType = '';
+		if (array_key_exists(1, $exp)) {
+			$voucherType = $exp[1];
+		}
+		if($reportName == 'Statistics'){
+			$type='HTML';
+		}else{
+			$type='XML';
+		}
+		$requestXML = '
+				<ENVELOPE>
+				<HEADER>
+				<TALLYREQUEST>Export Data</TALLYREQUEST>
+				</HEADER>
+				<BODY>
+				<EXPORTDATA>
+				<REQUESTDESC>
+				<STATICVARIABLES>
+				<SVCURRENTCOMPANY>' . $company_id . '</SVCURRENTCOMPANY>
+				<SVEXPORTFORMAT>$$SysName:'.$type.'</SVEXPORTFORMAT>
+				<SVFROMDATE>' . $fromDate . '</SVFROMDATE>
+				<SVTODATE>' . $toDate . '</SVTODATE>
+				' . $x . '
+				</STATICVARIABLES>
+				<REPORTNAME>' . $reportName . '</REPORTNAME>
+				</REQUESTDESC>
+				</EXPORTDATA>
+				</BODY>
+				</ENVELOPE>
+					';
+		try {
+			$headers = array("Content-type: application/json", "Accept: application/json", "Content-length:" . strlen($requestXML), "Connection: open");
+			$ch = curl_init();
+
+			curl_setopt($ch, CURLOPT_URL, $this->url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $requestXML);
+
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+			$data = curl_exec($ch);
+			if($reportName == 'Statistics') {
+				$xml = simplexml_load_string($data);
+				$json = json_encode($xml);
+				$array = json_decode($json, TRUE);
+				$getarrayData = $this->getArrayData($array);
 
 				$this->DownloadExcelSheet($reportName,$getarrayData);
 			}

@@ -40,6 +40,7 @@
 			</select>
 			<div class="">
 				<button type="button" class="btn btn-primary" onclick="get_trialBalance()">View</button>
+				<button type="button" class="btn btn-primary" id="downloadexcel" onclick="DownloadExcel()">DownLoadExcel</button>
 			</div>
 		</div>
 		<div class="col-sm-12" id="div_bas" align="center" width="100%"></div>
@@ -51,6 +52,9 @@
 <script>
 	$(document).ready(function () {
 		get_company_list();
+		$('#reportName').change(function(){
+			$('#downloadexcel')[ ($("option[value='Stock Query']").is(":checked"))? "hide" : "show" ]();
+		});
 	});
 	function get_company_list() {
 
@@ -109,6 +113,16 @@
 
 
 	}
-
+	function DownloadExcel() {
+		var company_name = $("#company_name1").val();
+		var fromDate = $("#fromDate").val();
+		var toDate = $("#toDate").val();
+		var reportName = $("#reportName").val();
+		if(company_name == "" || fromDate== "" || toDate==""){
+			alert("Company Name,From Date and To Date are Mandatory!!");
+		}else{
+			location.href = "<?= base_url() ?>"+"ExportController/DownLoadExcelStatementInventory?comp="+btoa(company_name)+"&fromDate="+btoa(fromDate)+"&toDate="+btoa(toDate)+"&reportName="+btoa(reportName);
+		}
+	}
 
 </script>
