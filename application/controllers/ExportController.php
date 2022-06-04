@@ -2912,9 +2912,9 @@ class ExportController extends CI_Controller
 			$voucherType = $exp[1];
 		}
 		if($reportName == 'Negative Ledgers' || $reportName=='Negative Stock' || $reportName=='Overdue Receivables' || $reportName=='Overdue Payables' || $reportName=='memorandum register'){
-			$type='HTML';
-		}else{
 			$type='XML';
+		}else{
+			$type='HTML';
 		}
 		$requestXML = '
 				<ENVELOPE>
@@ -2953,7 +2953,7 @@ class ExportController extends CI_Controller
 				$xml = simplexml_load_string($data);
 				$json = json_encode($xml);
 				$array = json_decode($json, TRUE);
-				$getarrayData = $this->getExceptionArrayData($array);
+				$getarrayData = $this->getExceptionArrayData($array,$reportName);
 
 				$this->DownloadExcelSheet($reportName,$getarrayData);
 			}
@@ -3211,6 +3211,7 @@ class ExportController extends CI_Controller
 	function getExceptionArrayData($array,$reportName)
 	{
 		if($reportName == 'Negative Ledgers') {
+
 			$account_names = $array['DSPACCNAME'];
 			$info = $array['DSPACCINFO'];
 			$particulars = array();
