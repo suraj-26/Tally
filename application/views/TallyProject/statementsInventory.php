@@ -53,7 +53,7 @@
 	$(document).ready(function () {
 		get_company_list();
 		$('#reportName').change(function(){
-			$('#downloadexcel')[ ($("option[value='Stock Query']").is(":checked"))? "hide" : "show" ]();
+			$('#downloadexcel')[ ($("option[value='Statistics']").is(":checked"))? "show" : "hide" ]();
 		});
 	});
 	function get_company_list() {
