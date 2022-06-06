@@ -40,7 +40,8 @@
 			</select>
 			<div class="">
 				<button type="button" class="btn btn-primary" onclick="get_trialBalance()">View</button>
-				<button type="button" class="btn btn-primary" id="downloadexcel" onclick="DownloadExcel()">DownLoadExcel</button>
+				<button type="button" class="btn btn-primary" id="downloadexcel" style="display: none" onclick="DownloadExcel()">DownLoadExcel</button>
+				<button type="button" id="DownloadPDF" class="btn btn-primary" style="display: none" onclick="DownloadPDF()">DownloadPDF</button>
 			</div>
 		</div>
 		<div class="col-sm-12" id="div_bas" align="center" width="100%"></div>
@@ -51,10 +52,13 @@
 
 <script>
 	$(document).ready(function () {
-		get_company_list();
+
+
 		$('#reportName').change(function(){
 			$('#downloadexcel')[ ($("option[value='Statistics']").is(":checked"))? "show" : "hide" ]();
+			$('#DownloadPDF')[ ($("option[value='Stock Query']").is(":checked"))? "show" : "hide" ]();
 		});
+		get_company_list();
 	});
 	function get_company_list() {
 
@@ -123,6 +127,17 @@
 		}else{
 			location.href = "<?= base_url() ?>"+"ExportController/DownLoadExcelStatementInventory?comp="+btoa(company_name)+"&fromDate="+btoa(fromDate)+"&toDate="+btoa(toDate)+"&reportName="+btoa(reportName);
 		}
+	}
+	function DownloadPDF() {
+		//div_pl
+		let divName="#div_bas";
+		$('#DownloadPDF').toggleClass('d-none');
+		var printContents = document.querySelector(divName).innerHTML;
+		var originalContents = document.body.innerHTML;
+		document.body.innerHTML = printContents;
+		window.print();
+		document.body.innerHTML = originalContents;
+		$('#DownloadPDF').toggleClass('d-none');
 	}
 
 </script>

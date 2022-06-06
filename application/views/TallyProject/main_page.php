@@ -350,6 +350,12 @@ $result = $this->db->get('partner_header_all')->row();
 			display: none;
 		}
 	}
+	.tally-logout{
+		text-decoration: none!important;
+		color: #000;
+		font-weight: 700;
+	}
+
 </style>
 
 <body>
@@ -552,7 +558,7 @@ if ($this->session->user_session->user_type == '6') {
 					<span><h5 class="logo_name pl-2 mb-0 font-weight-bold text-uppercase" id="logo_name">finance management</h5></span>
 				</div>
 				<div class="float-right logout mr-3">
-					<span><b>Logout</b><i class="fas fa-sign-out-alt pl-2" style=" margin-bottom:-3px ; transform: rotate(0deg); font-size: 1.3rem;"></i></span>
+					<span><a href="<?= base_url();?>logout" class="tally-logout">Logout<i class="fas fa-sign-out-alt pl-2" style=" margin-bottom:-3px ; transform: rotate(0deg); font-size: 1.3rem;"></i></a></span>
 				</div>
 			</div>
 		</div>

@@ -1417,7 +1417,9 @@ class ExportController extends CI_Controller
 
 		$array = $this->getLedgerXML($company_id, $fromDate, $toDate, $ledger_value);
 		if (count($array) > 0) {
+
 			$getDataLedgerWise = $this->getDataLedgerWise($array);
+
 			$date = $getDataLedgerWise[0];
 			$accounts = $getDataLedgerWise[1];
 			$voucherType = $getDataLedgerWise[2];
