@@ -610,7 +610,7 @@ class ExportController extends CI_Controller
 			$itemAccount = $AccountInfoArr[$key];
 			$OpeningArray[] = $this->checkType($itemAccount['DSPOPAMT']['DSPOPAMTA']);
 			$creditArray[] = $this->checkType($itemAccount['DSPCRAMT']['DSPCRAMTA']);
-			$debitArray[] = $this->checkType($itemAccount['DSPDRAMT']['DSPDRAMTA']);
+			$debitArray[] = $this->checkType(abs($itemAccount['DSPDRAMT']['DSPDRAMTA']));
 			$closingBalance[] = $this->checkType($itemAccount['DSPCLAMT']['DSPCLAMTA']);
 
 		}
@@ -1412,15 +1412,15 @@ class ExportController extends CI_Controller
 		$ledger_value = $this->input->post('value');
 		$toDate = $this->input->post('toDate');
 		$fromDate = $this->input->post('fromDate');
-		$toDate = date('d-M-Y', strtotime($toDate));
-		$fromDate = date('d-M-Y', strtotime($fromDate));
+		$toDate = date('Ymd', strtotime($toDate));
+		$fromDate = date('Ymd', strtotime($fromDate));
 
 		$array = $this->getLedgerXML($company_id, $fromDate, $toDate, $ledger_value);
 		if (count($array) > 0) {
 
 			$getDataLedgerWise = $this->getDataLedgerWise($array);
 
-			$date = $getDataLedgerWise[0];
+			$date = array_filter($getDataLedgerWise[0]);
 			$accounts = $getDataLedgerWise[1];
 			$voucherType = $getDataLedgerWise[2];
 			$Debit = $getDataLedgerWise[3];
@@ -1444,17 +1444,18 @@ class ExportController extends CI_Controller
 						<tbody>
 						';
 			$key = 0;
+
 			foreach ($date as $item) {
 
 				$html .= '<tr>
 							<td>' . $item . '</td>
-							<td>' . $this->checkType($accounts[$key]) . '</td>
-							<td>' . $this->checkType($voucherType[$key]) . '</td>
-							<td>' . $this->checkType($BillType[$key]) . '</td>
-							<td>' . $this->checkType($BillTypeName[$key]) . '</td>
-							<td>' . $this->checkType($Debit[$key]) . '</td>
-							<td>' . $this->checkType($Credit[$key]) . '</td>
-							<td>' . $this->checkType($BillCreditPeriod[$key]) . '</td>
+							<td>' . $this->checkType(array_key_exists($key,$accounts)?$accounts[$key]:"") . '</td>
+							<td>' . $this->checkType(array_key_exists($key,$voucherType)?$voucherType[$key]:"") . '</td>
+							<td>' . $this->checkType(array_key_exists($key,$BillType)?$BillType[$key]:"") . '</td>
+							<td>' . $this->checkType(array_key_exists($key,$BillTypeName)?$BillTypeName[$key]:"") . '</td>
+							<td>' . $this->checkType(array_key_exists($key,$Debit)?$Debit[$key]:"") . '</td>
+							<td>' . $this->checkType(array_key_exists($key,$Credit)?$Credit[$key]:"") . '</td>
+							<td>' . $this->checkType(array_key_exists($key,$BillCreditPeriod)?$BillCreditPeriod[$key]:"") . '</td>
 							</tr>';
 				$key++;
 			}
@@ -1485,14 +1486,15 @@ class ExportController extends CI_Controller
 
 	function getDataLedgerWise($array)
 	{
-		$date = array_values(array_filter($array['DSPVCHDATE']));
-		$accounts = $array['DSPVCHLEDACCOUNT'];
-		$voucherType = $array['DSPVCHTYPE'];
-		$Debit = $array['DSPVCHDRAMT'];
-		$Credit = $array['DSPVCHCRAMT'];
-		$BillType = $array['BILLTYPE'];
-		$BillCreditPeriod = $array['BILLCREDITPERIOD'];
-		$BillTypeName = $array['NAME'];
+
+		$date = array_key_exists('DSPVCHDATE',$array) ? $array['DSPVCHDATE'] : array();
+		$accounts = array_key_exists('DSPVCHLEDACCOUNT',$array) ? $array['DSPVCHLEDACCOUNT'] : array();
+		$voucherType = array_key_exists('DSPVCHTYPE',$array) ? $array['DSPVCHTYPE'] : array();
+		$Debit = array_key_exists('DSPVCHDRAMT',$array) ? $array['DSPVCHDRAMT'] : array();
+		$Credit = array_key_exists('DSPVCHCRAMT',$array) ? $array['DSPVCHCRAMT'] : array();
+		$BillType = array_key_exists('BILLTYPE',$array) ? $array['BILLTYPE'] : array();
+		$BillCreditPeriod = array_key_exists('BILLCREDITPERIOD',$array) ? $array['BILLCREDITPERIOD'] : array();
+		$BillTypeName = array_key_exists('NAME',$array) ? $array['NAME'] : array();
 		return array($date, $accounts, $voucherType, $Debit, $Credit, $BillType, $BillCreditPeriod, $BillTypeName);
 	}
 
